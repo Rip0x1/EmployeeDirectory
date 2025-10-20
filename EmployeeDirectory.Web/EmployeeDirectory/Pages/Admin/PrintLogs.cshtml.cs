@@ -33,7 +33,6 @@ namespace EmployeeDirectory.Pages.Admin
 
             var query = _context.Logs.AsQueryable();
 
-            // Поиск по всем полям
             if (!string.IsNullOrWhiteSpace(q))
             {
                 query = query.Where(l => 
@@ -58,9 +57,12 @@ namespace EmployeeDirectory.Pages.Admin
 
             Items = await query
                 .OrderByDescending(l => l.TimestampUtc)
-                .Take(1000) // Ограничиваем для печати
+                .Take(1000) 
                 .ToListAsync();
         }
     }
 }
+
+
+
 

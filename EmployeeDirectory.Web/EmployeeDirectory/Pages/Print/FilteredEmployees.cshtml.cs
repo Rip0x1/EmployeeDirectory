@@ -25,10 +25,9 @@ namespace EmployeeDirectory.Pages.Print
         public string? DepartmentName { get; set; }
         public bool? IsHeadOnly { get; set; }
 
-        public async Task OnGetAsync(string? search, int? departmentId, string? positionSearch, string? phoneSearch, bool? isHeadOnly, string? sortBy)
+        public async Task OnGetAsync(string? search, string[]? selectedEmployees, int[]? departments, string[]? positions, string? phoneSearch, bool? isHeadOnly, string? sortBy)
         {
             SearchQuery = search;
-            DepartmentId = departmentId;
             IsHeadOnly = isHeadOnly;
 
             var employees = _context.Employees
@@ -45,19 +44,26 @@ namespace EmployeeDirectory.Pages.Print
                 );
             }
 
-            if (departmentId.HasValue)
-            {
-                employees = employees.Where(e => e.DepartmentId == departmentId.Value);
-                var department = await _context.Departments.FindAsync(departmentId.Value);
-                DepartmentName = department?.Name;
-            }
-
-            if (!string.IsNullOrEmpty(positionSearch))
+            // Фильтр по ФИО (множественный выбор)
+            if (selectedEmployees != null && selectedEmployees.Length > 0)
             {
                 employees = employees.Where(e => 
-                    e.PositionDescription != null && 
-                    EF.Functions.ILike(e.PositionDescription, $"%{positionSearch}%")
-                );
+                    !string.IsNullOrEmpty(e.FullName) && 
+                    selectedEmployees.Contains(e.FullName));
+            }
+
+            // Фильтр по отделам (множественный выбор)
+            if (departments != null && departments.Length > 0)
+            {
+                employees = employees.Where(e => departments.Contains(e.DepartmentId));
+            }
+
+            // Фильтр по должностям (множественный выбор)
+            if (positions != null && positions.Length > 0)
+            {
+                employees = employees.Where(e => 
+                    !string.IsNullOrEmpty(e.PositionDescription) && 
+                    positions.Contains(e.PositionDescription));
             }
 
             if (!string.IsNullOrEmpty(phoneSearch))

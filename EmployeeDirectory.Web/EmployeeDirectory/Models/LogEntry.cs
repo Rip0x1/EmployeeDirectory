@@ -27,6 +27,3 @@ namespace EmployeeDirectory.Models
         public string? IpAddress { get; set; }
     }
 }
-
-
-

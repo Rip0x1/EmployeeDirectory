@@ -172,10 +172,61 @@
         }
         
         @@media print {
-            body { margin: 0; padding: 15px; }
-            .print-header { page-break-after: avoid; }
-            .department-section { page-break-inside: avoid; }
-            .employees-table { page-break-inside: auto; }
+            body { 
+                margin: 0; 
+                padding: 15px; 
+                font-size: 12px;
+            }
+            .print-header { 
+                page-break-after: avoid; 
+                margin-bottom: 20px;
+            }
+            .print-info {
+                page-break-after: avoid;
+                margin-bottom: 15px;
+            }
+            .summary {
+                page-break-after: avoid;
+                margin-bottom: 15px;
+            }
+            .department-section { 
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            .department-header {
+                page-break-after: avoid;
+                background: none !important;
+            }
+            .employees-table { 
+                page-break-inside: auto;
+                font-size: 11px;
+            }
+            .employees-table th,
+            .employees-table td {
+                padding: 4px 6px;
+                font-size: 10px;
+            }
+            .department-name-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+            .position-badge {
+                font-size: 9px;
+                padding: 2px 4px;
+            }
+            .multi-column {
+                column-count: 2;
+                column-gap: 20px;
+                column-rule: 1px solid #ddd;
+            }
+            .multi-column .department-section {
+                break-inside: avoid;
+                margin-bottom: 15px;
+            }
+            .many-departments {
+                column-count: 3;
+                column-gap: 15px;
+            }
         }
     </style>
 </head>
@@ -215,13 +266,12 @@
             }
         </div>
 
-        <div class="@(Model.DepartmentGroups.Count() > 3 ? "multi-column" : "")">
+        <div class="@(Model.DepartmentGroups.Count() > 6 ? "many-departments" : (Model.DepartmentGroups.Count() > 3 ? "multi-column" : ""))">
             @foreach (var departmentGroup in Model.DepartmentGroups)
             {
                 <div class="department-section">
                     <div class="department-header">
-                        <span class="badge">ОТДЕЛ</span>
-                        @departmentGroup.Key
+                        <span class="department-name-badge">@departmentGroup.Key</span>
                     </div>
 
                     <table class="employees-table">
@@ -274,4 +324,28 @@
         </div>
     }
 </body>
+
+<style>
+    .department-name-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #6f42c1, #9c27b0);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 0.9em;
+        border: 2px solid #6f42c1;
+        box-shadow: 0 2px 6px rgba(111, 66, 193, 0.2);
+        text-align: center;
+        margin: 0 auto;
+        width: fit-content;
+        min-width: 80px;
+    }
+    
+    .department-header {
+        background: none !important;
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
 </html>

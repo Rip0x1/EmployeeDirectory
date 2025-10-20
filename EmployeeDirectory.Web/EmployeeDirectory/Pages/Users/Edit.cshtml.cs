@@ -80,11 +80,9 @@ namespace EmployeeDirectory.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Убираем стандартную валидацию для полей пароля
             ModelState.Remove("Input.NewPassword");
             ModelState.Remove("Input.ConfirmPassword");
             
-            // Условная валидация для полей пароля
             if (!string.IsNullOrEmpty(Input.NewPassword) && string.IsNullOrEmpty(Input.ConfirmPassword))
             {
                 ModelState.AddModelError("Input.ConfirmPassword", "Подтвердите пароль");
@@ -121,14 +119,12 @@ namespace EmployeeDirectory.Pages.Users
 
             if (result.Succeeded)
             {
-                // Update password if provided
                 if (!string.IsNullOrEmpty(Input.NewPassword))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                     await _userManager.ResetPasswordAsync(user, token, Input.NewPassword);
                 }
 
-                // Update role
                 var currentRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, currentRoles);
                 

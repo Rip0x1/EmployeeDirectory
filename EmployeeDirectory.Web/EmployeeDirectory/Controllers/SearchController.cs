@@ -22,7 +22,7 @@ namespace EmployeeDirectory.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchEmployees([FromQuery] string? search, [FromQuery] int? departmentId, [FromQuery] string? positionSearch, [FromQuery] string? phoneSearch, [FromQuery] bool? isHeadOnly, [FromQuery] string? sortBy)
+        public async Task<IActionResult> SearchEmployees([FromQuery] string? search, [FromQuery] string[]? selectedEmployees, [FromQuery] int[]? departments, [FromQuery] string[]? positions, [FromQuery] string? phoneSearch, [FromQuery] bool? isHeadOnly, [FromQuery] string? sortBy)
         {
             try
             {
@@ -37,16 +37,26 @@ namespace EmployeeDirectory.Controllers
                     employees = await _employeeService.GetAllEmployeesAsync();
                 }
 
-                if (departmentId.HasValue)
+                // Фильтр по ФИО (множественный выбор)
+                if (selectedEmployees != null && selectedEmployees.Length > 0)
                 {
-                    employees = employees.Where(e => e.DepartmentId == departmentId.Value);
+                    employees = employees.Where(e => 
+                        !string.IsNullOrEmpty(e.FullName) && 
+                        selectedEmployees.Contains(e.FullName));
                 }
 
-                if (!string.IsNullOrEmpty(positionSearch))
+                // Фильтр по отделам (множественный выбор)
+                if (departments != null && departments.Length > 0)
+                {
+                    employees = employees.Where(e => departments.Contains(e.DepartmentId));
+                }
+
+                // Фильтр по должностям (множественный выбор)
+                if (positions != null && positions.Length > 0)
                 {
                     employees = employees.Where(e => 
                         !string.IsNullOrEmpty(e.PositionDescription) && 
-                        e.PositionDescription.Contains(positionSearch, StringComparison.OrdinalIgnoreCase));
+                        positions.Contains(e.PositionDescription));
                 }
 
                 if (!string.IsNullOrEmpty(phoneSearch))
@@ -99,7 +109,7 @@ namespace EmployeeDirectory.Controllers
                         .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                         .ThenBy(e => e.FullName ?? string.Empty);
                 }
-                var departments = await _departmentService.GetAllDepartmentsAsync();
+                var allDepartments = await _departmentService.GetAllDepartmentsAsync();
 
                 var result = employees.Select(e => new
                 {

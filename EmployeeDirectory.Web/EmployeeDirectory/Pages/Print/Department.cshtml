@@ -143,9 +143,32 @@
         }
         
         @@media print {
-            body { margin: 0; padding: 15px; }
-            .print-header { page-break-after: avoid; }
-            .employees-table { page-break-inside: auto; }
+            body { 
+                margin: 0; 
+                padding: 15px; 
+                font-size: 12px;
+            }
+            .print-header { 
+                page-break-after: avoid; 
+                margin-bottom: 20px;
+            }
+            .print-info {
+                page-break-after: avoid;
+                margin-bottom: 15px;
+            }
+            .employees-table { 
+                page-break-inside: auto;
+                font-size: 11px;
+            }
+            .employees-table th,
+            .employees-table td {
+                padding: 4px 6px;
+                font-size: 10px;
+            }
+            .position-badge {
+                font-size: 9px;
+                padding: 2px 4px;
+            }
         }
     </style>
 </head>
@@ -169,8 +192,7 @@
         </div>
 
         <div class="department-header">
-            <span class="badge">ОТДЕЛ</span>
-            @Model.DepartmentName
+            <span class="department-name-badge">@Model.DepartmentName</span>
         </div>
 
         <table class="employees-table">
@@ -220,4 +242,28 @@
         </div>
     }
 </body>
+
+<style>
+    .department-name-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #6f42c1, #9c27b0);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 0.9em;
+        border: 2px solid #6f42c1;
+        box-shadow: 0 2px 6px rgba(111, 66, 193, 0.2);
+        text-align: center;
+        margin: 0 auto;
+        width: fit-content;
+        min-width: 80px;
+    }
+    
+    .department-header {
+        background: none !important;
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
 </html>

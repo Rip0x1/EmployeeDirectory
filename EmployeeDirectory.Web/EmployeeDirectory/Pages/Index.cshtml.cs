@@ -28,7 +28,6 @@ namespace EmployeeDirectory.Pages
         public int TotalPages { get; set; }
         public int TotalEmployees { get; set; }
 
-        // Свойства для печати
         public string? SearchQuery => SearchTerm;
         public int? DepartmentId => SelectedDepartmentId;
         public string? PositionSearch { get; set; }
@@ -64,8 +63,6 @@ namespace EmployeeDirectory.Pages
             var groupedEmployees = allEmployees.GroupBy(e => e.Department.Name).OrderBy(g => g.Key).ToList();
             var totalDepartments = groupedEmployees.Count;
             
-            // Учитываем общее количество сотрудников для пагинации
-            // Если сотрудников больше 50, увеличиваем количество страниц
             var maxEmployeesPerPage = 50;
             if (TotalEmployees > maxEmployeesPerPage)
             {

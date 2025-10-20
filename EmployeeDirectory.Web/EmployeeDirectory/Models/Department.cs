@@ -8,7 +8,7 @@ namespace EmployeeDirectory.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Введите название отдела")]
         [StringLength(100)]
         [Display(Name = "Название отдела")]
         public string Name { get; set; } = string.Empty;

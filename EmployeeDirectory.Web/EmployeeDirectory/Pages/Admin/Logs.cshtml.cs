@@ -32,7 +32,6 @@ namespace EmployeeDirectory.Pages.Admin
 
             var query = _context.Logs.AsQueryable();
 
-            // Поиск по всем полям
             if (!string.IsNullOrWhiteSpace(q))
             {
                 query = query.Where(l => 
