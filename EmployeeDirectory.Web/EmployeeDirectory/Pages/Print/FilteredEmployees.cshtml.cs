@@ -34,7 +34,6 @@ namespace EmployeeDirectory.Pages.Print
                 .Include(e => e.Department)
                 .AsQueryable();
 
-            // Применяем те же фильтры, что и на главной странице
             if (!string.IsNullOrEmpty(search))
             {
                 employees = employees.Where(e => 
@@ -44,7 +43,6 @@ namespace EmployeeDirectory.Pages.Print
                 );
             }
 
-            // Фильтр по ФИО (множественный выбор)
             if (selectedEmployees != null && selectedEmployees.Length > 0)
             {
                 employees = employees.Where(e => 
@@ -52,13 +50,11 @@ namespace EmployeeDirectory.Pages.Print
                     selectedEmployees.Contains(e.FullName));
             }
 
-            // Фильтр по отделам (множественный выбор)
             if (departments != null && departments.Length > 0)
             {
                 employees = employees.Where(e => departments.Contains(e.DepartmentId));
             }
 
-            // Фильтр по должностям (множественный выбор)
             if (positions != null && positions.Length > 0)
             {
                 employees = employees.Where(e => 
@@ -79,7 +75,6 @@ namespace EmployeeDirectory.Pages.Print
                 employees = employees.Where(e => e.IsHeadOfDepartment == isHeadOnly.Value);
             }
 
-            // Сортировка
             var orderedEmployees = employees.OrderBy(e => e.Department != null ? e.Department.Name : "Без отдела")
                                           .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1);
 

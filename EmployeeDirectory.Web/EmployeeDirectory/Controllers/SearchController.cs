@@ -37,7 +37,6 @@ namespace EmployeeDirectory.Controllers
                     employees = await _employeeService.GetAllEmployeesAsync();
                 }
 
-                // Фильтр по ФИО (множественный выбор)
                 if (selectedEmployees != null && selectedEmployees.Length > 0)
                 {
                     employees = employees.Where(e => 
@@ -45,13 +44,11 @@ namespace EmployeeDirectory.Controllers
                         selectedEmployees.Contains(e.FullName));
                 }
 
-                // Фильтр по отделам (множественный выбор)
                 if (departments != null && departments.Length > 0)
                 {
                     employees = employees.Where(e => departments.Contains(e.DepartmentId));
                 }
 
-                // Фильтр по должностям (множественный выбор)
                 if (positions != null && positions.Length > 0)
                 {
                     employees = employees.Where(e => 
