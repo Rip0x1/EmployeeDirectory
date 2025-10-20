@@ -1,0 +1,78 @@
+@page "{id}"
+@model EmployeeDirectory.Pages.Users.EditModel
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Administrator")]
+@{
+    ViewData["Title"] = "Редактировать пользователя";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4><i class="fas fa-user-edit me-2"></i>Редактировать пользователя</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                        <input type="hidden" asp-for="Input.Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.UserName" class="form-label">Логин *</label>
+                                <input asp-for="Input.UserName" class="form-control" />
+                                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.NewPassword" class="form-label">Новый пароль (необязательно)</label>
+                                <input asp-for="Input.NewPassword" type="password" class="form-control" placeholder="Оставьте пустым, чтобы не менять пароль" />
+                                <span asp-validation-for="Input.NewPassword" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.ConfirmPassword" class="form-label">Подтвердите новый пароль (необязательно)</label>
+                                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Только если меняете пароль" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.FullName" class="form-label">Полное имя</label>
+                                <input asp-for="Input.FullName" class="form-control" />
+                                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Input.DepartmentId" class="form-label">Отдел</label>
+                                <select asp-for="Input.DepartmentId" class="form-select" asp-items="Model.Departments">
+                                    <option value="">— Не назначен —</option>
+                                </select>
+                                <span asp-validation-for="Input.DepartmentId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.Role" class="form-label">Роль *</label>
+                            <select asp-for="Input.Role" class="form-select">
+                                <option value="">— Выберите роль —</option>
+                                <option value="Manager">Начальник отдела</option>
+                                <option value="Administrator">Администратор</option>
+                            </select>
+                            <span asp-validation-for="Input.Role" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <a class="btn btn-secondary" href="@(Model.ReturnUrl ?? Url.Page("/Users/Manage"))">Отмена</a>
+                            <button type="submit" class="btn btn-warning">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

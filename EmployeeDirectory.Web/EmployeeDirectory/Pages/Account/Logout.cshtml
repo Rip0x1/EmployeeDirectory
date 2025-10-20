@@ -1,0 +1,33 @@
+@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Выход из системы";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h4><i class="fas fa-sign-out-alt me-2"></i>Выход из системы</h4>
+                </div>
+                <div class="card-body text-center">
+                    <p class="mb-4">Вы уверены, что хотите выйти из системы?</p>
+                    
+                    <form method="post">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-sign-out-alt me-1"></i>Да, выйти
+                            </button>
+                            <a href="/" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

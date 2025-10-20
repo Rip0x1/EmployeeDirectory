@@ -1,0 +1,70 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Администрирование";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-cog me-2"></i>Администрирование</h2>
+            <p class="text-muted">Управление системой справочника сотрудников</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="fas fa-building fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Управление отделами</h5>
+                    <p class="card-text flex-grow-1">Создание, редактирование и удаление отделов</p>
+                    <a asp-page="/Departments/Manage" class="btn btn-primary">
+                        <i class="fas fa-cog me-1"></i>Управлять
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="fas fa-users fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Управление сотрудниками</h5>
+                    <p class="card-text flex-grow-1">Добавление, редактирование и удаление сотрудников</p>
+                    <a asp-page="/Employees/Manage" class="btn btn-success">
+                        <i class="fas fa-users me-1"></i>Управлять
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="fas fa-user-cog fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Управление пользователями</h5>
+                    <p class="card-text flex-grow-1">Создание, редактирование и удаление пользователей</p>
+                    <a asp-page="/Users/Manage" class="btn btn-warning">
+                        <i class="fas fa-user-cog me-1"></i>Управлять
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="fas fa-file-alt fa-3x text-dark mb-3"></i>
+                    <h5 class="card-title">Логи системы</h5>
+                    <p class="card-text flex-grow-1">Просмотр логов действий пользователей</p>
+                    <a asp-page="/Admin/Logs" class="btn btn-dark">
+                        <i class="fas fa-file-alt me-1"></i>Просмотреть
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>

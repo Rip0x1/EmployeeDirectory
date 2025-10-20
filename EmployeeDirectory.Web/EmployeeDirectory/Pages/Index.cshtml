@@ -1,0 +1,870 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Справочник сотрудников";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Info"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>@TempData["Info"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            <h1 class="mb-4">Справочник сотрудников</h1>
+            
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-search me-2"></i>Поиск и фильтрация</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-1 g-sm-2 g-md-3">
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                            <label for="search" class="form-label">
+                                <i class="fas fa-search me-1"></i>Поиск по ФИО
+                            </label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="@Model.SearchTerm" placeholder="Введите ФИО...">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <label for="departmentId" class="form-label">
+                                <i class="fas fa-building me-1"></i>Отдел
+                            </label>
+                            <select class="form-select" id="departmentId" name="departmentId">
+                                <option value="">Все отделы</option>
+                                @foreach (var dept in Model.Departments)
+                                {
+                                    <option value="@dept.Id" selected="@(Model.SelectedDepartmentId == dept.Id)">
+                                        @dept.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <label for="positionSearch" class="form-label">
+                                <i class="fas fa-user-tie me-1"></i>Поиск по должности
+                            </label>
+                            <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
+                                   placeholder="Введите должность...">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-2 d-flex align-items-end">
+                            <a href="/" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-times me-1"></i>Сброс
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row g-1 g-sm-2 g-md-3 mt-1 mt-sm-2">
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                            <label for="phoneSearch" class="form-label">
+                                <i class="fas fa-phone me-1"></i>Поиск по телефону
+                            </label>
+                            <input type="text" class="form-control" id="phoneSearch" name="phoneSearch" 
+                                   placeholder="Городской или местный номер...">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <label for="isHeadOnly" class="form-label">
+                                <i class="fas fa-crown me-1"></i>Только начальники
+                            </label>
+                            <select class="form-select" id="isHeadOnly" name="isHeadOnly">
+                                <option value="">Все сотрудники</option>
+                                <option value="true">Только начальники</option>
+                                <option value="false">Только рядовые</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <label for="sortBy" class="form-label">
+                                <i class="fas fa-sort me-1"></i>Сортировка
+                            </label>
+                            <select class="form-select" id="sortBy" name="sortBy">
+                                <option value="name">По ФИО</option>
+                                <option value="department">По отделу</option>
+                                <option value="position">По должности</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Список сотрудников (@Model.Employees.Count())</h5>
+                    <button type="button" id="printBtn" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-print me-1"></i>Печать
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <div class="table-container">
+                            <table class="table mb-0">
+                            <thead class="table-dark sticky-header">
+                                <tr>
+                                    <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">Должность / ФИО</th>
+                                    <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">Городской номер</th>
+                                    <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">Местный номер</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeesTable">
+                        @{
+                            var groupedEmployees = Model.Employees.GroupBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name).OrderBy(g => g.Key);
+                        }
+                                @foreach (var departmentGroup in groupedEmployees)
+                                {
+                                    <tr class="department-header">
+                                        <td colspan="4" class="text-center fw-bold py-3" style="font-size: 0.7em; padding: 2px 1px;">
+                                            <span class="badge bg-purple text-white me-2" style="background: linear-gradient(45deg, #6f42c1, #5a2d91);">
+                                                <i class="fas fa-building me-1"></i>Отдел
+                                            </span>
+                                            @departmentGroup.Key
+                                        </td>
+                                    </tr>
+                                    @foreach (var employee in departmentGroup)
+                                    {
+                                        <tr>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">
+                                                @if (!string.IsNullOrEmpty(employee.PositionDescription))
+                                                {
+                                                    <span class="badge @(employee.IsHeadOfDepartment ? "bg-warning text-dark" : "bg-primary text-white") position-badge me-2" style="@(employee.IsHeadOfDepartment ? "background: linear-gradient(45deg, #ffc107, #e0a800);" : "background: linear-gradient(45deg, #007bff, #0056b3);")">
+                                                        <i class="fas @(employee.IsHeadOfDepartment ? "fa-crown" : "fa-user-tie") me-1"></i>@employee.PositionDescription
+                                                    </span>
+                                                    @if (!string.IsNullOrEmpty(employee.FullName))
+                                                    {
+                                                        <strong>@employee.FullName</strong>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted fst-italic">-</span>
+                                                }
+                                            </td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">@(employee.CityPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; font-size: 0.7em; padding: 2px 1px;">@(employee.LocalPhone ?? "Не указано")</td>
+                                        </tr>
+                                    }
+                                }
+                                @if (!Model.Employees.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            Сотрудники не найдены
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Навигация по страницам" class="mt-4">
+                    <ul class="pagination justify-content-center flex-wrap">
+                        @if (Model.PageNumber > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?search=@Model.SearchTerm&departmentId=@Model.SelectedDepartmentId&pageNumber=@(Model.PageNumber - 1)">
+                                    <i class="fas fa-chevron-left me-1"></i>Предыдущая
+                                </a>
+                            </li>
+                        }
+                        
+                        @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                        {
+                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                <a class="page-link" href="?search=@Model.SearchTerm&departmentId=@Model.SelectedDepartmentId&pageNumber=@i">@i</a>
+                            </li>
+                        }
+                        
+                        @if (Model.PageNumber < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?search=@Model.SearchTerm&departmentId=@Model.SelectedDepartmentId&pageNumber=@(Model.PageNumber + 1)">
+                                    Следующая<i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                
+                <div class="text-center text-muted small">
+                    <div class="d-block d-md-inline">Страница @Model.PageNumber из @Model.TotalPages</div>
+                    <div class="d-block d-md-inline ms-md-2">Показано @Model.Employees.Count() сотрудников из @Model.TotalEmployees</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style media="print">
+    .card-header, .btn, .form-control, .form-select {
+        display: none !important;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .table th, .table td {
+        padding: 4px 8px;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .table-responsive {
+        overflow: visible;
+    }
+    
+    .department-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: bold;
+        font-size: 1.1em;
+        padding: 12px;
+        text-align: center;
+    }
+    
+    .position-badge {
+        font-size: 0.9em;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .position-badge.manager {
+        background: linear-gradient(45deg, #ffc107, #ff8c00);
+        color: #000;
+        font-weight: bold;
+    }
+    
+    .position-badge.employee {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .position-badge {
+        width: 180px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.9em;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+    
+    .table-container {
+        height: 70vh;
+        overflow-y: auto;
+        position: relative;
+        border: 1px solid #dee2e6;
+    }
+    
+    
+    
+    .table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    .table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: #343a40 !important;
+        color: white !important;
+        border: 1px solid #dee2e6 !important;
+        border-bottom: 2px solid #212529 !important;
+        padding: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center !important;
+    }
+    
+    .table td, .table th {
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+    
+    .table th {
+        text-align: center !important;
+    }
+    
+    .table thead th,
+    .table th {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    
+    .table th,
+    .table td {
+        border-right: 3px solid #212529 !important;
+        border-left: 1px solid #dee2e6 !important;
+        vertical-align: middle;
+    }
+    
+    .table th:last-child,
+    .table td:last-child {
+        border-right: none !important;
+    }
+    
+    .table th:first-child,
+    .table td:first-child {
+        border-left: none !important;
+    }
+    
+    .table th:not(:last-child),
+    .table td:not(:last-child) {
+        border-right: 3px solid #212529 !important;
+    }
+    
+    .table {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+    
+    .table th,
+    .table td {
+        border-top: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .table th {
+        background-color: #343a40 !important;
+        color: white !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid #495057 !important;
+    }
+    
+    .table td {
+        padding: 8px 12px;
+    }
+    
+    .table th,
+    .table td {
+        border: 1px solid #dee2e6 !important;
+        border-right: 3px solid #212529 !important;
+    }
+    
+    .table th:last-child,
+    .table td:last-child {
+        border-right: 1px solid #dee2e6 !important;
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .table td:nth-child(1), .table th:nth-child(1) {
+        width: 20%;
+    }
+    
+    .table td:nth-child(2), .table th:nth-child(2) {
+        width: 40%;
+    }
+    
+    .table td:nth-child(3), .table th:nth-child(3) {
+        width: 20%;
+    }
+    
+    .table td:nth-child(4), .table th:nth-child(4) {
+        width: 20%;
+    }
+    
+    .table td:nth-child(5), .table th:nth-child(5) {
+        width: 15%;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8em;
+    }
+    
+    .table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    .table tbody tr:nth-child(odd) {
+        background-color: white;
+    }
+    
+    .department-header {
+        color: white;
+        font-size: 1.1em;
+        border: none;
+    }
+    
+    .department-header td {
+        color: white;
+        border: none;
+        padding: 12px;
+    }
+    
+    @@media (max-width: 768px) {
+        .table-container {
+            height: auto !important;
+            max-height: 60vh;
+        }
+        
+        .table th, .table td {
+            padding: 8px 4px;
+            font-size: 0.9em;
+        }
+        
+        .position-badge {
+            font-size: 0.8em;
+            padding: 4px 8px;
+        }
+        
+        .card-header h5 {
+            font-size: 1.1em;
+        }
+        
+        .form-label {
+            font-size: 0.9em;
+        }
+        
+        .btn {
+            font-size: 0.9em;
+        }
+        
+        .pagination {
+            font-size: 0.9em;
+        }
+        
+        .pagination .page-link {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+    
+    @@media (max-width: 576px) {
+        .table th, .table td {
+            padding: 6px 2px;
+            font-size: 0.8em;
+        }
+        
+        .position-badge {
+            font-size: 0.7em;
+            padding: 3px 6px;
+        }
+        
+        .card-header h5 {
+            font-size: 1em;
+        }
+        
+        .form-label {
+            font-size: 0.8em;
+        }
+        
+        .btn {
+            font-size: 0.8em;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .pagination .page-link {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8em;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+    
+    @@media (max-width: 992px) {
+        .table th, .table td {
+            padding: 6px 3px;
+            font-size: 0.85em;
+        }
+        
+        .position-badge {
+            font-size: 0.75em;
+            padding: 4px 8px;
+            width: 150px;
+        }
+        
+        .table-container {
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .container-fluid {
+            padding: 0.25rem;
+        }
+        
+        .card {
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-body {
+            padding: 0.5rem;
+        }
+        
+        .table th, .table td {
+            padding: 4px 2px;
+            font-size: 0.8em;
+            line-height: 1.2;
+        }
+        
+        .position-badge {
+            font-size: 0.7em;
+            padding: 3px 6px;
+            width: 120px;
+        }
+        
+        .department-header td {
+            padding: 8px 4px;
+            font-size: 0.9em;
+        }
+        
+        .form-label {
+            font-size: 0.8em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-control, .form-select {
+            font-size: 0.9em;
+            padding: 0.375rem 0.5rem;
+        }
+        
+        .btn {
+            font-size: 0.8em;
+            padding: 0.375rem 0.5rem;
+        }
+        
+        .card-header h5, .card-header h6 {
+            font-size: 0.9em;
+        }
+        
+        .pagination .page-link {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8em;
+        }
+        
+        .navbar-brand {
+            font-size: 0.9em;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8em;
+        }
+        
+        .table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 25%;
+        }
+        
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 35%;
+        }
+        
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 20%;
+        }
+        
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            width: 20%;
+        }
+        
+        .table th:nth-child(5),
+        .table td:nth-child(5) {
+            width: 15%;
+        }
+    }
+    
+    @@media (max-width: 480px) {
+        .table th, .table td {
+            padding: 3px 1px;
+            font-size: 0.75em;
+        }
+        
+        .position-badge {
+            font-size: 0.65em;
+            padding: 2px 4px;
+            width: 100px;
+        }
+        
+        .table-container {
+            max-height: 55vh;
+        }
+        
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 20%;
+        }
+        
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 30%;
+        }
+        
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 25%;
+        }
+        
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            width: 25%;
+        }
+        
+        .table th:nth-child(5),
+        .table td:nth-child(5) {
+            width: 15%;
+        }
+    }
+
+    @@media (max-width: 360px) {
+        .table th, .table td {
+            padding: 2px 1px;
+            font-size: 0.7em;
+        }
+        
+        .position-badge {
+            font-size: 0.6em;
+            padding: 1px 3px;
+            width: 80px;
+        }
+        
+        .table-container {
+            max-height: 50vh;
+        }
+
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 18%;
+        }
+        
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 28%;
+        }
+        
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 27%;
+        }
+        
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            width: 27%;
+        }
+        
+        .table th:nth-child(5),
+        .table td:nth-child(5) {
+            width: 15%;
+        }
+    }
+    
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const departmentSelect = document.getElementById('departmentId');
+        const positionSearchInput = document.getElementById('positionSearch');
+    const phoneSearchInput = document.getElementById('phoneSearch');
+    const isHeadOnlySelect = document.getElementById('isHeadOnly');
+    const sortBySelect = document.getElementById('sortBy');
+    const tbody = document.getElementById('employeesTable');
+    
+        function performSearch() {
+            const searchTerm = searchInput.value;
+            const departmentId = departmentSelect.value;
+            const positionSearch = positionSearchInput.value;
+            const phoneSearch = phoneSearchInput.value;
+            const isHeadOnly = isHeadOnlySelect.value;
+            const sortBy = sortBySelect.value;
+
+            const colSpan = "3";
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></td></tr>`;
+
+            const params = new URLSearchParams();
+            if (searchTerm) params.append('search', searchTerm);
+            if (departmentId) params.append('departmentId', departmentId);
+            if (positionSearch) params.append('positionSearch', positionSearch);
+            if (phoneSearch) params.append('phoneSearch', phoneSearch);
+            if (isHeadOnly) params.append('isHeadOnly', isHeadOnly);
+            if (sortBy) params.append('sortBy', sortBy);
+
+        fetch(`/api/search?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.employees && data.employees.length > 0) {
+                    const grouped = data.employees.reduce((groups, emp) => {
+                        const dept = emp.departmentName;
+                        if (!groups[dept]) groups[dept] = [];
+                        groups[dept].push(emp);
+                        return groups;
+                    }, {});
+                    
+                    let html = '';
+                        Object.keys(grouped).sort().forEach(deptName => {
+                            html += `
+                                <tr class="department-header">
+                                    <td colspan="3" class="text-start fw-bold py-3">
+                                        <i class="fas fa-building me-2"></i>${deptName}
+                                    </td>
+                                </tr>
+                            `;
+                        grouped[deptName].forEach(emp => {
+                            let positionBadge = '';
+                            if (emp.positionDescription) {
+                                const isHead = emp.isHeadOfDepartment;
+                                const badgeClass = isHead ? 'bg-warning text-dark' : 'bg-primary text-white';
+                                const iconClass = isHead ? 'fa-crown' : 'fa-user-tie';
+                                const badgeStyle = isHead ? 'background: linear-gradient(45deg, #ffc107, #e0a800) !important;' : 'background: linear-gradient(45deg, #007bff, #0056b3) !important;';
+                                
+                                positionBadge = `<span class="badge ${badgeClass} position-badge me-2" style="${badgeStyle}"><i class="fas ${iconClass} me-1"></i>${emp.positionDescription}</span>`;
+                                if (emp.fullName && emp.fullName !== '-') {
+                                    positionBadge += `<strong>${emp.fullName}</strong>`;
+                                }
+                            } else {
+                                positionBadge = '<span class="text-muted fst-italic">-</span>';
+                            }
+                            
+                            
+                            html += `
+                                <tr>
+                                    <td class="text-center" style="border-right: 3px solid #212529 !important;">
+                                        ${positionBadge}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid #212529 !important;">${emp.cityPhone || 'Не указано'}</td>
+                                    <td class="text-center" style="border-right: 3px solid #212529 !important;">${emp.localPhone || 'Не указано'}</td>
+                                </tr>
+                            `;
+                        });
+                    });
+                    tbody.innerHTML = html;
+                    
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">Сотрудники не найдены</td></tr>`;
+                    }
+            })
+            .catch(error => {
+                console.error('Ошибка поиска:', error);
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger">Ошибка при выполнении поиска</td></tr>`;
+            });
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    phoneSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    departmentSelect.addEventListener('change', performSearch);
+        positionSearchInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(performSearch, 300);
+        });
+    isHeadOnlySelect.addEventListener('change', performSearch);
+    sortBySelect.addEventListener('change', performSearch);
+    
+    function handleResponsiveColumns() {
+        const width = window.innerWidth;
+        
+        if (width <= 360) {
+            document.querySelectorAll('.table th, .table td').forEach(cell => {
+                cell.style.fontSize = '0.7em';
+                cell.style.padding = '2px 1px';
+            });
+        } else if (width <= 480) {
+            document.querySelectorAll('.table th, .table td').forEach(cell => {
+                cell.style.fontSize = '0.75em';
+                cell.style.padding = '3px 1px';
+            });
+        } else if (width <= 768) {
+            document.querySelectorAll('.table th, .table td').forEach(cell => {
+                cell.style.fontSize = '0.8em';
+                cell.style.padding = '4px 2px';
+            });
+        } else {
+            document.querySelectorAll('.table th, .table td').forEach(cell => {
+                cell.style.fontSize = '';
+                cell.style.padding = '';
+            });
+        }
+    }
+    
+    handleResponsiveColumns();
+    window.addEventListener('resize', handleResponsiveColumns);
+
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+        printBtn.addEventListener('click', function() {
+            const search = document.getElementById('search')?.value || '';
+            const departmentId = document.getElementById('departmentId')?.value || '';
+            const positionSearch = document.getElementById('positionSearch')?.value || '';
+            const phoneSearch = document.getElementById('phoneSearch')?.value || '';
+            const isHeadOnly = document.getElementById('isHeadOnly')?.value || '';
+            const sortBy = document.getElementById('sortBy')?.value || '';
+            
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (departmentId) params.append('departmentId', departmentId);
+            if (positionSearch) params.append('positionSearch', positionSearch);
+            if (phoneSearch) params.append('phoneSearch', phoneSearch);
+            if (isHeadOnly) params.append('isHeadOnly', isHeadOnly);
+            if (sortBy) params.append('sortBy', sortBy);
+            
+            const url = '@Url.Page("/Print/FilteredEmployees")' + (params.toString() ? '?' + params.toString() : '');
+            window.open(url, '_blank');
+        });
+    }
+});
+
+</script>

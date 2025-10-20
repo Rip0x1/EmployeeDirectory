@@ -1,0 +1,72 @@
+@page
+@model EmployeeDirectory.Pages.Departments.ManageModel
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Administrator")]
+@{
+    ViewData["Title"] = "Управление отделами";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-sitemap me-2"></i>Управление отделами</h2>
+        <a asp-page="/Departments/Create" asp-route-returnUrl="/Departments/Manage" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i>Добавить отдел
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div class="table-container">
+                    <table class="table mb-0">
+                        <thead class="table-dark sticky-header">
+                            <tr>
+                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Название отдела</th>
+                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Начальник отдела</th>
+                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var d in Model.Departments)
+                        {
+                            <tr>
+                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@d.Name</td>
+                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                    @if (d.Head != null)
+                                    {
+                                        @(string.IsNullOrWhiteSpace(d.Head.FullName) ? d.Head.PositionDescription : d.Head.FullName)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Не назначен</span>
+                                    }
+                                </td>
+                                <td class="text-center" style="">
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="/Departments/Edit" asp-route-id="@d.Id" asp-route-returnUrl="/Departments/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-page="/Departments/Delete" asp-route-id="@d.Id" asp-route-returnUrl="/Departments/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

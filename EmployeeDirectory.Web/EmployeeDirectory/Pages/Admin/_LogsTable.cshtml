@@ -1,0 +1,17 @@
+@model List<EmployeeDirectory.Models.LogEntry>
+@*
+  Renders only table rows for logs. Used for AJAX partial updates on Logs page.
+*@
+@foreach (var log in Model)
+{
+    <tr>
+        <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@log.TimestampUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+        <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@log.UserName</td>
+        <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@log.Action</td>
+        <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@log.EntityType (@log.EntityId)</td>
+        <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@log.Details</td>
+    </tr>
+}
+
+
+

@@ -1,0 +1,104 @@
+@page
+@model CreateModel
+@{
+    ViewData["Title"] = "Добавить сотрудника";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-user-plus me-2"></i>Добавить сотрудника</h4>
+                </div>
+                <div class="card-body">
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            </div>
+                        }
+                    <form method="post">
+                        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.FullName" class="form-label">
+                                    <i class="fas fa-user me-1"></i>ФИО *
+                                </label>
+                                <input asp-for="Employee.FullName" class="form-control" placeholder="Введите ФИО" />
+                                <span asp-validation-for="Employee.FullName" class="text-danger"></span>
+                            </div>
+                            
+                            @if (!User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="DepartmentId" class="form-label">
+                                        <i class="fas fa-building me-1"></i>Отдел *
+                                    </label>
+                                    <select asp-for="DepartmentId" class="form-select" asp-items="Model.Departments">
+                                    </select>
+                                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.CityPhone" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Городской номер
+                                </label>
+                                <input asp-for="Employee.CityPhone" class="form-control" placeholder="74-91-52" />
+                                <span asp-validation-for="Employee.CityPhone" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.LocalPhone" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Местный номер
+                                </label>
+                                <input asp-for="Employee.LocalPhone" class="form-control" placeholder="1-54" />
+                                <span asp-validation-for="Employee.LocalPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.PositionDescription" class="form-label">
+                                    <i class="fas fa-user-tie me-1"></i>Должность/Описание *
+                                </label>
+                                <input asp-for="Employee.PositionDescription" class="form-control" placeholder="Например: Директор, Технологи, Электрик (1 этаж)" />
+                                <span asp-validation-for="Employee.PositionDescription" class="text-danger"></span>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="form-check">
+                                    <input asp-for="Employee.IsHeadOfDepartment" class="form-check-input" />
+                                    <label asp-for="Employee.IsHeadOfDepartment" class="form-check-label">
+                                        <i class="fas fa-crown me-1"></i>Начальник отдела
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-outline-secondary" href="@(Model.ReturnUrl ?? Request.Headers["Referer"].ToString() ?? Url.Page("/Index"))">
+                                <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

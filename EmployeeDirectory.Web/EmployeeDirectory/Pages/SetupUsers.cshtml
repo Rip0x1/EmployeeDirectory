@@ -1,0 +1,57 @@
+@page
+@model SetupUsersModel
+@{
+    ViewData["Title"] = "Настройка пользователей";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-user-cog me-2"></i>Настройка пользователей</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.UsersCreated)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Пользователи успешно созданы!</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Администратор:</strong> логин: <code>admin</code>, пароль: <code>admin123</code></li>
+                                <li><strong>Начальник отдела:</strong> логин: <code>manager</code>, пароль: <code>manager123</code></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Создание тестовых пользователей</strong>
+                            <p class="mb-0">Нажмите кнопку ниже для создания тестовых пользователей с ролями администратора и начальника отдела.</p>
+                        </div>
+                        
+                        <form method="post">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Создать тестовых пользователей
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-1"></i>На главную
+                        </a>
+                        <a href="/Account/Login" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i>Войти в систему
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
