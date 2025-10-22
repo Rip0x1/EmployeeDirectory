@@ -57,7 +57,6 @@ namespace EmployeeDirectory.Pages.Admin
 
             Items = await query
                 .OrderByDescending(l => l.TimestampUtc)
-                .Take(1000) 
                 .ToListAsync();
         }
     }
