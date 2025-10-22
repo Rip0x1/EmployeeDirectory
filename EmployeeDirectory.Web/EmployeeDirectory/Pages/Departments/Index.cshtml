@@ -4,12 +4,12 @@
     ViewData["Title"] = "Мой отдел";
 }
 
-<div class="container-fluid">
+<div class="container-fluid fade-in-up">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-building me-2"></i>Мой отдел</h2>
-                <div>
+                <div class="d-flex justify-content-end">
                     <a asp-page="/Employees/Create" asp-route-returnUrl="/Departments" class="btn btn-success">
                         <i class="fas fa-plus me-1"></i>Добавить сотрудника
                     </a>
@@ -30,13 +30,6 @@
                                    placeholder="Введите ФИО...">
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <label for="positionSearch" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Поиск по должности
-                            </label>
-                            <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
-                                   placeholder="Введите должность...">
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <label for="phoneSearch" class="form-label">
                                 <i class="fas fa-phone me-1"></i>Поиск по телефону
                             </label>
@@ -44,58 +37,52 @@
                                    placeholder="Городской или местный номер...">
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <label for="isHeadOnly" class="form-label">
-                                <i class="fas fa-crown me-1"></i>Только начальники
+                            <label for="positionSearch" class="form-label">
+                                <i class="fas fa-user-tie me-1"></i>Поиск по должности
                             </label>
-                            <select class="form-select" id="isHeadOnly" name="isHeadOnly">
-                                <option value="">Все сотрудники</option>
-                                <option value="true">Только начальники</option>
-                                <option value="false">Только рядовые</option>
-                            </select>
+                            <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
+                                   placeholder="Введите должность...">
                         </div>
                     </div>
                     
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                             <label for="employees" class="form-label">
-                                <i class="fas fa-users me-1"></i>ФИО (множественный выбор)
+                                <i class="fas fa-users me-1"></i>ФИО
                             </label>
                             <select class="form-select" id="employees" name="employees" multiple size="3">
-                                @foreach (var employee in Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Select(e => e.FullName).Distinct().OrderBy(e => e))
+                                @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
                                 {
-                                    <option value="@employee">@employee</option>
+                                    @foreach (var employee in Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Select(e => e.FullName).Distinct().OrderBy(e => e))
+                                    {
+                                        <option value="@employee">@employee</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option disabled>Нет доступных сотрудников</option>
                                 }
                             </select>
                             <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                             <label for="positions" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Должности (множественный выбор)
+                                <i class="fas fa-user-tie me-1"></i>Должности
                             </label>
                             <select class="form-select" id="positions" name="positions" multiple size="3">
-                                @foreach (var position in Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Distinct().OrderBy(p => p))
+                                @if (Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Any())
                                 {
-                                    <option value="@position">@position</option>
+                                    @foreach (var position in Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Distinct().OrderBy(p => p))
+                                    {
+                                        <option value="@position">@position</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option disabled>Нет доступных должностей</option>
                                 }
                             </select>
                             <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <label class="form-label me-3 mb-0">
-                                <i class="fas fa-list me-1"></i>Настройки отображения
-                            </label>
-                        </div>
-                        <div>
-                            <a href="/Departments" class="btn btn-outline-danger">
-                                <i class="fas fa-times me-1"></i>Сброс фильтров
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -104,11 +91,16 @@
             @if (Model.Employees.Any())
             {
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center gap-2">
                         <h5 class="mb-0">Список сотрудников (@Model.Employees.Count())</h5>
-                        <a href="@Url.Page("/Print/Department", new { departmentId = Model.DepartmentId })" target="_blank" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-print me-1"></i>Печать
-                        </a>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <button id="printDepartmentBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-print me-1"></i>Печать
+                            </button>
+                            <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger">
+                                <i class="fas fa-times me-1"></i>Сброс фильтров
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div id="employeesTable">
@@ -190,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search');
     const positionSearchInput = document.getElementById('positionSearch');
     const phoneSearchInput = document.getElementById('phoneSearch');
-    const isHeadOnlySelect = document.getElementById('isHeadOnly');
     const employeesSelect = document.getElementById('employees');
     const positionsSelect = document.getElementById('positions');
     const tbody = document.querySelector('tbody');
@@ -199,57 +190,93 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = searchInput.value.toLowerCase();
         const positionSearch = positionSearchInput.value.toLowerCase();
         const phoneSearch = phoneSearchInput.value.toLowerCase();
-        const isHeadOnly = isHeadOnlySelect.value;
         const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
         const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
-        
-        const rows = tbody.querySelectorAll('tr');
+
+        const rows = Array.from(tbody.querySelectorAll('tr'));
         
         rows.forEach(row => {
-            if (row.classList.contains('department-header')) {
-                return;
+            if (row.classList.contains('text-center')) return; 
+            
+            const cells = row.querySelectorAll('td');
+            if (cells.length === 0) return;
+            
+            const fullName = cells[0].textContent.toLowerCase();
+            const cityPhone = cells[1].textContent.toLowerCase();
+            const localPhone = cells[2].textContent.toLowerCase();
+            const positionText = cells[0].querySelector('.position-badge')?.textContent.toLowerCase() || '';
+            
+            let showRow = true;
+
+            if (searchTerm && !fullName.includes(searchTerm) && !positionText.includes(searchTerm)) {
+                showRow = false;
             }
-            
-            const firstCell = row.querySelector('td:nth-child(1)');
-            const secondCell = row.querySelector('td:nth-child(2)');
-            const thirdCell = row.querySelector('td:nth-child(3)');
-            if (!firstCell) return;
-            
-            const cellText = firstCell.textContent.toLowerCase();
-            const phoneText = secondCell ? secondCell.textContent.toLowerCase() : '';
-            const localPhoneText = thirdCell ? thirdCell.textContent.toLowerCase() : '';
-            
-            const isHeadRow = firstCell.querySelector('.position-head') !== null;
-            
-            const matchesSearch = !searchTerm || cellText.includes(searchTerm);
-            const matchesPosition = !positionSearch || cellText.includes(positionSearch);
-            const matchesPhone = !phoneSearch || phoneText.includes(phoneSearch) || localPhoneText.includes(phoneSearch);
-            
-            let matchesHeadFilter = true;
-            if (isHeadOnly === 'true') {
-                matchesHeadFilter = isHeadRow;
-            } else if (isHeadOnly === 'false') {
-                matchesHeadFilter = !isHeadRow;
+
+            if (positionSearch && !positionText.includes(positionSearch)) {
+                showRow = false;
             }
-            
-            let matchesSelectedEmployees = true;
+
+            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch)) {
+                showRow = false;
+            }
+
             if (selectedEmployees.length > 0) {
-                matchesSelectedEmployees = selectedEmployees.some(emp => cellText.includes(emp.toLowerCase()));
+                const employeeName = cells[0].querySelector('strong')?.textContent || '';
+                const isEmployeeSelected = selectedEmployees.some(selected => 
+                    employeeName.toLowerCase().includes(selected.toLowerCase()) || 
+                    selected.toLowerCase().includes(employeeName.toLowerCase())
+                );
+                if (!isEmployeeSelected) {
+                    showRow = false;
+                }
             }
-            
-            let matchesSelectedPositions = true;
+
             if (selectedPositions.length > 0) {
-                matchesSelectedPositions = selectedPositions.some(pos => cellText.includes(pos.toLowerCase()));
+                const isPositionSelected = selectedPositions.some(selected => 
+                    positionText.includes(selected.toLowerCase()) || 
+                    selected.toLowerCase().includes(positionText)
+                );
+                if (!isPositionSelected) {
+                    showRow = false;
+                }
             }
-            
-            if (matchesSearch && matchesPosition && matchesPhone && matchesHeadFilter && matchesSelectedEmployees && matchesSelectedPositions) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+
+            row.style.display = showRow ? '' : 'none';
         });
+        
+        updateEmployeeCount();
     }
     
+    function updateEmployeeCount() {
+        const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => 
+            !row.classList.contains('text-center') && 
+            row.style.display !== 'none'
+        );
+        const count = visibleRows.length;
+        const countElement = document.querySelector('.card-header h5');
+        if (countElement) {
+            countElement.textContent = `Список сотрудников (${count})`;
+        }
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        positionSearchInput.value = '';
+        phoneSearchInput.value = '';
+        
+        Array.from(employeesSelect.options).forEach(option => option.selected = false);
+        Array.from(positionsSelect.options).forEach(option => option.selected = false);
+        
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.forEach(row => {
+            if (!row.classList.contains('text-center')) {
+                row.style.display = '';
+            }
+        });
+        
+        updateEmployeeCount();
+    }
+
     searchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(performSearch, 300);
@@ -264,6 +291,20 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(performSearch, 300);
     });
+    
+    employeesSelect.addEventListener('change', function() {
+        updatePositionsList();
+        performSearch();
+    });
+    
+    positionsSelect.addEventListener('change', performSearch);
+
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+    
+    updateEmployeeCount();
     
     function updatePositionsList() {
         const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
@@ -306,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
         performSearch();
     });
     positionsSelect.addEventListener('change', performSearch);
-    isHeadOnlySelect.addEventListener('change', performSearch);
 });
 </script>
 
@@ -348,13 +388,15 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 1px solid #dee2e6;
     padding: 8px;
     text-align: center;
+    vertical-align: middle;
     font-weight: bold;
 }
 
 .employees-table td {
     border: 1px solid #dee2e6;
     padding: 8px;
-    vertical-align: top;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .employee-name {
@@ -384,3 +426,34 @@ document.addEventListener('DOMContentLoaded', function() {
     color: white;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const printDepartmentBtn = document.getElementById('printDepartmentBtn');
+    console.log('Print department button found:', printDepartmentBtn);
+    if (printDepartmentBtn) {
+        printDepartmentBtn.addEventListener('click', function() {
+            const search = document.getElementById('search')?.value || '';
+            const phoneSearch = document.getElementById('phoneSearch')?.value || '';
+            const employees = Array.from(document.getElementById('employees')?.selectedOptions || [])
+                .map(option => option.value);
+            const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
+                .map(option => option.value);
+            const positionSearch = document.getElementById('positionSearch')?.value || '';
+            
+            const params = new URLSearchParams();
+            params.append('departmentId', @Model.DepartmentId);
+            if (search) params.append('search', search);
+            if (phoneSearch) params.append('phoneSearch', phoneSearch);
+            if (positionSearch) params.append('positionSearch', positionSearch);
+            if (employees.length > 0) params.append('employeeNames', employees.join(','));
+            if (positions.length > 0) params.append('positionNames', positions.join(','));
+            
+            const url = '@Url.Page("/Print/PrintDepartments")' + '?' + params.toString();
+            window.open(url, '_blank');
+        });
+    } else {
+        console.log('Print department button not found!');
+    }
+});
+</script>

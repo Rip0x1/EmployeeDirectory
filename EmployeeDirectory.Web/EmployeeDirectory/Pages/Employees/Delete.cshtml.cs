@@ -39,7 +39,6 @@ namespace EmployeeDirectory.Pages.Employees
                 return RedirectToPage("/Index");
             }
 
-            // Если пользователь - начальник отдела, проверяем, что сотрудник из его отдела
             if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
             {
                 if (user.DepartmentId == null || employee.DepartmentId != user.DepartmentId.Value)
@@ -68,7 +67,6 @@ namespace EmployeeDirectory.Pages.Employees
                 return RedirectToPage("/Index");
             }
 
-            // Если пользователь - начальник отдела, проверяем, что сотрудник из его отдела
             if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
             {
                 if (user.DepartmentId == null || employee.DepartmentId != user.DepartmentId.Value)
@@ -95,7 +93,6 @@ namespace EmployeeDirectory.Pages.Employees
                 TempData["Error"] = $"Ошибка при удалении сотрудника: {ex.Message}";
             }
 
-            // Определяем предыдущую страницу
             if (!string.IsNullOrEmpty(ReturnUrl))
             {
                 return Redirect(ReturnUrl);
@@ -107,7 +104,6 @@ namespace EmployeeDirectory.Pages.Employees
                 return Redirect(referer);
             }
             
-            // Если редирект не сработал, возвращаемся на главную
             return RedirectToPage("/Index");
         }
     }

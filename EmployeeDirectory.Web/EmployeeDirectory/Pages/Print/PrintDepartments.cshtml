@@ -1,0 +1,307 @@
+@page
+@model EmployeeDirectory.Pages.Print.PrintDepartmentsModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Печать отдела - Справочник сотрудников</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .print-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .print-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .print-header .subtitle {
+            margin-top: 10px;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .filters-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filters-info h5 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .filter-item {
+            margin-bottom: 8px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #343a40, #495057);
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #dee2e6;
+        }
+
+        .table td {
+            padding: 10px 8px;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .position-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .position-head {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #000;
+        }
+
+        .position-employee {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+        }
+
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .print-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+        }
+
+        @@media print {
+            body {
+                margin: 0;
+                padding: 10px;
+            }
+            
+            .print-header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .table th {
+                background-color: #343a40 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .table tbody tr:nth-child(even) {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .position-head {
+                background: #ffc107 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .position-employee {
+                background: #007bff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-header">
+        <h1><i class="fas fa-building"></i> @Model.DepartmentName</h1>
+        <div class="subtitle">Сотрудники отдела</div>
+    </div>
+
+    @if (Model.HasFilters)
+    {
+        <div class="filters-info">
+            <h5><i class="fas fa-filter"></i> Примененные фильтры:</h5>
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Поиск по ФИО:</span> @Model.SearchTerm
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.PhoneSearch))
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Поиск по телефону:</span> @Model.PhoneSearch
+                </div>
+            }
+            @if (Model.SelectedEmployeeNames?.Any() == true)
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Сотрудники:</span> @string.Join(", ", Model.SelectedEmployeeNames)
+                </div>
+            }
+            @if (Model.SelectedPositionNames?.Any() == true)
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Должности:</span> @string.Join(", ", Model.SelectedPositionNames)
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.PositionSearch))
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Поиск по должности:</span> @Model.PositionSearch
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.Employees.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Должность / ФИО</th>
+                    <th style="width: 25%;">Городской номер</th>
+                    <th style="width: 25%;">Местный номер</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model.Employees)
+                {
+                    <tr>
+                        <td>
+                            @{
+                                var positionText = !string.IsNullOrEmpty(employee.PositionDescription) 
+                                    ? employee.PositionDescription 
+                                    : employee.Position?.Name;
+                            }
+                            @if (!string.IsNullOrEmpty(positionText))
+                            {
+                                <span class="position-badge @(employee.IsHeadOfDepartment ? "position-head" : "position-employee")">
+                                    @positionText
+                                </span>
+                                @if (!string.IsNullOrEmpty(employee.FullName))
+                                {
+                                    <strong>@employee.FullName</strong>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(employee.CityPhone))
+                            {
+                                @employee.CityPhone
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(employee.LocalPhone))
+                            {
+                                @employee.LocalPhone
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="no-results">
+            <i class="fas fa-search fa-3x mb-3"></i>
+            <h4>Сотрудники не найдены</h4>
+            <p>Попробуйте изменить параметры поиска или фильтры</p>
+        </div>
+    }
+
+    <div class="print-footer">
+        <p>Документ сгенерирован: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
+        <p>Всего сотрудников в отделе: @Model.Employees.Count()</p>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+
+        window.onafterprint = function() {
+            window.close();
+        };
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html>

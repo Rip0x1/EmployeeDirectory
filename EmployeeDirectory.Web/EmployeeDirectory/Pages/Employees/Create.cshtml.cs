@@ -51,11 +51,9 @@ namespace EmployeeDirectory.Pages.Employees
                 return RedirectToPage("/Account/Login");
             }
 
-            // Загружаем отделы и должности
             var departments = await _departmentService.GetAllDepartmentsAsync();
             var positions = await _positionService.GetAllPositionsAsync();
 
-            // Если пользователь - начальник отдела, показываем только его отдел
             if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
             {
                 if (user.DepartmentId == null)
@@ -74,7 +72,6 @@ namespace EmployeeDirectory.Pages.Employees
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Отладочная информация
             
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -82,7 +79,6 @@ namespace EmployeeDirectory.Pages.Employees
                 return RedirectToPage("/Account/Login");
             }
 
-            // Если пользователь - начальник отдела, ограничиваем его отделом
             if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
             {
                 if (user.DepartmentId == null)
@@ -93,20 +89,16 @@ namespace EmployeeDirectory.Pages.Employees
                 Employee.DepartmentId = user.DepartmentId.Value;
             }
 
-            // Проверяем валидацию для основных полей
-            // Валидация должности/описания
             if (string.IsNullOrEmpty(Employee.PositionDescription))
             {
                 ModelState.AddModelError("Employee.PositionDescription", "Должность/описание обязательно");
             }
             
-            // Очищаем ошибки валидации для полей, которые мы не используем
             ModelState.Remove("Employee.Department");
             ModelState.Remove("Employee.Position");
 
             if (!ModelState.IsValid)
             {
-                // Перезагружаем данные для формы
                 var departments = await _departmentService.GetAllDepartmentsAsync();
                 var positions = await _positionService.GetAllPositionsAsync();
 
@@ -118,7 +110,6 @@ namespace EmployeeDirectory.Pages.Employees
                 Departments = new SelectList(departments, "Id", "Name");
                 Positions = new SelectList(positions, "Id", "Name");
                 
-                // Добавляем ошибки валидации в TempData для отладки
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
                 TempData["Error"] = $"Ошибки валидации: {string.Join(", ", errors)}";
                 return Page();
@@ -126,25 +117,21 @@ namespace EmployeeDirectory.Pages.Employees
 
             try
             {
-                // Всегда используем отдельные свойства
                 if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
                 {
-                    // Для начальников отдела используем их отдел
                     Employee.DepartmentId = user.DepartmentId.Value;
                 }
                 else
                 {
-                    // Для администраторов используем выбранный отдел
                     Employee.DepartmentId = DepartmentId;
                 }
-                Employee.PositionId = null; // Больше не используем PositionId
+                Employee.PositionId = null; 
 
                 Employee.CreatedAt = DateTime.UtcNow;
                 await _employeeService.AddEmployeeAsync(Employee);
                 
                 TempData["Success"] = $"Запись {Employee.FullName} успешно добавлена!";
                 
-                // Определяем предыдущую страницу
                 if (!string.IsNullOrEmpty(ReturnUrl))
                 {
                     return Redirect(ReturnUrl);
@@ -156,14 +143,12 @@ namespace EmployeeDirectory.Pages.Employees
                     return Redirect(referer);
                 }
                 
-                // Если редирект не сработал, возвращаемся на главную
                 return RedirectToPage("/Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Ошибка при добавлении сотрудника: {ex.Message}";
                 
-                // Перезагружаем данные для формы
                 var departments = await _departmentService.GetAllDepartmentsAsync();
                 var positions = await _positionService.GetAllPositionsAsync();
 

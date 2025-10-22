@@ -1,15 +1,10 @@
 using EmployeeDirectory.Data;
 using EmployeeDirectory.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
 
-namespace EmployeeDirectory.Pages.Admin
+namespace EmployeeDirectory.Pages.Print
 {
     [Authorize(Roles = "Administrator")]
     public class PrintLogsModel : PageModel
@@ -22,14 +17,17 @@ namespace EmployeeDirectory.Pages.Admin
         }
 
         public List<LogEntry> Items { get; set; } = new();
-
         public string? Q { get; set; }
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
+        
+        public bool HasFilters => !string.IsNullOrEmpty(Q) || From.HasValue || To.HasValue;
 
         public async Task OnGetAsync(string? q, DateTime? from, DateTime? to)
         {
-            Q = q; From = from; To = to;
+            Q = q; 
+            From = from; 
+            To = to;
 
             var query = _context.Logs.AsQueryable();
 
@@ -49,19 +47,16 @@ namespace EmployeeDirectory.Pages.Admin
                 var fromUtc = DateTime.SpecifyKind(from.Value, DateTimeKind.Utc);
                 query = query.Where(l => l.TimestampUtc >= fromUtc);
             }
+            
             if (to.HasValue)
             {
                 var toUtc = DateTime.SpecifyKind(to.Value.AddDays(1), DateTimeKind.Utc);
                 query = query.Where(l => l.TimestampUtc <= toUtc);
             }
-
+  
             Items = await query
                 .OrderByDescending(l => l.TimestampUtc)
                 .ToListAsync();
         }
     }
 }
-
-
-
-

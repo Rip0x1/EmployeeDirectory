@@ -34,12 +34,14 @@ namespace EmployeeDirectory.Pages
         public string? PhoneSearch { get; set; }
         public bool? IsHeadOnly { get; set; }
         public string? SortBy { get; set; }
+        public int? DepartmentsPerPage { get; set; }
 
-        public async Task OnGetAsync(string search, int? departmentId, int pageNumber = 1)
+        public async Task OnGetAsync(string search, int? departmentId, int pageNumber = 1, int? departmentsPerPage = null)
         {
             SearchTerm = search ?? string.Empty;
             SelectedDepartmentId = departmentId;
             PageNumber = pageNumber;
+            DepartmentsPerPage = departmentsPerPage;
 
             Departments = await _departmentService.GetAllDepartmentsAsync();
             Positions = await _positionService.GetAllPositionsAsync();
@@ -63,21 +65,42 @@ namespace EmployeeDirectory.Pages
             var groupedEmployees = allEmployees.GroupBy(e => e.Department.Name).OrderBy(g => g.Key).ToList();
             var totalDepartments = groupedEmployees.Count;
             
-            var maxEmployeesPerPage = 50;
-            if (TotalEmployees > maxEmployeesPerPage)
+            // Если указан параметр departmentsPerPage, используем его для пагинации
+            if (departmentsPerPage.HasValue && departmentsPerPage.Value > 0)
             {
-                TotalPages = (int)Math.Ceiling((double)TotalEmployees / maxEmployeesPerPage);
+                PageSize = departmentsPerPage.Value;
+                TotalPages = (int)Math.Ceiling((double)totalDepartments / PageSize);
+                
+                var departmentsForPage = groupedEmployees
+                    .Skip((PageNumber - 1) * PageSize)
+                    .Take(PageSize);
+
+                Employees = departmentsForPage.SelectMany(g => g);
+            }
+            // Если нет параметров поиска и фильтрации, показываем все отделы
+            else if (string.IsNullOrEmpty(search) && !departmentId.HasValue)
+            {
+                Employees = allEmployees;
+                TotalPages = 1;
             }
             else
             {
-                TotalPages = (int)Math.Ceiling((double)totalDepartments / PageSize);
-            }
-            
-            var departmentsForPage = groupedEmployees
-                .Skip((PageNumber - 1) * PageSize)
-                .Take(PageSize);
+                var maxEmployeesPerPage = 50;
+                if (TotalEmployees > maxEmployeesPerPage)
+                {
+                    TotalPages = (int)Math.Ceiling((double)TotalEmployees / maxEmployeesPerPage);
+                }
+                else
+                {
+                    TotalPages = (int)Math.Ceiling((double)totalDepartments / PageSize);
+                }
+                
+                var departmentsForPage = groupedEmployees
+                    .Skip((PageNumber - 1) * PageSize)
+                    .Take(PageSize);
 
-            Employees = departmentsForPage.SelectMany(g => g);
+                Employees = departmentsForPage.SelectMany(g => g);
+            }
         }
     }
 }

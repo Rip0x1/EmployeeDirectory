@@ -25,12 +25,42 @@ namespace EmployeeDirectory.Pages.Employees
         public IEnumerable<Employee> Employees { get; set; } = new List<Employee>();
         public IEnumerable<Department> Departments { get; set; } = new List<Department>();
         public IEnumerable<Position> Positions { get; set; } = new List<Position>();
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 3;
+        public int TotalPages { get; set; }
+        public int TotalEmployees { get; set; }
+        public int? DepartmentsPerPage { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int pageNumber = 1, int? departmentsPerPage = null)
         {
-            Employees = await _employeeService.GetAllEmployeesAsync();
+            PageNumber = pageNumber;
+            DepartmentsPerPage = departmentsPerPage;
+
+            var allEmployees = await _employeeService.GetAllEmployeesAsync();
             Departments = await _departmentService.GetAllDepartmentsAsync();
             Positions = await _positionService.GetAllPositionsAsync();
+
+            TotalEmployees = allEmployees.Count();
+            
+            var groupedEmployees = allEmployees.GroupBy(e => e.Department.Name).OrderBy(g => g.Key).ToList();
+            var totalDepartments = groupedEmployees.Count;
+            
+            if (departmentsPerPage.HasValue && departmentsPerPage.Value > 0)
+            {
+                PageSize = departmentsPerPage.Value;
+                TotalPages = (int)Math.Ceiling((double)totalDepartments / PageSize);
+                
+                var departmentsForPage = groupedEmployees
+                    .Skip((PageNumber - 1) * PageSize)
+                    .Take(PageSize);
+
+                Employees = departmentsForPage.SelectMany(g => g);
+            }
+            else
+            {
+                Employees = allEmployees;
+                TotalPages = 1;
+            }
         }
     }
 }

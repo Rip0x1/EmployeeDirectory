@@ -1,0 +1,240 @@
+ИНСТРУКЦИЯ ПО РАЗВЕРТЫВАНИЮ EMPLOYEE DIRECTORY
+===============================================
+
+СОДЕРЖАНИЕ:
+1. Windows Server (IIS)
+2. Linux Server (Ubuntu/CentOS)
+3. Docker
+4. Облачные платформы
+5. Настройка базы данных
+6. Безопасность
+7. Чек-лист развертывания
+
+===============================================
+1. WINDOWS SERVER (IIS)
+===============================================
+
+ПОДГОТОВКА СЕРВЕРА:
+- Установите .NET 8 Runtime (не SDK)
+- Установите IIS с модулями ASP.NET Core
+- Установите Hosting Bundle для .NET 8
+
+ПУБЛИКАЦИЯ ПРИЛОЖЕНИЯ:
+dotnet publish -c Release -o ./publish
+
+НАСТРОЙКА IIS:
+1. Создайте сайт в IIS Manager
+2. Укажите папку с опубликованными файлами
+3. Настройте Application Pool для .NET Core
+4. Добавьте файл web.config (создается автоматически)
+
+===============================================
+2. LINUX SERVER (UBUNTU/CENTOS)
+===============================================
+
+УСТАНОВКА .NET 8:
+
+Ubuntu/Debian:
+wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install dotnet-runtime-8.0
+
+CentOS/RHEL:
+sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+sudo yum install dotnet-runtime-8.0
+
+ПУБЛИКАЦИЯ:
+dotnet publish -c Release -o ./publish --self-contained false
+
+СОЗДАНИЕ SYSTEMD СЕРВИСА:
+Создайте файл /etc/systemd/system/employeedirectory.service:
+
+[Unit]
+Description=Employee Directory App
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dotnet /var/www/employeedirectory/EmployeeDirectory.dll
+Restart=always
+RestartSec=10
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://localhost:5000
+
+[Install]
+WantedBy=multi-user.target
+
+ЗАПУСК СЕРВИСА:
+sudo systemctl enable employeedirectory
+sudo systemctl start employeedirectory
+
+===============================================
+3. NGINX КАК REVERSE PROXY (LINUX)
+===============================================
+
+УСТАНОВКА NGINX:
+sudo apt install nginx  # Ubuntu
+sudo yum install nginx  # CentOS
+
+КОНФИГУРАЦИЯ NGINX:
+Создайте /etc/nginx/sites-available/employeedirectory:
+
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+АКТИВАЦИЯ:
+sudo ln -s /etc/nginx/sites-available/employeedirectory /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+
+===============================================
+4. DOCKER (УНИВЕРСАЛЬНО)
+===============================================
+
+СОЗДАНИЕ DOCKERFILE:
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore
+RUN dotnet build -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "EmployeeDirectory.dll"]
+
+СБОРКА И ЗАПУСК:
+docker build -t employeedirectory .
+docker run -d -p 8080:80 --name emp-dir employeedirectory
+
+===============================================
+5. ОБЛАЧНЫЕ ПЛАТФОРМЫ
+===============================================
+
+AZURE:
+- Azure App Service
+- Просто загрузите ZIP с опубликованным приложением
+- Настройте строку подключения к БД
+
+AWS:
+- Elastic Beanstalk
+- EC2 с Docker
+- Lambda (если переделать под serverless)
+
+DIGITALOCEAN/AWS EC2:
+- Создайте Ubuntu сервер
+- Следуйте инструкциям для Linux выше
+
+===============================================
+6. НАСТРОЙКА БАЗЫ ДАННЫХ
+===============================================
+
+SQL SERVER НА LINUX:
+curl -o /etc/yum.repos.d/mssql-server.repo https://packages.microsoft.com/config/rhel/8/mssql-server-2022.repo
+sudo yum install -y mssql-server
+sudo /opt/mssql/bin/mssql-conf setup
+
+POSTGRESQL (АЛЬТЕРНАТИВА):
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres createdb employeedirectory
+
+===============================================
+7. БЕЗОПАСНОСТЬ
+===============================================
+
+FIREWALL:
+sudo ufw allow 22    # SSH
+sudo ufw allow 80    # HTTP
+sudo ufw allow 443   # HTTPS
+sudo ufw enable
+
+SSL СЕРТИФИКАТ (LET'S ENCRYPT):
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
+
+НАСТРОЙКА APPSETTINGS.PRODUCTION.JSON:
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=EmployeeDirectory;Trusted_Connection=true;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  }
+}
+
+===============================================
+8. ЧЕК-ЛИСТ РАЗВЕРТЫВАНИЯ
+===============================================
+
+ОСНОВНЫЕ ШАГИ:
+□ Установить .NET 8 Runtime
+□ Опубликовать приложение (dotnet publish)
+□ Настроить базу данных
+□ Обновить строку подключения
+□ Настроить веб-сервер (IIS/Nginx)
+□ Настроить SSL сертификат
+□ Настроить мониторинг и логи
+□ Протестировать приложение
+
+РЕКОМЕНДАЦИИ:
+- Начните с простого Linux сервера + Nginx + systemd
+- Используйте Docker для быстрого развертывания
+- Настройте автоматические бэкапы базы данных
+- Мониторьте логи приложения
+
+===============================================
+ДОПОЛНИТЕЛЬНЫЕ КОМАНДЫ
+===============================================
+
+ПРОВЕРКА СТАТУСА СЕРВИСА:
+sudo systemctl status employeedirectory
+
+ПРОСМОТР ЛОГОВ:
+sudo journalctl -u employeedirectory -f
+
+ПЕРЕЗАПУСК СЕРВИСА:
+sudo systemctl restart employeedirectory
+
+ПРОВЕРКА ПОРТОВ:
+netstat -tlnp | grep :5000
+
+ПРОВЕРКА NGINX:
+sudo nginx -t
+sudo systemctl status nginx
+
+===============================================
+КОНТАКТЫ И ПОДДЕРЖКА
+===============================================
+
+При возникновении проблем:
+1. Проверьте логи приложения
+2. Убедитесь в правильности строки подключения
+3. Проверьте настройки firewall
+4. Убедитесь в доступности портов
+
+Удачного развертывания! 🚀

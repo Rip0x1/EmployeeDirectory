@@ -19,7 +19,6 @@ namespace EmployeeDirectory.Pages.Account
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // Показываем страницу подтверждения выхода
             return Page();
         }
 
@@ -30,13 +29,11 @@ namespace EmployeeDirectory.Pages.Account
                 var userName = User.Identity.Name;
                 _logger.LogInformation("Пользователь {Name} вышел из системы", userName);
                 
-                // Выполняем выход из системы
                 await _signInManager.SignOutAsync();
                 
                 TempData["Success"] = $"Вы успешно вышли из системы. До свидания, {userName}!";
             }
 
-            // Перенаправляем на главную страницу после выхода
             return RedirectToPage("/Index");
         }
     }

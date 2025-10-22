@@ -31,12 +31,24 @@ namespace EmployeeDirectory
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             builder.Services.AddAuthentication()
                 .AddCookie(options =>
                 {
                     options.LoginPath = "/Account/Login";
                     options.LogoutPath = "/Account/Logout";
                     options.AccessDeniedPath = "/Account/AccessDenied";
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.IsEssential = true;
                 });
 
             builder.Services.AddAuthorization();
@@ -49,15 +61,40 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<UserInitializationService>();
 
             var app = builder.Build();
-
-            if (!app.Environment.IsDevelopment())
+ 
+            app.UseHsts();
+            app.UseHttpsRedirection();
+            
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseExceptionHandler("/Error");
-                app.UseHsts();
             }
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    if (app.Environment.IsDevelopment())
+                    {
+                        ctx.Context.Response.Headers.Append("Cache-Control", "no-cache");
+                    }
+                    else
+                    {
+                        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000");
+                    }
+                }
+            });
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Append("Permissions-Policy", "attribution-reporting=()");
+                
+                await next();
+            });
+
 
             app.UseRouting();
 

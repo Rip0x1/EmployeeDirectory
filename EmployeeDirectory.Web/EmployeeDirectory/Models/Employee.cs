@@ -8,7 +8,6 @@ namespace EmployeeDirectory.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Введите полное имя")]
         [StringLength(100)]
         [Display(Name = "ФИО")]
         public string? FullName { get; set; }

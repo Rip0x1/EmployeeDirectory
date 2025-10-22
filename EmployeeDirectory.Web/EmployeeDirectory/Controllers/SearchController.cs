@@ -22,7 +22,15 @@ namespace EmployeeDirectory.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchEmployees([FromQuery] string? search, [FromQuery] string[]? selectedEmployees, [FromQuery] int[]? departments, [FromQuery] string[]? positions, [FromQuery] string? phoneSearch, [FromQuery] bool? isHeadOnly, [FromQuery] string? sortBy)
+        public async Task<IActionResult> SearchEmployees(
+            [FromQuery] string? search,
+            [FromQuery] string[]? selectedEmployees,
+            [FromQuery] int[]? departments,
+            [FromQuery] string[]? positions,
+            [FromQuery] string? phoneSearch,
+            [FromQuery] string? positionSearch,
+            [FromQuery] string? departmentSearch,
+            [FromQuery] string? sortBy)
         {
             try
             {
@@ -63,9 +71,18 @@ namespace EmployeeDirectory.Controllers
                         (e.LocalPhone != null && e.LocalPhone.Contains(phoneSearch)));
                 }
                 
-                if (isHeadOnly.HasValue)
+                if (!string.IsNullOrEmpty(positionSearch))
                 {
-                    employees = employees.Where(e => e.IsHeadOfDepartment == isHeadOnly.Value);
+                    employees = employees.Where(e => 
+                        (e.PositionDescription != null && e.PositionDescription.Contains(positionSearch, StringComparison.OrdinalIgnoreCase)) ||
+                        (e.Position != null && e.Position.Name.Contains(positionSearch, StringComparison.OrdinalIgnoreCase)));
+                }
+
+                if (!string.IsNullOrEmpty(departmentSearch))
+                {
+                    employees = employees.Where(e =>
+                        (!string.IsNullOrEmpty(e.DepartmentName) && e.DepartmentName.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)) ||
+                        (e.Department != null && e.Department.Name.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)));
                 }
 
                 if (!string.IsNullOrEmpty(sortBy))
@@ -114,7 +131,7 @@ namespace EmployeeDirectory.Controllers
                     fullName = e.FullName ?? "-",
                     departmentName = !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name,
                     cityPhone = e.CityPhone ?? "Не указано",
-                    localPhone = e.LocalPhone ?? "-",
+                    localPhone = e.LocalPhone ?? "Не указано",
                     isHeadOfDepartment = e.IsHeadOfDepartment,
                     positionDescription = e.PositionDescription
                 }).ToList();
@@ -126,5 +143,6 @@ namespace EmployeeDirectory.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
         }
+
     }
 }
