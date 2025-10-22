@@ -95,6 +95,12 @@ dotnet ef database update
 dotnet publish -c Release -o publish
 ```
 
+### Фото
+<img width="1907" height="874" alt="{FDDCBA42-5624-4842-BF8C-A828883AC0D7}" src="https://github.com/user-attachments/assets/aea52473-359a-494c-bf0a-19525487a961" />
+<img width="1920" height="926" alt="{5C431DC7-3F9B-4B69-AB8A-B52B5F097FE5}" src="https://github.com/user-attachments/assets/91921e7b-9a4f-41fe-a1fc-7755d1a29717" />
+<img width="1918" height="813" alt="{D903FDEC-C649-424E-B7AC-806DB33ADA17}" src="https://github.com/user-attachments/assets/3d9a8a69-dc9c-4305-beed-be27c5292818" />
+
+
 ### Обратная связь
 Вопросы и предложения — создавайте issue или сообщайте разработчику.
 
