@@ -206,6 +206,12 @@
                     <span class="filter-label">Поиск по должности:</span> @Model.PositionSearch
                 </div>
             }
+            @if (!string.IsNullOrEmpty(Model.EmailSearch))
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Поиск по Email:</span> @Model.EmailSearch
+                </div>
+            }
         </div>
     }
 

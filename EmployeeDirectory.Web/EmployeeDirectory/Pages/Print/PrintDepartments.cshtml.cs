@@ -19,19 +19,22 @@ namespace EmployeeDirectory.Pages.Print
         public List<string>? SelectedEmployeeNames { get; set; }
         public List<string>? SelectedPositionNames { get; set; }
         public string? PositionSearch { get; set; }
+        public string? EmailSearch { get; set; }
         
         public bool HasFilters => !string.IsNullOrEmpty(SearchTerm) || 
                                  !string.IsNullOrEmpty(PhoneSearch) ||
                                  !string.IsNullOrEmpty(PositionSearch) ||
+                                 !string.IsNullOrEmpty(EmailSearch) ||
                                  SelectedEmployeeNames?.Any() == true || 
                                  SelectedPositionNames?.Any() == true;
 
-        public async Task OnGetAsync(int departmentId, string? search, string? phoneSearch, string? positionSearch,
+        public async Task OnGetAsync(int departmentId, string? search, string? phoneSearch, string? positionSearch, string? emailSearch,
             string? employeeNames, string? positionNames)
         {
             SearchTerm = search;
             PhoneSearch = phoneSearch;
             PositionSearch = positionSearch;
+            EmailSearch = emailSearch;
             
             if (!string.IsNullOrEmpty(employeeNames))
             {
@@ -73,6 +76,13 @@ namespace EmployeeDirectory.Pages.Print
                 filteredEmployees = filteredEmployees.Where(e => 
                     e.PositionDescription != null && e.PositionDescription.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase) ||
                     e.Position != null && e.Position.Name.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase)
+                );
+            }
+
+            if (!string.IsNullOrEmpty(EmailSearch))
+            {
+                filteredEmployees = filteredEmployees.Where(e => 
+                    !string.IsNullOrEmpty(e.Email) && e.Email.Contains(EmailSearch, StringComparison.OrdinalIgnoreCase)
                 );
             }
 

@@ -256,6 +256,12 @@
                             <strong>Поиск по должности:</strong> "@Model.PositionSearch"
                         </div>
                     }
+                    @if (!string.IsNullOrEmpty(Model.EmailSearch))
+                    {
+                        <div class="col-md-6">
+                            <strong>Поиск по Email:</strong> "@Model.EmailSearch"
+                        </div>
+                    }
                     @if (!string.IsNullOrEmpty(Model.DepartmentSearch))
                     {
                         <div class="col-md-6">
@@ -296,9 +302,10 @@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50%;">Должность / ФИО</th>
-                                        <th style="width: 25%;">Городской номер</th>
-                                        <th style="width: 25%;">Местный номер</th>
+                                        <th style="width: 40%;">Должность / ФИО</th>
+                                        <th style="width: 20%;">Городской номер</th>
+                                        <th style="width: 20%;">Местный номер</th>
+                                        <th style="width: 20%;">Email</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -328,6 +335,7 @@
                                             </td>
                                             <td>@(employee.CityPhone ?? "Не указано")</td>
                                             <td>@(employee.LocalPhone ?? "Не указано")</td>
+                                            <td>@(employee.Email ?? "Не указано")</td>
                                         </tr>
                                     }
                                 </tbody>

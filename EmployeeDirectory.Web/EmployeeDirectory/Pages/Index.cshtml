@@ -59,6 +59,13 @@
                                    placeholder="Введите должность...">
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="emailSearch" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Поиск по Email
+                            </label>
+                            <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
+                                   placeholder="Введите email...">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <label for="departmentSearch" class="form-label">
                                 <i class="fas fa-building me-1"></i>Поиск по отделу
                             </label>
@@ -128,7 +135,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+</div>
            
             <div class="card">
                 <div class="card-header">
@@ -167,9 +174,10 @@
                                 <table class="employees-table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 50%;">Должность / ФИО</th>
-                                            <th style="width: 25%;">Городской номер</th>
-                                            <th style="width: 25%;">Местный номер</th>
+                                            <th style="width: 40%;">Должность / ФИО</th>
+                                            <th style="width: 20%;">Городской номер</th>
+                                            <th style="width: 20%;">Местный номер</th>
+                                            <th style="width: 20%;">Email</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -202,6 +210,9 @@
                                                 </td>
                                                 <td class="phone-number">
                                                     @(employee.LocalPhone ?? "Не указано")
+                                                </td>
+                                                <td class="phone-number">
+                                                    @(employee.Email ?? "Не указано")
                                                 </td>
                                             </tr>
                                         }
@@ -844,6 +855,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
     const phoneSearchInput = document.getElementById('phoneSearch');
     const positionSearchInput = document.getElementById('positionSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
     const departmentSearchInput = document.getElementById('departmentSearch');
     const tbody = document.getElementById('employeesTable');
     
@@ -857,6 +869,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const departmentsPerPage = departmentsPerPageSelect.value;
         const phoneSearch = phoneSearchInput.value;
         const positionSearch = positionSearchInput.value;
+        const emailSearch = emailSearchInput.value;
         const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
 
         tbody.innerHTML = `<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>`;
@@ -869,6 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (departmentsPerPage) params.append('departmentsPerPage', departmentsPerPage);
         if (phoneSearch) params.append('phoneSearch', phoneSearch);
         if (positionSearch) params.append('positionSearch', positionSearch);
+        if (emailSearch) params.append('emailSearch', emailSearch);
         if (departmentSearch) {
             params.append('departmentSearch', departmentSearch);
         }
@@ -899,9 +913,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <table class="employees-table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 50%;">Должность / ФИО</th>
-                                            <th style="width: 25%;">Городской номер</th>
-                                            <th style="width: 25%;">Местный номер</th>
+                                            <th style="width: 40%;">Должность / ФИО</th>
+                                            <th style="width: 20%;">Городской номер</th>
+                                            <th style="width: 20%;">Местный номер</th>
+                                            <th style="width: 20%;">Email</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -931,6 +946,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                             </td>
                                             <td class="phone-number">
                                                 ${emp.localPhone || 'Не указано'}
+                                            </td>
+                                            <td class="phone-number">
+                                                ${emp.email || 'Не указано'}
                                             </td>
                                         </tr>
                             `;
@@ -1093,6 +1111,11 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(performSearch, 300);
     });
+    
+    emailSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
     if (departmentSearchInput) {
         departmentSearchInput.addEventListener('input', function () {
             clearTimeout(typingTimer);
@@ -1142,12 +1165,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
                 .map(option => option.value);
             const positionSearch = document.getElementById('positionSearch')?.value || '';
+            const emailSearch = document.getElementById('emailSearch')?.value || '';
             const departmentSearch = document.getElementById('departmentSearch')?.value || '';
                         
             const params = new URLSearchParams();
             if (search) params.append('search', search);
             if (phoneSearch) params.append('phoneSearch', phoneSearch);
             if (positionSearch) params.append('positionSearch', positionSearch);
+            if (emailSearch) params.append('emailSearch', emailSearch);
             if (departmentSearch) params.append('departmentSearch', departmentSearch);
             departments.forEach(id => params.append('departmentIds', id));
             if (employees.length > 0) params.append('employeeNames', employees.join(','));
@@ -1179,6 +1204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.value = '';
         phoneSearchInput.value = '';
         positionSearchInput.value = '';
+        emailSearchInput.value = '';
         
         Array.from(employeesSelect.options).forEach(option => option.selected = false);
         Array.from(departmentsSelect.options).forEach(option => option.selected = false);

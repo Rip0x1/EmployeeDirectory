@@ -23,7 +23,7 @@ namespace EmployeeDirectory.Services
 
         public async Task InitializeAsync()
         {
-            await CreateRolesAsync();
+            //await CreateRolesAsync();
             //await CreateAdminUserAsync();
         }
 

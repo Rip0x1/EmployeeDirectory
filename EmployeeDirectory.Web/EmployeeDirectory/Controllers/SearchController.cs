@@ -29,6 +29,7 @@ namespace EmployeeDirectory.Controllers
             [FromQuery] string[]? positions,
             [FromQuery] string? phoneSearch,
             [FromQuery] string? positionSearch,
+            [FromQuery] string? emailSearch,
             [FromQuery] string? departmentSearch,
             [FromQuery] string? sortBy)
         {
@@ -85,6 +86,12 @@ namespace EmployeeDirectory.Controllers
                         (e.Department != null && e.Department.Name.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)));
                 }
 
+                if (!string.IsNullOrEmpty(emailSearch))
+                {
+                    employees = employees.Where(e =>
+                        !string.IsNullOrEmpty(e.Email) && e.Email.Contains(emailSearch, StringComparison.OrdinalIgnoreCase));
+                }
+
                 if (!string.IsNullOrEmpty(sortBy))
                 {
                     switch (sortBy.ToLower())
@@ -132,6 +139,7 @@ namespace EmployeeDirectory.Controllers
                     departmentName = !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name,
                     cityPhone = e.CityPhone ?? "Не указано",
                     localPhone = e.LocalPhone ?? "Не указано",
+                    email = e.Email ?? "Не указано",
                     isHeadOfDepartment = e.IsHeadOfDepartment,
                     positionDescription = e.PositionDescription
                 }).ToList();

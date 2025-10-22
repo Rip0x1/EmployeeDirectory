@@ -43,6 +43,13 @@
                             <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
                                    placeholder="Введите должность...">
                         </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="emailSearch" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Поиск по Email
+                            </label>
+                            <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
+                                   placeholder="Введите email...">
+                        </div>
                     </div>
                     
                     <div class="row g-3 mb-3">
@@ -112,9 +119,10 @@
                                 <table class="employees-table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 40%;">Должность / ФИО</th>
-                                            <th style="width: 20%;">Городской номер</th>
-                                            <th style="width: 20%;">Местный номер</th>
+                                            <th style="width: 30%;">Должность / ФИО</th>
+                                            <th style="width: 15%;">Городской номер</th>
+                                            <th style="width: 15%;">Местный номер</th>
+                                            <th style="width: 20%;">Email</th>
                                             <th style="width: 20%;">Действия</th>
                                         </tr>
                                     </thead>
@@ -140,6 +148,7 @@
                                             </td>
                                             <td class="phone-number">@(employee.CityPhone ?? "Не указано")</td>
                                             <td class="phone-number">@(employee.LocalPhone ?? "Не указано")</td>
+                                            <td class="phone-number">@(employee.Email ?? "Не указано")</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group">
                                                     <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-warning" title="Редактировать">
@@ -182,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search');
     const positionSearchInput = document.getElementById('positionSearch');
     const phoneSearchInput = document.getElementById('phoneSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
     const employeesSelect = document.getElementById('employees');
     const positionsSelect = document.getElementById('positions');
     const tbody = document.querySelector('tbody');
@@ -190,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = searchInput.value.toLowerCase();
         const positionSearch = positionSearchInput.value.toLowerCase();
         const phoneSearch = phoneSearchInput.value.toLowerCase();
+        const emailSearch = emailSearchInput.value.toLowerCase();
         const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
         const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
 
@@ -204,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fullName = cells[0].textContent.toLowerCase();
             const cityPhone = cells[1].textContent.toLowerCase();
             const localPhone = cells[2].textContent.toLowerCase();
+            const email = cells[3].textContent.toLowerCase();
             const positionText = cells[0].querySelector('.position-badge')?.textContent.toLowerCase() || '';
             
             let showRow = true;
@@ -217,6 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch)) {
+                showRow = false;
+            }
+
+            if (emailSearch && !email.includes(emailSearch)) {
                 showRow = false;
             }
 
@@ -263,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.value = '';
         positionSearchInput.value = '';
         phoneSearchInput.value = '';
+        emailSearchInput.value = '';
         
         Array.from(employeesSelect.options).forEach(option => option.selected = false);
         Array.from(positionsSelect.options).forEach(option => option.selected = false);
@@ -288,6 +305,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     phoneSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+    
+    emailSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(performSearch, 300);
     });
@@ -440,12 +462,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
                 .map(option => option.value);
             const positionSearch = document.getElementById('positionSearch')?.value || '';
+            const emailSearch = document.getElementById('emailSearch')?.value || '';
             
             const params = new URLSearchParams();
             params.append('departmentId', @Model.DepartmentId);
             if (search) params.append('search', search);
             if (phoneSearch) params.append('phoneSearch', phoneSearch);
             if (positionSearch) params.append('positionSearch', positionSearch);
+            if (emailSearch) params.append('emailSearch', emailSearch);
             if (employees.length > 0) params.append('employeeNames', employees.join(','));
             if (positions.length > 0) params.append('positionNames', positions.join(','));
             

@@ -258,6 +258,12 @@
                     <span class="filter-label">Поиск по должности:</span> @Model.PositionSearch
                 </div>
             }
+            @if (!string.IsNullOrEmpty(Model.EmailSearch))
+            {
+                <div class="filter-item">
+                    <span class="filter-label">Поиск по Email:</span> @Model.EmailSearch
+                </div>
+            }
             @if (!string.IsNullOrEmpty(Model.DepartmentSearch))
             {
                 <div class="filter-item">
@@ -302,10 +308,11 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th style="width: 50%;">Должность / ФИО</th>
-                        <th style="width: 20%;">Отдел</th>
+                        <th style="width: 40%;">Должность / ФИО</th>
+                        <th style="width: 15%;">Отдел</th>
                         <th style="width: 15%;">Городской номер</th>
                         <th style="width: 15%;">Местный номер</th>
+                        <th style="width: 15%;">Email</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -368,6 +375,16 @@
                                 @if (!string.IsNullOrEmpty(employee.LocalPhone))
                                 {
                                     @employee.LocalPhone
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">-</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(employee.Email))
+                                {
+                                    @employee.Email
                                 }
                                 else
                                 {

@@ -64,6 +64,16 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.Email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Email
+                                </label>
+                                <input asp-for="Employee.Email" class="form-control" placeholder="example@company.com" type="email" />
+                                <span asp-validation-for="Employee.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 <label asp-for="Employee.PositionDescription" class="form-label">
                                     <i class="fas fa-user-tie me-1"></i>Должность/Описание *
                                 </label>

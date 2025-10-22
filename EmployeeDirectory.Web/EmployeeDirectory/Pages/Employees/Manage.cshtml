@@ -43,6 +43,12 @@
                     <input type="text" class="form-control" id="positionSearch" placeholder="Введите должность...">
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <label for="emailSearch" class="form-label">
+                        <i class="fas fa-envelope me-1"></i>Поиск по Email
+                    </label>
+                    <input type="text" class="form-control" id="emailSearch" placeholder="Введите email...">
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <label for="departmentSearch" class="form-label">
                                 <i class="fas fa-building me-1"></i>Поиск по отделу
                             </label>
@@ -152,9 +158,10 @@
                                     <table class="employees-table">
                                         <thead>
                                             <tr>
-                                                <th style="width: 40%;">Должность / ФИО</th>
-                                                <th style="width: 20%;">Городской номер</th>
-                                                <th style="width: 20%;">Местный номер</th>
+                                                <th style="width: 30%;">Должность / ФИО</th>
+                                                <th style="width: 15%;">Городской номер</th>
+                                                <th style="width: 15%;">Местный номер</th>
+                                                <th style="width: 20%;">Email</th>
                                                 <th style="width: 20%;">Действия</th>
                                             </tr>
                                         </thead>
@@ -180,6 +187,7 @@
                                                     </td>
                                                     <td class="phone-number">@(employee.CityPhone ?? "Не указано")</td>
                                                     <td class="phone-number">@(employee.LocalPhone ?? "Не указано")</td>
+                                                    <td class="phone-number">@(employee.Email ?? "Не указано")</td>
                                                     <td class="text-center">
                                                         <div class="btn-group" role="group">
                                                             <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
@@ -250,6 +258,7 @@
         const searchInput = document.getElementById('search');
         const phoneSearchInput = document.getElementById('phoneSearch');
         const positionSearchInput = document.getElementById('positionSearch');
+        const emailSearchInput = document.getElementById('emailSearch');
         const departmentSearchInput = document.getElementById('departmentSearch');
         const employeesSelect = document.getElementById('employees');
         const departmentsSelect = document.getElementById('departments');
@@ -263,6 +272,7 @@
             const searchTerm = searchInput.value;
             const phoneSearch = phoneSearchInput.value;
             const positionSearch = positionSearchInput.value;
+            const emailSearch = emailSearchInput.value;
             const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
             const departmentsPerPage = departmentsPerPageSelect.value;
             const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
@@ -275,6 +285,7 @@
             if (searchTerm) params.append('search', searchTerm);
             if (phoneSearch) params.append('phoneSearch', phoneSearch);
             if (positionSearch) params.append('positionSearch', positionSearch);
+            if (emailSearch) params.append('emailSearch', emailSearch);
             if (departmentSearch) {
                 params.append('departmentSearch', departmentSearch);
             }
@@ -309,9 +320,10 @@
                                     <table class="employees-table">
                                         <thead>
                                             <tr>
-                                                <th style="width: 40%;">Должность / ФИО</th>
-                                                <th style="width: 20%;">Городской номер</th>
-                                                <th style="width: 20%;">Местный номер</th>
+                                                <th style="width: 30%;">Должность / ФИО</th>
+                                                <th style="width: 15%;">Городской номер</th>
+                                                <th style="width: 15%;">Местный номер</th>
+                                                <th style="width: 20%;">Email</th>
                                                 <th style="width: 20%;">Действия</th>
                                             </tr>
                                         </thead>
@@ -338,6 +350,7 @@
                                                 </td>
                                                 <td class="phone-number">${emp.cityPhone || 'Не указано'}</td>
                                                 <td class="phone-number">${emp.localPhone || 'Не указано'}</td>
+                                                <td class="phone-number">${emp.email || 'Не указано'}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group" role="group">
                                                         <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
@@ -395,6 +408,11 @@
         });
 
         positionSearchInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(performSearch, 300);
+        });
+        
+        emailSearchInput.addEventListener('input', function() {
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(performSearch, 300);
         });
@@ -516,6 +534,7 @@
             searchInput.value = '';
             phoneSearchInput.value = '';
             positionSearchInput.value = '';
+            emailSearchInput.value = '';
 
             Array.from(employeesSelect.options).forEach(option => option.selected = false);
             Array.from(departmentsSelect.options).forEach(option => option.selected = false);
@@ -657,6 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
                 .map(option => option.value);
             const positionSearch = document.getElementById('positionSearch')?.value || '';
+            const emailSearch = document.getElementById('emailSearch')?.value || '';
             const departmentSearch = document.getElementById('departmentSearch')?.value || '';
             const departmentsPerPage = document.getElementById('departmentsPerPage')?.value || '';
             
@@ -664,6 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (search) params.append('search', search);
             if (phoneSearch) params.append('phoneSearch', phoneSearch);
             if (positionSearch) params.append('positionSearch', positionSearch);
+            if (emailSearch) params.append('emailSearch', emailSearch);
             if (departmentSearch) params.append('departmentSearch', departmentSearch);
             departments.forEach(id => params.append('departmentIds', id));
             if (employees.length > 0) params.append('employeeNames', employees.join(','));

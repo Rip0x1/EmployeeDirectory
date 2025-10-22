@@ -20,6 +20,10 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Местный номер")]
         public string? LocalPhone { get; set; }
 
+        [StringLength(150)]
+        [Display(Name = "Email")]
+        public string? Email { get; set; }
+
         [Required(ErrorMessage = "Отдел обязателен")]
         [Display(Name = "Department")]
         public int DepartmentId { get; set; }
