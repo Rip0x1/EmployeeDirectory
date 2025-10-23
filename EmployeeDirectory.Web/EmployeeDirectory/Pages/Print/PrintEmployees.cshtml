@@ -1,7 +1,7 @@
 @page
 @model EmployeeDirectory.Pages.Print.PrintEmployeesModel
 @{
-    Layout = null;
+    ViewData["Title"] = "Печать списка сотрудников";
 }
 
 <!DOCTYPE html>
@@ -9,411 +9,373 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Печать сотрудников - Справочник сотрудников</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <title>Список сотрудников - Печать</title>
     <style>
+        @@page {
+            size: A4 @(ViewData["Orientation"]);
+            margin: 15mm;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: @(ViewData["Scale"])%;
+            color: #000 !important;
             background: white;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            line-height: 1.4;
+            font-weight: bold !important;
         }
 
-        .print-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .print-header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        .print-header .subtitle {
-            margin-top: 10px;
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .filters-info {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
+        
+        .department-section {
             margin-bottom: 20px;
+            border: 2px solid #000;
+            border-radius: 5px;
+            overflow: hidden;
+            page-break-inside: avoid;
         }
-
-        .filters-info h5 {
-            color: #495057;
-            margin-bottom: 10px;
+        
+        .department-section table {
+            page-break-inside: auto;
         }
-
-        .filter-item {
-            margin-bottom: 8px;
+        
+        .department-section thead {
+            display: table-header-group;
         }
-
-        .filter-label {
-            font-weight: bold;
-            color: #6c757d;
+        
+        .department-section tbody {
+            display: table-row-group;
         }
-
-        .table {
+        
+        .department-section tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        
+        .department-header {
+            background: white !important;
+            color: #000 !important;
+            padding: 10px;
+            font-weight: bold !important;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #000 !important;
+        }
+        
+        .print-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin: 0;
         }
-
-.table th {
-            background: linear-gradient(135deg, #343a40, #495057);
-            color: white;
-    padding: 6px 8px;
+        
+        .print-table th {
+            background: #000 !important;
+            color: white !important;
+            padding: 8px;
             text-align: center;
-            font-weight: bold;
-            border: 1px solid #dee2e6;
-    font-size: 11px;
+            font-weight: bold !important;
+            border: 1px solid #000;
         }
-
-.table td {
-    padding: 5px 7px;
-            border: 1px solid #dee2e6;
+        
+        .print-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #000;
             vertical-align: middle;
-    font-size: 10px;
+            color: #000 !important;
+            font-weight: bold !important;
         }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .table tbody tr:hover {
-            background-color: #e9ecef;
+        
+        .print-table tr:nth-child(even) td {
+            background: #f8f9fa;
         }
 
         .position-badge {
+            background: #e9ecef !important;
+            color: #000 !important;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-bottom: 3px;
             display: inline-block;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-right: 6px;
+            font-weight: bold !important;
+        }
+        
+        .employee-name {
+            font-weight: bold !important;
+            font-size: 12px;
+            color: #000 !important;
         }
 
-        .position-head {
-            background: linear-gradient(45deg, #ffc107, #e0a800);
-            color: #000;
-        }
-
-        .position-employee {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
-        }
-
-        .actions {
-            white-space: nowrap;
-        }
-
-        .btn-sm {
-            padding: 4px 8px;
-            font-size: 0.8em;
-            margin: 0 2px;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-            font-style: italic;
-        }
-
-        .print-footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 0.9em;
-            border-top: 1px solid #dee2e6;
-            padding-top: 15px;
-        }
-        
-.multi-column-container {
-    column-count: 2;
-    column-gap: 12px;
-    column-rule: 1px solid #eee;
-}
-        
-.multi-column-container .table {
-    font-size: 10px;
-            break-inside: avoid;
-        }
-        
-        .multi-column-container .table th,
-        .multi-column-container .table td {
-            padding: 4px 5px;
-        }
-        
-        .multi-column-container .position-badge {
-            font-size: 0.7em;
-            padding: 2px 4px;
-            margin-right: 3px;
-        }
-        
-.compact-layout {
-    column-count: 3;
-    column-gap: 10px;
-}
-        
-.compact-layout .table {
-    font-size: 9px;
-}
-        
-        .compact-layout .table th,
-        .compact-layout .table td {
-            padding: 3px 4px;
-        }
-        
-        .compact-layout .position-badge {
-            font-size: 0.65em;
-            padding: 2px 3px;
-            margin-right: 3px;
-        }
-
-        @@media print {
+        @@media print and (orientation: landscape) {
+            * {
+                box-sizing: border-box !important;
+            }
+            
             body {
-                margin: 0;
-                padding: 8px;
-                font-size: 11px;
+                font-size: 6px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
             }
             
-            .print-header {
-                padding: 12px;
-                margin-bottom: 12px;
+            .print-container {
+                display: flex !important;
+                flex-direction: row !important;
+                width: 100% !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             
-            .filters-info {
-                padding: 10px;
-                margin-bottom: 12px;
+            .print-column {
+                flex: 0 0 50% !important;
+                width: 50% !important;
+                max-width: 50% !important;
+                height: 100vh !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+                padding: 2px !important;
+                float: left !important;
+                position: relative !important;
             }
             
-            .print-header {
-                background: #667eea !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .print-column:first-child {
+                border-right: 1px solid #ccc !important;
             }
             
-            .table th {
-                background-color: #343a40 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .department-section {
+                margin-bottom: 5px !important;
+                border: 1px solid #000 !important;
+                padding: 1px !important;
             }
             
-            .table tbody tr:nth-child(even) {
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .department-header {
+                font-size: 8px !important;
+                padding: 3px !important;
+                margin: 0 !important;
             }
             
-            .position-head {
-                background: #ffc107 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .print-table {
+                font-size: 5px !important;
+                margin: 0 !important;
             }
             
-            .position-employee {
-                background: #007bff !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .print-table th,
+            .print-table td {
+                padding: 2px !important;
+                font-size: 5px !important;
+                line-height: 1.1 !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+            
+            .position-badge {
+                font-size: 3px !important;
+                padding: 1px 2px !important;
+                margin-bottom: 1px !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+            
+            .employee-name {
+                font-size: 5px !important;
+                line-height: 1.1 !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+        }
+
+        @@media print and (orientation: portrait) {
+            body {
+                font-size: 8px !important;
+            }
+            
+            .print-table {
+                font-size: 7px !important;
+            }
+            
+            .print-table th,
+            .print-table td {
+                padding: 3px !important;
+                font-size: 6px !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+            
+            .position-badge {
+                font-size: 5px !important;
+                padding: 1px 2px !important;
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+            
+            .employee-name {
+                font-size: 7px !important;
+                color: #000 !important;
+                font-weight: bold !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="print-header">
-        <h1><i class="fas fa-users"></i> Управление сотрудниками</h1>
-        <div class="subtitle">Справочник сотрудников</div>
-    </div>
-
-    @if (Model.HasFilters)
-    {
-        <div class="filters-info">
-            <h5><i class="fas fa-filter"></i> Примененные фильтры:</h5>
-            @if (!string.IsNullOrEmpty(Model.SearchTerm))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Поиск по ФИО:</span> @Model.SearchTerm
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.PhoneSearch))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Поиск по телефону:</span> @Model.PhoneSearch
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.PositionSearch))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Поиск по должности:</span> @Model.PositionSearch
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.EmailSearch))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Поиск по Email:</span> @Model.EmailSearch
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.DepartmentSearch))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Поиск по отделу:</span> @Model.DepartmentSearch
-                </div>
-            }
-            @if (Model.SelectedDepartmentNames?.Any() == true)
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Отделы:</span> @string.Join(", ", Model.SelectedDepartmentNames)
-                </div>
-            }
-            @if (Model.SelectedEmployeeNames?.Any() == true)
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Сотрудники:</span> @string.Join(", ", Model.SelectedEmployeeNames)
-                </div>
-            }
-            @if (Model.SelectedPositionNames?.Any() == true)
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Должности:</span> @string.Join(", ", Model.SelectedPositionNames)
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.SortBy))
-            {
-                <div class="filter-item">
-                    <span class="filter-label">Сортировка:</span> 
-                    @(Model.SortBy == "name" ? "По ФИО" : Model.SortBy == "department" ? "По отделу" : Model.SortBy == "position" ? "По должности" : "По умолчанию")
-                </div>
-            }
-        </div>
-    }
 
     @if (Model.Employees.Any())
     {
-        var totalEmployees = Model.Employees.Count();
-        var useMultiColumn = totalEmployees > 18; 
-        var useCompactLayout = totalEmployees > 40; 
-        
-        <div class="@(useMultiColumn ? "multi-column-container" : "") @(useCompactLayout ? "compact-layout" : "")">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="width: 40%;">Должность / ФИО</th>
-                        <th style="width: 15%;">Отдел</th>
-                        <th style="width: 15%;">Городской номер</th>
-                        <th style="width: 15%;">Местный номер</th>
-                        <th style="width: 15%;">Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var employee in Model.Employees)
+        <div class="print-container">
+            @{
+                var groupedEmployees = Model.Employees
+                    .GroupBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department?.Name)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+                
+                var orientation = ViewData["Orientation"]?.ToString() ?? "portrait";
+                
+                if (orientation == "landscape")
+                {
+                    var allEmployees = groupedEmployees.SelectMany(g => g).ToList();
+                    var totalDepartments = groupedEmployees.Count();
+                    var halfDepartments = (totalDepartments + 1) / 2;
+                    var leftDepartments = groupedEmployees.Take(halfDepartments).ToList();
+                    var rightDepartments = groupedEmployees.Skip(halfDepartments).ToList();
+                    
+                    <div class="print-container">
+                        <div class="print-section">
+                            @foreach (var departmentGroup in leftDepartments)
+                            {
+                                <div class="department-section">
+                                    <div class="department-header">
+                                        @departmentGroup.Key
+                                    </div>
+                                    
+                                    <table class="print-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 40%;">Должность</th>
+                                                <th style="width: 20%;">Городской</th>
+                                                <th style="width: 20%;">Местный</th>
+                                                <th style="width: 20%;">Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var employee in departmentGroup)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(employee.PositionDescription))
+                                                        {
+                                                            <div class="position-badge">@employee.PositionDescription</div>
+                                                        }
+                                                        <br />
+                                                        <div class="employee-name">@employee.FullName</div>
+                                                    </td>
+                                                    <td>@(string.IsNullOrEmpty(employee.CityPhone) ? "Не указано" : employee.CityPhone)</td>
+                                                    <td>@(string.IsNullOrEmpty(employee.LocalPhone) ? "Не указано" : employee.LocalPhone)</td>
+                                                    <td>@(string.IsNullOrEmpty(employee.Email) ? "Не указано" : employee.Email)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="print-section">
+                            @foreach (var departmentGroup in rightDepartments)
+                            {
+                                <div class="department-section">
+                                    <div class="department-header">
+                                        @departmentGroup.Key
+                                    </div>
+                                    
+                                    <table class="print-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 40%;">Должность</th>
+                                                <th style="width: 20%;">Городской</th>
+                                                <th style="width: 20%;">Местный</th>
+                                                <th style="width: 20%;">Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var employee in departmentGroup)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(employee.PositionDescription))
+                                                        {
+                                                            <div class="position-badge">@employee.PositionDescription</div>
+                                                        }
+                                                        <br />
+                                                        <div class="employee-name">@employee.FullName</div>
+                                                    </td>
+                                                    <td>@(string.IsNullOrEmpty(employee.CityPhone) ? "Не указано" : employee.CityPhone)</td>
+                                                    <td>@(string.IsNullOrEmpty(employee.LocalPhone) ? "Не указано" : employee.LocalPhone)</td>
+                                                    <td>@(string.IsNullOrEmpty(employee.Email) ? "Не указано" : employee.Email)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                                }
+                                else
+                                {
+                    @foreach (var departmentGroup in groupedEmployees)
                     {
-                        <tr>
-                            <td>
-                                @{
-                                    var positionText = !string.IsNullOrEmpty(employee.PositionDescription) 
-                                        ? employee.PositionDescription 
-                                        : employee.Position?.Name;
-                                }
-                                @if (!string.IsNullOrEmpty(positionText))
-                                {
-                                    <span class="position-badge @(employee.IsHeadOfDepartment ? "position-head" : "position-employee")">
-                                        @positionText
-                                    </span>
-                                    @if (!string.IsNullOrEmpty(employee.FullName))
+                        <div class="department-section">
+                            <div class="department-header">
+                                @departmentGroup.Key
+                            </div>
+                            
+                            <table class="print-table">
+                                <thead>
+                                    <tr>
+                                            <th style="width: 40%;">Должность</th>
+                                        <th style="width: 20%;">Городской</th>
+                                        <th style="width: 20%;">Местный</th>
+                                        <th style="width: 20%;">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in departmentGroup)
                                     {
-                                        <strong>@employee.FullName</strong>
-                                    }
-                                }
-                                else
-                                {
-                                    @if (!string.IsNullOrEmpty(employee.FullName))
-                                    {
-                                        <strong>@employee.FullName</strong>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted fst-italic">-</span>
-                                    }
-                                }
+                                        <tr>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(employee.PositionDescription))
+                                                    {
+                                                        <div class="position-badge">@employee.PositionDescription</div>
+                                                    }
+                                                    <br />
+                                                    <div class="employee-name">@employee.FullName</div>
                             </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(employee.DepartmentName))
-                                {
-                                    @employee.DepartmentName
-                                }
-                                else if (employee.Department != null)
-                                {
-                                    @employee.Department.Name
-                                }
-                                else
-                                {
-                                    <span class="text-muted fst-italic">-</span>
-                                }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(employee.CityPhone))
-                                {
-                                    @employee.CityPhone
-                                }
-                                else
-                                {
-                                    <span class="text-muted fst-italic">-</span>
-                                }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(employee.LocalPhone))
-                                {
-                                    @employee.LocalPhone
-                                }
-                                else
-                                {
-                                    <span class="text-muted fst-italic">-</span>
-                                }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(employee.Email))
-                                {
-                                    @employee.Email
-                                }
-                                else
-                                {
-                                    <span class="text-muted fst-italic">-</span>
-                                }
-                            </td>
+                                            <td>@(string.IsNullOrEmpty(employee.CityPhone) ? "Не указано" : employee.CityPhone)</td>
+                                            <td>@(string.IsNullOrEmpty(employee.LocalPhone) ? "Не указано" : employee.LocalPhone)</td>
+                                            <td>@(string.IsNullOrEmpty(employee.Email) ? "Не указано" : employee.Email)</td>
                         </tr>
                     }
                 </tbody>
             </table>
+                        </div>
+                    }
+                }
+            }
         </div>
     }
     else
     {
-        <div class="no-results">
-            <i class="fas fa-search fa-3x mb-3"></i>
-            <h4>Сотрудники не найдены</h4>
-            <p>Попробуйте изменить параметры поиска или фильтры</p>
+        <div style="text-align: center; padding: 50px; color: #7f8c8d;">
+            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+            <p>Сотрудники не найдены</p>
         </div>
     }
 
-    <div class="print-footer">
-        <p>Документ сгенерирован: @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
-        <p>Всего сотрудников: @Model.Employees.Count()</p>
-    </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         window.onload = function() {
             setTimeout(function() {
@@ -421,9 +383,9 @@
             }, 500);
         };
 
-        window.onafterprint = function() {
+        window.addEventListener('afterprint', function() {
             window.close();
-        };
+        });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {

@@ -15,6 +15,7 @@ namespace EmployeeDirectory
 
             builder.Services.AddRazorPages();
             builder.Services.AddControllers();
+            builder.Services.AddMvc();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -27,6 +28,7 @@ namespace EmployeeDirectory
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
                 options.User.RequireUniqueEmail = false;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
@@ -61,6 +63,7 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<ILogService, LogService>();
             builder.Services.AddScoped<UserInitializationService>();
             builder.Services.AddScoped<DataSeederService>();
+            builder.Services.AddScoped<QuestPdfService>();
 
             var app = builder.Build();
  
@@ -111,6 +114,9 @@ namespace EmployeeDirectory
 
             app.MapRazorPages();
             app.MapControllers();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             using (var scope = app.Services.CreateScope())
             {

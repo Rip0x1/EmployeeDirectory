@@ -802,9 +802,6 @@ body {
   }
 }
 
-/* ===== УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ПОЛЕЙ ПОИСКА И ФИЛЬТРОВ ===== */
-
-/* Контейнер для полей поиска */
 .search-filters-container {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 15px;
@@ -837,7 +834,6 @@ body {
   font-size: 1.2rem;
 }
 
-/* Стили для полей ввода */
 .search-input-group {
   position: relative;
   margin-bottom: 20px;
@@ -882,7 +878,6 @@ body {
   font-style: italic;
 }
 
-/* Стили для селектов */
 .search-select-group {
   position: relative;
   margin-bottom: 20px;
@@ -932,7 +927,6 @@ body {
   background-color: #f8f9fa;
 }
 
-/* Подсказки под полями */
 .search-help-text {
   font-size: 0.85rem;
   color: #6c757d;
@@ -959,7 +953,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Стили для предупреждающих сообщений */
 .text-warning {
   color: #ffc107 !important;
   font-weight: 500;
@@ -971,7 +964,6 @@ body {
   font-weight: 500;
 }
 
-/* Кнопки действий */
 .search-actions {
   display: flex;
   gap: 10px;
@@ -999,7 +991,6 @@ body {
   margin-right: 6px;
 }
 
-/* Адаптивность для полей поиска */
 @media (max-width: 1200px) {
   .search-filters-container {
     padding: 20px;
@@ -1071,7 +1062,6 @@ body {
   }
 }
 
-/* Анимации для полей */
 @keyframes searchFieldFocus {
   0% {
     transform: scale(1);
@@ -1089,7 +1079,6 @@ body {
   animation: searchFieldFocus 0.3s ease;
 }
 
-/* Стили для результатов поиска */
 .search-results-header {
   background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   color: white;

@@ -128,7 +128,7 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/MyDepartment">
                                 <i class="fas fa-print"></i> Печать
                             </button>
                         </div>
@@ -364,6 +364,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function updateEmployeesList() {
+        Array.from(employeesSelect.options).forEach(option => {
+            option.style.display = '';
+        });
+    }
+
     employeesSelect.addEventListener('change', function() {
         performSearch();
     });
@@ -554,6 +560,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         tbody.innerHTML = originalTableHTML;
         
+        updateEmployeesList();
+        updatePositionsList();
         updateEmployeeCounter();
     }
 
@@ -598,32 +606,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetFilters);
-    }
-
-    const printDepartmentBtn = document.getElementById('printDepartmentBtn');
-    if (printDepartmentBtn) {
-        printDepartmentBtn.addEventListener('click', function() {
-            const search = document.getElementById('search')?.value || '';
-            const phoneSearch = document.getElementById('phoneSearch')?.value || '';
-            const employees = Array.from(document.getElementById('employees')?.selectedOptions || [])
-                .map(option => option.value);
-            const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
-                .map(option => option.value);
-            const positionSearch = document.getElementById('positionSearch')?.value || '';
-            const emailSearch = document.getElementById('emailSearch')?.value || '';
-            
-            const params = new URLSearchParams();
-            params.append('departmentId', @Model.DepartmentId);
-            if (search) params.append('search', search);
-            if (phoneSearch) params.append('phoneSearch', phoneSearch);
-            if (positionSearch) params.append('positionSearch', positionSearch);
-            if (emailSearch) params.append('emailSearch', emailSearch);
-            if (employees.length > 0) params.append('employeeNames', employees.join(','));
-            if (positions.length > 0) params.append('positionNames', positions.join(','));
-            
-            const url = '@Url.Page("/Print/PrintDepartments")' + '?' + params.toString();
-            window.open(url, '_blank');
-        });
     }
 });
 </script>

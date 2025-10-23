@@ -32,6 +32,8 @@ namespace EmployeeDirectory.Pages.Admin
 
             var query = _context.Logs.AsQueryable();
 
+            query = query.Where(l => l.Action != "SYSTEM_INIT" && l.EntityType != "System");
+
             if (!string.IsNullOrWhiteSpace(q))
             {
                 query = query.Where(l => 

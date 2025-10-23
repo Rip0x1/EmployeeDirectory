@@ -22,7 +22,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.UserName" class="form-label">Логин *</label>
-                                <input asp-for="Input.UserName" class="form-control" />
+                                <input asp-for="Input.UserName" class="form-control" id="Input_UserName" />
                                 <span asp-validation-for="Input.UserName" class="text-danger"></span>
                             </div>
                         </div>
@@ -30,13 +30,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.NewPassword" class="form-label">Новый пароль (необязательно)</label>
-                                <input asp-for="Input.NewPassword" type="password" class="form-control" placeholder="Оставьте пустым, чтобы не менять пароль" data-val="false" />
+                                <input asp-for="Input.NewPassword" type="password" class="form-control" placeholder="Оставьте пустым, чтобы не менять пароль" data-val="false" id="Input_NewPassword" />
                                 <span asp-validation-for="Input.NewPassword" class="text-danger"></span>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.ConfirmPassword" class="form-label">Подтвердите новый пароль (необязательно)</label>
-                                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Только если меняете пароль" data-val="false" />
+                                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Только если меняете пароль" data-val="false" id="Input_ConfirmPassword" />
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
                         </div>
@@ -44,13 +44,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.FullName" class="form-label">Полное имя</label>
-                                <input asp-for="Input.FullName" class="form-control" />
+                                <input asp-for="Input.FullName" class="form-control" id="Input_FullName" />
                                 <span asp-validation-for="Input.FullName" class="text-danger"></span>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.DepartmentId" class="form-label">Отдел</label>
-                                <select asp-for="Input.DepartmentId" class="form-select" asp-items="Model.Departments">
+                                <select asp-for="Input.DepartmentId" class="form-select" asp-items="Model.Departments" id="Input_DepartmentId">
                                     <option value="">— Не назначен —</option>
                                 </select>
                                 <span asp-validation-for="Input.DepartmentId" class="text-danger"></span>
@@ -59,7 +59,7 @@
                         
                         <div class="mb-3">
                             <label asp-for="Input.Role" class="form-label">Роль *</label>
-                            <select asp-for="Input.Role" class="form-select">
+                            <select asp-for="Input.Role" class="form-select" id="Input_Role">
                                 <option value="">— Выберите роль —</option>
                                 <option value="Manager">Начальник отдела</option>
                                 <option value="Administrator">Администратор</option>

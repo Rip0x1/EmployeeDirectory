@@ -30,6 +30,13 @@ namespace EmployeeDirectory.Services
             _context.Logs.Add(entry);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<IEnumerable<LogEntry>> GetAllLogsAsync()
+        {
+            return await _context.Logs
+                .OrderByDescending(l => l.TimestampUtc)
+                .ToListAsync();
+        }
     }
 }
 

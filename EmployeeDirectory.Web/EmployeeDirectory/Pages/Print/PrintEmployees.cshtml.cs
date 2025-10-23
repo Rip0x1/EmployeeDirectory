@@ -1,147 +1,53 @@
-using EmployeeDirectory.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using EmployeeDirectory.Services;
+using EmployeeDirectory.Models;
 
-namespace EmployeeDirectory.Pages.Print
-{
+namespace EmployeeDirectory.Pages.Print;
+
     public class PrintEmployeesModel : PageModel
     {
         private readonly IEmployeeService _employeeService;
+    private readonly IDepartmentService _departmentService;
 
-        public PrintEmployeesModel(IEmployeeService employeeService)
+    public PrintEmployeesModel(IEmployeeService employeeService, IDepartmentService departmentService)
         {
             _employeeService = employeeService;
-        }
+        _departmentService = departmentService;
+    }
 
-        public List<Models.Employee> Employees { get; set; } = new();
-        public string? SearchTerm { get; set; }
-        public string? PhoneSearch { get; set; }
-        public string? PositionSearch { get; set; }
-        public List<int>? SelectedDepartmentIds { get; set; }
-        public List<string>? SelectedDepartmentNames { get; set; }
-        public List<string>? SelectedEmployeeNames { get; set; }
-        public List<string>? SelectedPositionNames { get; set; }
-        public string? SortBy { get; set; }
-        public string? EmailSearch { get; set; }
-        public string? DepartmentSearch { get; set; }
+    public IEnumerable<Employee> Employees { get; set; } = new List<Employee>();
+    public IEnumerable<Department> Departments { get; set; } = new List<Department>();
+
+    public async Task OnGetAsync(string? orientation = "portrait", int? scale = 100, string[]? selectedDepartments = null, string? departmentSearch = null)
+    {
+        var allEmployees = await _employeeService.GetAllEmployeesAsync();
         
-        public bool HasFilters => !string.IsNullOrEmpty(SearchTerm) || 
-                                 !string.IsNullOrEmpty(PhoneSearch) ||
-                                 !string.IsNullOrEmpty(PositionSearch) ||
-                                 !string.IsNullOrEmpty(EmailSearch) ||
-                                 !string.IsNullOrEmpty(DepartmentSearch) ||
-                                 SelectedDepartmentIds?.Any() == true || 
-                                 SelectedEmployeeNames?.Any() == true || 
-                                 SelectedPositionNames?.Any() == true ||
-                                 !string.IsNullOrEmpty(SortBy);
-
-        public async Task OnGetAsync(string? search, string? phoneSearch, string? positionSearch, string? emailSearch, string? departmentSearch, int[]? departmentIds, 
-            string? employeeNames, string? positionNames, string? sortBy)
+        if (selectedDepartments != null && selectedDepartments.Length > 0)
         {
-            SearchTerm = search;
-            PhoneSearch = phoneSearch;
-            PositionSearch = positionSearch;
-            EmailSearch = emailSearch;
-            DepartmentSearch = departmentSearch;
-            SortBy = sortBy;
-            
-            if (departmentIds?.Any() == true)
-            {
-                SelectedDepartmentIds = departmentIds.ToList();
-            }
-            
-            if (!string.IsNullOrEmpty(employeeNames))
-            {
-                SelectedEmployeeNames = employeeNames.Split(',').Select(s => s.Trim()).ToList();
-            }
-            
-            if (!string.IsNullOrEmpty(positionNames))
-            {
-                SelectedPositionNames = positionNames.Split(',').Select(s => s.Trim()).ToList();
-            }
-
-            var allEmployees = await _employeeService.GetAllEmployeesAsync();
-            var filteredEmployees = allEmployees.AsQueryable();
-
-            if (!string.IsNullOrEmpty(SearchTerm))
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    e.FullName != null && e.FullName.Contains(SearchTerm));
-            }
-
-            if (!string.IsNullOrEmpty(PhoneSearch))
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    e.CityPhone != null && e.CityPhone.Contains(PhoneSearch) ||
-                    e.LocalPhone != null && e.LocalPhone.Contains(PhoneSearch));
-            }
-
-            if (!string.IsNullOrEmpty(PositionSearch))
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    e.PositionDescription != null && e.PositionDescription.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase) ||
-                    e.Position != null && e.Position.Name.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (!string.IsNullOrEmpty(DepartmentSearch))
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    !string.IsNullOrEmpty(e.DepartmentName) && e.DepartmentName.Contains(DepartmentSearch, StringComparison.OrdinalIgnoreCase) ||
-                    e.Department != null && e.Department.Name.Contains(DepartmentSearch, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (!string.IsNullOrEmpty(EmailSearch))
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    !string.IsNullOrEmpty(e.Email) && e.Email.Contains(EmailSearch, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (SelectedDepartmentIds?.Any() == true)
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    SelectedDepartmentIds.Contains(e.DepartmentId));
-            }
-
-            if (SelectedEmployeeNames?.Any() == true)
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    e.FullName != null && SelectedEmployeeNames.Contains(e.FullName));
-            }
-
-            if (SelectedPositionNames?.Any() == true)
-            {
-                filteredEmployees = filteredEmployees.Where(e => 
-                    !string.IsNullOrEmpty(e.PositionDescription) && SelectedPositionNames.Contains(e.PositionDescription) ||
-                    e.Position != null && e.Position.Name != null && SelectedPositionNames.Contains(e.Position.Name));
-            }
-
-
-            switch (SortBy)
-            {
-                case "name":
-                    filteredEmployees = filteredEmployees.OrderBy(e => e.FullName);
-                    break;
-                case "department":
-                    filteredEmployees = filteredEmployees.OrderBy(e => e.DepartmentName ?? e.Department!.Name);
-                    break;
-                case "position":
-                    filteredEmployees = filteredEmployees.OrderBy(e => e.PositionDescription ?? e.Position!.Name);
-                    break;
-                default:
-                    filteredEmployees = filteredEmployees.OrderBy(e => e.FullName);
-                    break;
-            }
-
-            Employees = filteredEmployees.ToList();
-
-            if (SelectedDepartmentIds?.Any() == true)
-            {
-                var departmentService = HttpContext.RequestServices.GetRequiredService<IDepartmentService>();
-                var departments = await departmentService.GetAllDepartmentsAsync();
-                SelectedDepartmentNames = departments
-                    .Where(d => SelectedDepartmentIds.Contains(d.Id))
-                    .Select(d => d.Name)
-                    .ToList();
-            }
+            var departmentIds = selectedDepartments
+                .Where(id => int.TryParse(id, out _))
+                .Select(id => int.Parse(id))
+                .ToList();
+                
+            Employees = allEmployees.Where(e => 
+                departmentIds.Contains(e.DepartmentId)
+            ).ToList();
         }
+        else if (!string.IsNullOrEmpty(departmentSearch))
+        {
+            Employees = allEmployees.Where(e => 
+                (e.DepartmentName ?? e.Department?.Name ?? "").ToLower().Contains(departmentSearch.ToLower())
+            ).ToList();
+        }
+        else
+        {
+            Employees = allEmployees;
+        }
+        
+        Departments = await _departmentService.GetAllDepartmentsAsync();
+        
+        ViewData["Orientation"] = orientation ?? "portrait";
+        ViewData["Scale"] = scale ?? 100;
     }
 }

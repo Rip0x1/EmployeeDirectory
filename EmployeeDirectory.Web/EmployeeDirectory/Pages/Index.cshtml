@@ -171,7 +171,7 @@
                             <option value="5" style="color: #333; background: white;">5 отделов</option>
                             <option value="0" selected style="color: #333; background: white;">Все отделы</option>
                         </select>
-                        <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                        <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/EmployeeDirectory">
                             <i class="fas fa-print"></i> Печать
                         </button>
                     </div>
@@ -243,11 +243,15 @@
                         }
                                 @if (!Model.Employees.Any())
                                 {
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">
-                                            Сотрудники не найдены
-                                        </td>
-                                    </tr>
+                                    <div class="card">
+                                        <div class="card-body p-0">
+                                            <div class="card-body p-0">
+                                                <div id="employeesTable">
+                                                    <div class="text-center text-muted py-4">Сотрудники не найдены</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
                             </tbody>
                         </table>
@@ -929,7 +933,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="department-section">
                                 <div class="department-header">
                                     <span class="department-name-badge">${deptName}</span>
-</div>
+                                </div>
 
                                 <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
@@ -951,27 +955,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                 
                                 positionBadge = `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>`;
                                 if (emp.fullName && emp.fullName !== '-') {
-                                    positionBadge += `<strong>${emp.fullName}</strong>`;
+                                    positionBadge += ` <strong>${emp.fullName}</strong>`;
                                 }
                             } else {
                                 positionBadge = '<span class="text-muted fst-italic">-</span>';
                             }
                             
                             html += `
-                                        <tr>
-                                            <td class="employee-name">
-                                                ${positionBadge}
-                                            </td>
-                                            <td class="phone-number">
-                                                ${emp.cityPhone || 'Не указано'}
-                                            </td>
-                                            <td class="phone-number">
-                                                ${emp.localPhone || 'Не указано'}
-                                            </td>
-                                            <td class="phone-number">
-                                                ${emp.email || 'Не указано'}
-                                            </td>
-                                        </tr>
+                                <tr>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${positionBadge}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${emp.cityPhone || 'Не указано'}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${emp.localPhone || 'Не указано'}
+                                    </td>
+                                    <td class="text-center">
+                                        ${emp.email || 'Не указано'}
+                                    </td>
+                                </tr>
                             `;
                         });
                         
@@ -981,6 +985,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                     });
+                    
                     tbody.innerHTML = html;
                     
                     const totalEmployees = departmentsToShow.reduce((total, deptName) => {
@@ -1007,7 +1012,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     } else {
-                        tbody.innerHTML = `<div class="text-center text-muted py-4">Сотрудники не найдены</div>`;
+                        tbody.innerHTML = `
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="card-body p-0">
+                                        <div id="employeesTable">
+                                            <div class="text-center text-muted py-4">Сотрудники не найдены</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                         
                         const badgeElement = document.querySelector('.search-results-header .badge');
                         if (badgeElement) {
@@ -1022,7 +1037,17 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Ошибка поиска:', error);
-                tbody.innerHTML = `<div class="text-center text-danger py-4">Ошибка при выполнении поиска</div>`;
+                tbody.innerHTML = `
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="card-body p-0">
+                                <div id="employeesTable">
+                                    <div class="text-center text-danger py-4">Ошибка при выполнении поиска</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
                 
                 const badgeElement = document.querySelector('.search-results-header .badge');
                 if (badgeElement) {
@@ -1246,6 +1271,9 @@ document.addEventListener('DOMContentLoaded', function() {
         departmentsPerPageSelect.addEventListener('change', function() {
             const selectedValue = this.value;
             if (selectedValue === '0') {
+                // При показе всех отделов обновляем списки и выполняем поиск
+                updateEmployeesList();
+                updatePositionsList();
                 performSearch();
             } else {
                 const currentUrl = new URL(window.location);
@@ -1346,38 +1374,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     handleResponsiveColumns();
     window.addEventListener('resize', handleResponsiveColumns);
-
-    const printBtn = document.getElementById('printBtn');
-    if (printBtn) {
-        printBtn.addEventListener('click', function() {
-            const search = document.getElementById('search')?.value || '';
-            const phoneSearch = document.getElementById('phoneSearch')?.value || '';
-            const departments = Array.from(document.getElementById('departments')?.selectedOptions || [])
-                .map(option => option.value);
-            const employees = Array.from(document.getElementById('employees')?.selectedOptions || [])
-                .map(option => option.value);
-            const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
-                .map(option => option.value);
-            const positionSearch = document.getElementById('positionSearch')?.value || '';
-            const emailSearch = document.getElementById('emailSearch')?.value || '';
-            const departmentSearch = document.getElementById('departmentSearch')?.value || '';
-                        
-            const params = new URLSearchParams();
-            if (search) params.append('search', search);
-            if (phoneSearch) params.append('phoneSearch', phoneSearch);
-            if (positionSearch) params.append('positionSearch', positionSearch);
-            if (emailSearch) params.append('emailSearch', emailSearch);
-            if (departmentSearch) params.append('departmentSearch', departmentSearch);
-            departments.forEach(id => params.append('departments', id));
-            employees.forEach(emp => params.append('selectedEmployees', emp));
-            positions.forEach(pos => params.append('positions', pos));
-            
-            const url = '@Url.Page("/Print/PrintIndex")' + (params.toString() ? '?' + params.toString() : '');
-            window.open(url, '_blank');
-        });
-    } else {
-    }
-    
     function updateEmployeeCount() {
         const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
             const isDepartmentHeader = row.querySelector('.department-name-badge');
@@ -1394,26 +1390,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function resetFilters() {
-        searchInput.value = '';
-        phoneSearchInput.value = '';
-        positionSearchInput.value = '';
-        emailSearchInput.value = '';
-        
-        Array.from(employeesSelect.options).forEach(option => option.selected = false);
-        Array.from(departmentsSelect.options).forEach(option => option.selected = false);
-        Array.from(positionsSelect.options).forEach(option => option.selected = false);
-
-        departmentsPerPageSelect.value = '0';
-        if (departmentSearchInput) departmentSearchInput.value = '';
-
-        const paginationNav = document.getElementById('paginationNav');
-        if (paginationNav) {
-            paginationNav.style.display = 'none';
-        }
-
-        updateEmployeesList();
-        updatePositionsList();
-        performSearch();
+        // Просто перезагружаем страницу для сброса всех фильтров
+        window.location.href = window.location.pathname;
     }
     
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');

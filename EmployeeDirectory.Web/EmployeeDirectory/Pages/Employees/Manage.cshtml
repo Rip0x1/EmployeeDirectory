@@ -64,20 +64,20 @@
             </div>
             <div class="col-12 col-sm-6 col-md-4 col-lg-6">
                 <div class="search-input-group">
-                    <label for="departmentSearch" class="form-label">
+                            <label for="departmentSearch" class="form-label">
                         <i class="fas fa-building"></i>Поиск по отделу
-                    </label>
+                            </label>
                     <input type="text" class="form-control" id="departmentSearch" placeholder="Введите название отдела" />
                 </div>
+                </div>
             </div>
-        </div>
-        
+            
         <div class="row g-3 mb-3 justify-content-center">
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                 <div class="search-select-group">
-                    <label for="employees" class="form-label">
+                            <label for="employees" class="form-label">
                         <i class="fas fa-users"></i>ФИО
-                    </label>
+                            </label>
                     <select class="form-select" id="employees" multiple size="3">
                         @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
                         {
@@ -93,12 +93,12 @@
                     </select>
                     <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                 <div class="search-select-group">
-                    <label for="departments" class="form-label">
+                            <label for="departments" class="form-label">
                         <i class="fas fa-building"></i>Отделы
-                    </label>
+                            </label>
                     <select class="form-select" id="departments" multiple size="3">
                         @if (Model.Departments.Any())
                         {
@@ -114,12 +114,12 @@
                     </select>
                     <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                 <div class="search-select-group">
-                    <label for="positions" class="form-label">
+                            <label for="positions" class="form-label">
                         <i class="fas fa-user-tie"></i>Должности
-                    </label>
+                            </label>
                     <select class="form-select" id="positions" multiple size="3">
                         @if (Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Any())
                         {
@@ -147,23 +147,15 @@
     
 
     <div class="search-results-header">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <select class="form-select" id="departmentsPerPage" style="width: auto; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
-                    <option value="1" style="color: #333; background: white;">1 отдел</option>
-                    <option value="2" style="color: #333; background: white;">2 отдела</option>
-                    <option value="3" style="color: #333; background: white;">3 отдела</option>
-                    <option value="4" style="color: #333; background: white;">4 отдела</option>
-                    <option value="5" style="color: #333; background: white;">5 отделов</option>
-                    <option value="0" selected style="color: #333; background: white;">Все отделы</option>
-                </select>
-                <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/ManageEmployees">
                     <i class="fas fa-print"></i> Печать
-                </button>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
     
     <div class="card">
         <div class="card-body p-0">
@@ -276,261 +268,6 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search');
-    const employeesSelect = document.getElementById('employees');
-    const departmentsSelect = document.getElementById('departments');
-    const positionsSelect = document.getElementById('positions');
-    const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
-    const phoneSearchInput = document.getElementById('phoneSearch');
-    const positionSearchInput = document.getElementById('positionSearch');
-    const emailSearchInput = document.getElementById('emailSearch');
-    const departmentSearchInput = document.getElementById('departmentSearch');
-    const tbody = document.getElementById('employeesTable');
-    
-    let typingTimer;
-    
-    function performSearch() {
-            const searchTerm = searchInput.value;
-            const phoneSearch = phoneSearchInput.value;
-            const positionSearch = positionSearchInput.value;
-            const emailSearch = emailSearchInput.value;
-            const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
-            const departmentsPerPage = departmentsPerPageSelect.value;
-            const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
-            const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
-            const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
-
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></td></tr>';
-
-            const params = new URLSearchParams();
-            if (searchTerm) params.append('search', searchTerm);
-            if (phoneSearch) params.append('phoneSearch', phoneSearch);
-            if (positionSearch) params.append('positionSearch', positionSearch);
-            if (emailSearch) params.append('emailSearch', emailSearch);
-            if (departmentSearch) {
-                params.append('departmentSearch', departmentSearch);
-            }
-            if (departmentsPerPage) params.append('departmentsPerPage', departmentsPerPage);
-            selectedEmployees.forEach(emp => params.append('selectedEmployees', emp));
-            selectedDepartments.forEach(id => params.append('departments', id));
-            selectedPositions.forEach(pos => params.append('positions', pos));
-
-            fetch(`/api/search?${params.toString()}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.employees && data.employees.length > 0) {
-                        const grouped = data.employees.reduce((groups, emp) => {
-                            const dept = emp.DepartmentName;
-                            if (!groups[dept]) groups[dept] = [];
-                            groups[dept].push(emp);
-                            return groups;
-                        }, {});
-
-                        let html = '';
-                        const deptNames = Object.keys(grouped).sort();
-                        const maxDepartments = departmentsPerPage === '0' ? deptNames.length : parseInt(departmentsPerPage);
-                        const departmentsToShow = deptNames.slice(0, maxDepartments);
-                        
-                        departmentsToShow.forEach(deptName => {
-                            html += `
-                                <div class="department-section">
-                                    <div class="department-header">
-                                        <span class="department-name-badge">${deptName}</span>
-                                    </div>
-
-                                    <table id="employeesTable" class="table mb-0">
-                                        <thead class="table-dark sticky-header">
-                                            <tr>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Местный номер</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
-                                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                            `;
-                            grouped[deptName].forEach(emp => {
-                                let positionBadge = '';
-                                if (emp.PositionDescription) {
-                                    const isHead = emp.IsHeadOfDepartment;
-                                    const badgeClass = isHead ? 'position-head' : 'position-employee';
-                                    
-                                    positionBadge = `<span class="position-badge ${badgeClass}">${emp.PositionDescription}</span>`;
-                                    if (emp.FullName && emp.FullName !== '-') {
-                                        positionBadge += `<strong>${emp.FullName}</strong>`;
-                                    }
-                                } else {
-                                    positionBadge = '<span class="text-muted fst-italic">-</span>';
-                                }
-
-                                html += `
-                                            <tr data-department-id="${emp.DepartmentId}">
-                                                <td class="employee-name">
-                                                    ${positionBadge}
-                                                </td>
-                                                <td class="phone-number">${emp.CityPhone || 'Не указано'}</td>
-                                                <td class="phone-number">${emp.LocalPhone || 'Не указано'}</td>
-                                                <td class="phone-number">${emp.Email || 'Не указано'}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group" role="group">
-                                                        <a href="/Employees/Edit?id=${emp.Id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="/Employees/Delete?id=${emp.Id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                `;
-                            });
-                            
-                            html += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
-                        });
-                        tbody.innerHTML = html;
-                        updateEmployeeCount();
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Сотрудники не найдены</td></tr>';
-                        updateEmployeeCount();
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка поиска:', error);
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Ошибка при выполнении поиска</td></tr>';
-                });
-        }
-
-        function updateEmployeeCount() {
-            const visibleRows = Array.from(tbody.querySelectorAll('tbody tr')).filter(row => {
-                const isServiceRow = row.classList.contains('text-center');
-                const isHidden = row.style.display === 'none';
-                return !isServiceRow && !isHidden;
-            });
-            const count = visibleRows.length;
-            const countElement = document.querySelector('.card-header h5');
-            if (countElement) {
-                countElement.textContent = `Список сотрудников (${count})`;
-            }
-        }
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(performSearch, 300);
-        });
-
-        phoneSearchInput.addEventListener('input', function() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(performSearch, 300);
-        });
-
-        positionSearchInput.addEventListener('input', function() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(performSearch, 300);
-        });
-        
-        emailSearchInput.addEventListener('input', function() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(performSearch, 300);
-        });
-
-        departmentsPerPageSelect.addEventListener('change', function() {
-            const selectedValue = this.value;
-            if (selectedValue === '0') {
-                const paginationNav = document.getElementById('paginationNav');
-                if (paginationNav) {
-                    paginationNav.style.display = 'none';
-                }
-                const paginationInfo = document.getElementById('paginationInfo');
-                if (paginationInfo) {
-                    paginationInfo.textContent = '';
-                }
-                const paginationInfoSecond = document.querySelector('#paginationInfo + .d-block.d-md-inline');
-                if (paginationInfoSecond) {
-                    paginationInfoSecond.textContent = '';
-                }
-                performSearch();
-            } else {
-                const currentUrl = new URL(window.location);
-                currentUrl.searchParams.set('departmentsPerPage', selectedValue);
-                currentUrl.searchParams.delete('pageNumber');
-                window.location.href = currentUrl.toString();
-            }
-        });
-
-        function updatePositionsList() {
-            const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
-            
-            if (selectedDepartments.length === 0) {
-                Array.from(positionsSelect.options).forEach(option => {
-                    option.style.display = '';
-                });
-            } else {
-                const params = new URLSearchParams();
-                selectedDepartments.forEach(id => params.append('departments', id));
-                
-                fetch(`/api/search?${params.toString()}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.employees && data.employees.length > 0) {
-                            const availablePositions = [...new Set(data.employees
-                                .map(emp => emp.PositionDescription)
-                                .filter(pos => pos && pos.trim() !== '')
-                            )].sort();
-                            
-                            Array.from(positionsSelect.options).forEach(option => {
-                                if (option.value === '') {
-                                    option.style.display = ''; 
-                                } else {
-                                    option.style.display = availablePositions.includes(option.value) ? '' : 'none';
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при обновлении списка должностей:', error);
-                    });
-            }
-        }
-
-        function updateEmployeesList() {
-            const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
-            
-            if (selectedDepartments.length === 0) {
-                Array.from(employeesSelect.options).forEach(option => {
-                    option.style.display = '';
-                });
-        }
-
-        positionsSelect.addEventListener('change', performSearch);
-        
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const departmentsPerPageFromUrl = urlParams.get('departmentsPerPage');
-        if (departmentsPerPageFromUrl) {
-            departmentsPerPageSelect.value = departmentsPerPageFromUrl;
-        }
-
-        const paginationNav = document.getElementById('paginationNav');
-        if (paginationNav) {
-            const currentDepartmentsPerPage = departmentsPerPageSelect.value;
-            if (currentDepartmentsPerPage === '0') {
-                paginationNav.style.display = 'none';
-            } else {
-                paginationNav.style.display = paginationNav.children.length > 0 ? 'block' : 'none';
-            }
-        }
-        
-        updateEmployeeCount();
-    });
-</script>
-
 <style>
 .department-name-badge {
     display: inline-block;
@@ -614,7 +351,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const employeesSelect = document.getElementById('employees');
     const departmentsSelect = document.getElementById('departments');
     const positionsSelect = document.getElementById('positions');
-    const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
     const phoneSearchInput = document.getElementById('phoneSearch');
     const positionSearchInput = document.getElementById('positionSearch');
     const emailSearchInput = document.getElementById('emailSearch');
@@ -629,45 +365,45 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
         const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
         const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
-        const departmentsPerPage = departmentsPerPageSelect.value;
         const phoneSearch = phoneSearchInput.value;
         const positionSearch = positionSearchInput.value;
         const emailSearch = emailSearchInput.value;
         const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
-
-        tbody.innerHTML = `<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>`;
-
+        
         const params = new URLSearchParams();
         if (searchTerm) params.append('search', searchTerm);
-        if (phoneSearch) params.append('phoneSearch', phoneSearch);
-        if (positionSearch) params.append('positionSearch', positionSearch);
-        if (emailSearch) params.append('emailSearch', emailSearch);
-        if (departmentSearch) params.append('departmentSearch', departmentSearch);
-        selectedDepartments.forEach(id => params.append('departments', id));
+        if (phoneSearch) params.append('phone', phoneSearch);
+        if (positionSearch) params.append('position', positionSearch);
+        if (emailSearch) params.append('email', emailSearch);
+        if (departmentSearch) params.append('department', departmentSearch);
         selectedEmployees.forEach(emp => params.append('selectedEmployees', emp));
+        selectedDepartments.forEach(dept => params.append('departments', dept));
         selectedPositions.forEach(pos => params.append('positions', pos));
-        if (departmentsPerPage) params.append('departmentsPerPage', departmentsPerPage);
         
         fetch(`/api/search?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
                 if (data.employees && data.employees.length > 0) {
+                    // Группируем сотрудников по отделам
                     const grouped = data.employees.reduce((groups, emp) => {
-                        const dept = emp.departmentName;
+                        const dept = emp.departmentName || 'Не назначен';
                         if (!groups[dept]) groups[dept] = [];
                         groups[dept].push(emp);
                         return groups;
                     }, {});
-
+                    
                     let html = '';
-                    Object.keys(grouped).sort().forEach(deptName => {
+                    const deptNames = Object.keys(grouped).sort();
+                    const departmentsToShow = deptNames;
+                    
+                    departmentsToShow.forEach(deptName => {
                         html += `
                             <div class="department-section">
                                 <div class="department-header">
                                     <span class="department-name-badge">${deptName}</span>
                                 </div>
 
-                                <table id="employeesTable" class="table mb-0">
+                                <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
                                         <tr>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
@@ -679,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </thead>
                                     <tbody>
                         `;
+                        
                         grouped[deptName].forEach(emp => {
                             let positionBadge = '';
                             if (emp.positionDescription) {
@@ -687,68 +424,71 @@ document.addEventListener('DOMContentLoaded', function() {
                                 
                                 positionBadge = `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>`;
                                 if (emp.fullName && emp.fullName !== '-') {
-                                    positionBadge += `<strong>${emp.fullName}</strong>`;
+                                    positionBadge += ` <strong>${emp.fullName}</strong>`;
                                 }
                             } else {
                                 positionBadge = '<span class="text-muted fst-italic">-</span>';
                             }
-
+                            
                             html += `
-                                        <tr data-department-id="${emp.departmentId}">
-                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
-                                                ${positionBadge}
-                                            </td>
-                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.cityPhone || 'Не указано'}</td>
-                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
-                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.email || 'Не указано'}</td>
-                                            <td class="text-center">
-                                                <div class="d-flex gap-2 justify-content-center">
-                                                    <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary" title="Редактировать">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a href="/Employees/Delete?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                <tr data-department-id="${emp.departmentId}">
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${positionBadge}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${emp.cityPhone || 'Не указано'}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${emp.localPhone || 'Не указано'}
+                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                        ${emp.email || 'Не указано'}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="/Employees/Edit/${emp.id}?returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit me-1"></i>Изменить
+                                            </a>
+                                            <a href="/Employees/Delete/${emp.id}?returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash me-1"></i>Удалить
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
                             `;
                         });
+                        
                         html += `
                                     </tbody>
                                 </table>
                             </div>
                         `;
                     });
+                    
                     tbody.innerHTML = html;
-
+                    
+                    // Подсчитываем только отображаемых сотрудников
+                    const totalEmployees = departmentsToShow.reduce((total, deptName) => {
+                        return total + (grouped[deptName] ? grouped[deptName].length : 0);
+                    }, 0);
+                    
                     const badgeElement = document.querySelector('.search-results-header .badge');
                     if (badgeElement) {
-                        badgeElement.textContent = data.employees.length;
+                        badgeElement.textContent = totalEmployees;
                     }
                     
                     const headerElement = document.querySelector('.card-header h5');
                     if (headerElement) {
-                        headerElement.textContent = `Список сотрудников (${data.employees.length})`;
+                        headerElement.textContent = `Список сотрудников (${totalEmployees})`;
                     }
-                    
-                    const paginationNav = document.getElementById('paginationNav');
-                    if (paginationNav) {
-                        if (departmentsPerPage === '0') {
-                            paginationNav.style.display = 'none';
-                        } else {
-                            paginationNav.style.display = paginationNav.children.length > 0 ? 'block' : 'none';
-                        }
-                    }
-                    
                 } else {
-                    tbody.innerHTML = `<div class="text-center text-muted py-4">Сотрудники не найдены</div>`;
-
+                    tbody.innerHTML = '<div class="text-center text-muted py-4">Сотрудники не найдены</div>';
+                    
                     const badgeElement = document.querySelector('.search-results-header .badge');
                     if (badgeElement) {
                         badgeElement.textContent = '0';
                     }
-
+                    
                     const headerElement = document.querySelector('.card-header h5');
                     if (headerElement) {
                         headerElement.textContent = 'Список сотрудников (0)';
@@ -926,26 +666,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function resetFilters() {
-        searchInput.value = '';
-        phoneSearchInput.value = '';
-        positionSearchInput.value = '';
-        emailSearchInput.value = '';
-        if (departmentSearchInput) departmentSearchInput.value = '';
-        
-        Array.from(employeesSelect.options).forEach(option => option.selected = false);
-        Array.from(departmentsSelect.options).forEach(option => option.selected = false);
-        Array.from(positionsSelect.options).forEach(option => option.selected = false);
-
-        departmentsPerPageSelect.value = '0';
-
-        const paginationNav = document.getElementById('paginationNav');
-        if (paginationNav) {
-            paginationNav.style.display = 'none';
-        }
-
-        updateEmployeesList();
-        updatePositionsList();
-        performSearch();
+        // Просто перезагружаем страницу для сброса всех фильтров
+        window.location.href = window.location.pathname;
     }
 
     searchInput.addEventListener('input', function() {
@@ -1021,44 +743,9 @@ document.addEventListener('DOMContentLoaded', function() {
         performSearch();
     });
 
-    departmentsPerPageSelect.addEventListener('change', function() {
-        performSearch();
-    });
 
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetFilters);
-    }
-
-    const printBtn = document.getElementById('printBtn');
-    if (printBtn) {
-        printBtn.addEventListener('click', function() {
-            const search = document.getElementById('search')?.value || '';
-            const phoneSearch = document.getElementById('phoneSearch')?.value || '';
-            const departments = Array.from(document.getElementById('departments')?.selectedOptions || [])
-                .map(option => option.value);
-            const employees = Array.from(document.getElementById('employees')?.selectedOptions || [])
-                .map(option => option.value);
-            const positions = Array.from(document.getElementById('positions')?.selectedOptions || [])
-                .map(option => option.value);
-            const positionSearch = document.getElementById('positionSearch')?.value || '';
-            const emailSearch = document.getElementById('emailSearch')?.value || '';
-            const departmentSearch = document.getElementById('departmentSearch')?.value || '';
-            const departmentsPerPage = document.getElementById('departmentsPerPage')?.value || '';
-            
-            const params = new URLSearchParams();
-            if (search) params.append('search', search);
-            if (phoneSearch) params.append('phoneSearch', phoneSearch);
-            if (positionSearch) params.append('positionSearch', positionSearch);
-            if (emailSearch) params.append('emailSearch', emailSearch);
-            if (departmentSearch) params.append('departmentSearch', departmentSearch);
-            departments.forEach(id => params.append('departmentIds', id));
-            if (employees.length > 0) params.append('employeeNames', employees.join(','));
-            if (positions.length > 0) params.append('positionNames', positions.join(','));
-            if (departmentsPerPage) params.append('departmentsPerPage', departmentsPerPage);
-            
-            const url = '@Url.Page("/Print/PrintEmployees")' + (params.toString() ? '?' + params.toString() : '');
-            window.open(url, '_blank');
-        });
     }
 });
 </script>
