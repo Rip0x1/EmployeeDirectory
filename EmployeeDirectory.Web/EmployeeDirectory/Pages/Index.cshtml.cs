@@ -65,7 +65,6 @@ namespace EmployeeDirectory.Pages
             var groupedEmployees = allEmployees.GroupBy(e => e.Department.Name).OrderBy(g => g.Key).ToList();
             var totalDepartments = groupedEmployees.Count;
             
-            // Если указан параметр departmentsPerPage, используем его для пагинации
             if (departmentsPerPage.HasValue && departmentsPerPage.Value > 0)
             {
                 PageSize = departmentsPerPage.Value;
@@ -77,7 +76,6 @@ namespace EmployeeDirectory.Pages
 
                 Employees = departmentsForPage.SelectMany(g => g);
             }
-            // Если нет параметров поиска и фильтрации, показываем все отделы
             else if (string.IsNullOrEmpty(search) && !departmentId.HasValue)
             {
                 Employees = allEmployees;

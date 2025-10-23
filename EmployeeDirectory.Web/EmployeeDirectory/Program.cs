@@ -60,6 +60,7 @@ namespace EmployeeDirectory
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ILogService, LogService>();
             builder.Services.AddScoped<UserInitializationService>();
+            builder.Services.AddScoped<DataSeederService>();
 
             var app = builder.Build();
  
@@ -101,6 +102,12 @@ namespace EmployeeDirectory
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
+                await dataSeeder.SeedDataAsync();
+            }
 
             app.MapRazorPages();
             app.MapControllers();
