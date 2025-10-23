@@ -5,16 +5,22 @@
     ViewData["Title"] = "Логи системы";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card shadow">
-                <div class="card-header logs-header d-flex justify-content-between align-items-center">
-                    <h4><i class="fas fa-clipboard-list me-2"></i>Логи системы</h4>
-                    <button id="printLogsBtn" class="btn btn-light btn-sm">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-clipboard-list me-2"></i>Логи системы</h2>
+                <div class="d-flex gap-2">
+                    <button id="printLogsBtn" class="btn btn-outline-primary">
                         <i class="fas fa-print me-1"></i>Печать
                     </button>
+                    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                    </a>
                 </div>
+            </div>
+
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <form method="get" class="row g-2 mb-3" id="logsFilterForm">
                         <div class="col-md-4">
@@ -48,6 +54,8 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
             </div>
         </div>
     </div>

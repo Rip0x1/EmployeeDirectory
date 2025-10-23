@@ -38,10 +38,10 @@ namespace EmployeeDirectory.Pages.Users
             public string UserName { get; set; } = string.Empty;
 
             [Display(Name = "Новый пароль")]
-            public string NewPassword { get; set; } = string.Empty;
+            public string? NewPassword { get; set; }
 
             [Display(Name = "Подтверждение пароля")]
-            public string ConfirmPassword { get; set; } = string.Empty;
+            public string? ConfirmPassword { get; set; }
 
             [Display(Name = "Полное имя")]
             public string FullName { get; set; } = string.Empty;
@@ -80,22 +80,27 @@ namespace EmployeeDirectory.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Remove("Input.NewPassword");
-            ModelState.Remove("Input.ConfirmPassword");
-            
-            if (!string.IsNullOrEmpty(Input.NewPassword) && string.IsNullOrEmpty(Input.ConfirmPassword))
+            if (!string.IsNullOrWhiteSpace(Input.NewPassword) || !string.IsNullOrWhiteSpace(Input.ConfirmPassword))
             {
-                ModelState.AddModelError("Input.ConfirmPassword", "Подтвердите пароль");
-            }
-            
-            if (!string.IsNullOrEmpty(Input.ConfirmPassword) && string.IsNullOrEmpty(Input.NewPassword))
-            {
-                ModelState.AddModelError("Input.NewPassword", "Введите новый пароль");
-            }
-            
-            if (!string.IsNullOrEmpty(Input.NewPassword) && !string.IsNullOrEmpty(Input.ConfirmPassword) && Input.NewPassword != Input.ConfirmPassword)
-            {
-                ModelState.AddModelError("Input.ConfirmPassword", "Пароли не совпадают");
+                if (string.IsNullOrWhiteSpace(Input.NewPassword))
+                {
+                    ModelState.AddModelError("Input.NewPassword", "Введите новый пароль");
+                }
+                
+                if (string.IsNullOrWhiteSpace(Input.ConfirmPassword))
+                {
+                    ModelState.AddModelError("Input.ConfirmPassword", "Подтвердите пароль");
+                }
+                
+                if (!string.IsNullOrWhiteSpace(Input.NewPassword) && !string.IsNullOrWhiteSpace(Input.ConfirmPassword) && Input.NewPassword != Input.ConfirmPassword)
+                {
+                    ModelState.AddModelError("Input.ConfirmPassword", "Пароли не совпадают");
+                }
+                
+                if (!string.IsNullOrWhiteSpace(Input.NewPassword) && Input.NewPassword.Length < 6)
+                {
+                    ModelState.AddModelError("Input.NewPassword", "Пароль должен содержать минимум 6 символов");
+                }
             }
 
             if (!ModelState.IsValid)
@@ -118,11 +123,36 @@ namespace EmployeeDirectory.Pages.Users
             var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
-            {
-                if (!string.IsNullOrEmpty(Input.NewPassword))
+            {       
+                if (!string.IsNullOrWhiteSpace(Input.NewPassword))
                 {
-                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    await _userManager.ResetPasswordAsync(user, token, Input.NewPassword);
+                    var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+                    if (removePasswordResult.Succeeded)
+                    {
+                        var addPasswordResult = await _userManager.AddPasswordAsync(user, Input.NewPassword);
+                        if (!addPasswordResult.Succeeded)
+                        {
+                            foreach (var error in addPasswordResult.Errors)
+                            {
+                                ModelState.AddModelError("Input.NewPassword", error.Description);
+                            }
+                            
+                            var departmentsReload1 = await _departmentService.GetAllDepartmentsAsync();
+                            Departments = new SelectList(departmentsReload1, "Id", "Name");
+                            return Page();
+                        }
+                    }
+                    else
+                    {
+                        foreach (var error in removePasswordResult.Errors)
+                        {
+                            ModelState.AddModelError("Input.NewPassword", error.Description);
+                        }
+                        
+                        var departmentsReload2 = await _departmentService.GetAllDepartmentsAsync();
+                        Departments = new SelectList(departmentsReload2, "Id", "Name");
+                        return Page();
+                    }
                 }
 
                 var currentRoles = await _userManager.GetRolesAsync(user);
@@ -133,7 +163,12 @@ namespace EmployeeDirectory.Pages.Users
                     await _userManager.AddToRoleAsync(user, Input.Role);
                 }
 
-                TempData["Success"] = $"Пользователь {Input.UserName} успешно обновлен!";
+                var successMessage = $"Пользователь {Input.UserName} успешно обновлен!";
+                if (!string.IsNullOrWhiteSpace(Input.NewPassword))
+                {
+                    successMessage += " Пароль также обновлен.";
+                }
+                TempData["Success"] = successMessage;
                 
                 if (!string.IsNullOrEmpty(ReturnUrl))
                 {

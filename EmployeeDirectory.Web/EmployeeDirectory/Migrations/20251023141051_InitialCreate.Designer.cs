@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmployeeDirectory.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251022113440_AddEmailToEmployee")]
-    partial class AddEmailToEmployee
+    [Migration("20251023141051_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,8 +193,8 @@ namespace EmployeeDirectory.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(100)

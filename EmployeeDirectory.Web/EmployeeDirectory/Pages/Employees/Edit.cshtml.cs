@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EmployeeDirectory.Pages.Employees
 {
-    [Authorize(Roles = "Manager,Administrator")]
+    [Authorize(Roles = "Manager,Administrator,DepartmentEditor")]
     public class EditModel : PageModel
     {
         private readonly IEmployeeService _employeeService;
@@ -111,7 +111,6 @@ namespace EmployeeDirectory.Pages.Employees
             }
             
             ModelState.Remove("Employee.Department");
-            ModelState.Remove("Employee.Position");
 
             if (!ModelState.IsValid)
             {
@@ -141,8 +140,8 @@ namespace EmployeeDirectory.Pages.Employees
                 {
                     Employee.DepartmentId = DepartmentId;
                 }
-                Employee.PositionId = null; 
                 
+                Employee.PositionId = PositionId;
                 Employee.UpdatedAt = DateTime.UtcNow;
                 await _employeeService.UpdateEmployeeAsync(Employee);
                 

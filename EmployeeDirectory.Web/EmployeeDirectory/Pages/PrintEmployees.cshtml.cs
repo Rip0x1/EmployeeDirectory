@@ -62,7 +62,10 @@ namespace EmployeeDirectory.Pages
             if (!string.IsNullOrEmpty(SearchTerm))
             {
                 filteredEmployees = filteredEmployees.Where(e => 
-                    e.FullName != null && e.FullName.Contains(SearchTerm));
+                    e.FullName != null && e.FullName.Contains(SearchTerm) ||
+                    e.Department.Name.Contains(SearchTerm) ||
+                    e.PositionDescription != null && e.PositionDescription.Contains(SearchTerm) ||
+                    e.Position != null && e.Position.Name.Contains(SearchTerm));
             }
 
             if (!string.IsNullOrEmpty(PhoneSearch))

@@ -9,58 +9,75 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-users me-2"></i>Управление сотрудниками</h2>
-                <div class="d-flex justify-content-end">
+                <div class="d-flex gap-2">
                     <a class="btn btn-success" href="/Employees/Create?returnUrl=%2FEmployees%2FManage">
                         <i class="fas fa-plus me-1"></i>Добавить сотрудника
+                    </a>
+                    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h6 class="mb-0"><i class="fas fa-search me-2"></i>Поиск и фильтрация</h6>
+    <div class="search-filters-container">
+        <div class="search-filters-header">
+            <h6><i class="fas fa-search"></i>Поиск и фильтрация</h6>
         </div>
-        <div class="card-body">
-            <div class="row g-3 mb-3">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        
+        <div class="row g-3 mb-3 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-input-group">
                     <label for="search" class="form-label">
-                        <i class="fas fa-search me-1"></i>Поиск по ФИО
+                        <i class="fas fa-search"></i>Поиск по ФИО
                     </label>
                     <input type="text" class="form-control" id="search" placeholder="Введите ФИО для поиска">
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-input-group">
                     <label for="phoneSearch" class="form-label">
-                        <i class="fas fa-phone me-1"></i>Поиск по телефону
+                        <i class="fas fa-phone"></i>Поиск по телефону
                     </label>
                     <input type="text" class="form-control" id="phoneSearch" placeholder="Городской или местный номер...">
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-input-group">
                     <label for="positionSearch" class="form-label">
-                        <i class="fas fa-user-tie me-1"></i>Поиск по должности
+                        <i class="fas fa-user-tie"></i>Поиск по должности
                     </label>
                     <input type="text" class="form-control" id="positionSearch" placeholder="Введите должность...">
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            </div>
+        </div>
+        
+        <div class="row g-3 mb-3 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-6">
+                <div class="search-input-group">
                     <label for="emailSearch" class="form-label">
-                        <i class="fas fa-envelope me-1"></i>Поиск по Email
+                        <i class="fas fa-envelope"></i>Поиск по Email
                     </label>
                     <input type="text" class="form-control" id="emailSearch" placeholder="Введите email...">
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <label for="departmentSearch" class="form-label">
-                                <i class="fas fa-building me-1"></i>Поиск по отделу
-                            </label>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-6">
+                <div class="search-input-group">
+                    <label for="departmentSearch" class="form-label">
+                        <i class="fas fa-building"></i>Поиск по отделу
+                    </label>
                     <input type="text" class="form-control" id="departmentSearch" placeholder="Введите название отдела" />
                 </div>
             </div>
-            
-            <div class="row g-3 mb-3">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                            <label for="employees" class="form-label">
-                                <i class="fas fa-users me-1"></i>ФИО
-                            </label>
+        </div>
+        
+        <div class="row g-3 mb-3 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-select-group">
+                    <label for="employees" class="form-label">
+                        <i class="fas fa-users"></i>ФИО
+                    </label>
                     <select class="form-select" id="employees" multiple size="3">
                         @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
                         {
@@ -74,13 +91,14 @@
                             <option disabled>Нет доступных сотрудников</option>
                         }
                     </select>
-                    <div class="form-text text-muted" id="employeesEmptyNoteManage" style="display:none">Подходящие ФИО отсутствуют</div>
-                    <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                    <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                            <label for="departments" class="form-label">
-                                <i class="fas fa-building me-1"></i>Отделы
-                            </label>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-select-group">
+                    <label for="departments" class="form-label">
+                        <i class="fas fa-building"></i>Отделы
+                    </label>
                     <select class="form-select" id="departments" multiple size="3">
                         @if (Model.Departments.Any())
                         {
@@ -94,12 +112,14 @@
                             <option disabled>Нет доступных отделов</option>
                         }
                     </select>
-                    <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                    <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                            <label for="positions" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Должности
-                            </label>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="search-select-group">
+                    <label for="positions" class="form-label">
+                        <i class="fas fa-user-tie"></i>Должности
+                    </label>
                     <select class="form-select" id="positions" multiple size="3">
                         @if (Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Any())
                         {
@@ -113,36 +133,40 @@
                             <option disabled>Нет доступных должностей</option>
                         }
                     </select>
-                    <div class="form-text text-muted" id="positionsEmptyNoteManage" style="display:none">Подходящие должности отсутствуют</div>
-                    <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                    <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                 </div>
             </div>
+        </div>
+        
+        <div class="search-actions">
+            <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger w-100">
+                <i class="fas fa-times"></i>Сброс фильтров
+            </button>
         </div>
     </div>
     
 
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <h5 class="mb-0">Список сотрудников (@Model.Employees.Count())</h5>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <select class="form-select" id="departmentsPerPage" style="width: auto;">
-                        <option value="1">1 отдел</option>
-                        <option value="2">2 отдела</option>
-                        <option value="3">3 отдела</option>
-                        <option value="4">4 отдела</option>
-                        <option value="5">5 отделов</option>
-                        <option value="0" selected>Все отделы</option>
-                    </select>
-                    <button type="button" id="printBtn" class="btn btn-outline-primary">
-                        <i class="fas fa-print me-1"></i>Печать
-                    </button>
-                    <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger">
-                        <i class="fas fa-times me-1"></i>Сброс фильтров
-                    </button>
-                </div>
+    <div class="search-results-header">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <select class="form-select" id="departmentsPerPage" style="width: auto; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                    <option value="1" style="color: #333; background: white;">1 отдел</option>
+                    <option value="2" style="color: #333; background: white;">2 отдела</option>
+                    <option value="3" style="color: #333; background: white;">3 отдела</option>
+                    <option value="4" style="color: #333; background: white;">4 отдела</option>
+                    <option value="5" style="color: #333; background: white;">5 отделов</option>
+                    <option value="0" selected style="color: #333; background: white;">Все отделы</option>
+                </select>
+                <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                    <i class="fas fa-print"></i>Печать
+                </button>
             </div>
         </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body p-0">
         <div class="card-body p-0">
             <div id="employeesTable">
                             @{
@@ -155,21 +179,21 @@
                                         <span class="department-name-badge">@departmentGroup.Key</span>
                                     </div>
 
-                                    <table class="employees-table">
-                                        <thead>
+                                    <table id="employeesTable" class="table mb-0">
+                                        <thead class="table-dark sticky-header">
                                             <tr>
-                                                <th style="width: 30%;">Должность / ФИО</th>
-                                                <th style="width: 15%;">Городской номер</th>
-                                                <th style="width: 15%;">Местный номер</th>
-                                                <th style="width: 20%;">Email</th>
-                                                <th style="width: 20%;">Действия</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Местный номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
+                                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach (var employee in departmentGroup)
                                             {
-                                                <tr>
-                                                    <td class="employee-name">
+                                                <tr data-department-id="@employee.DepartmentId">
+                                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                         @if (!string.IsNullOrEmpty(employee.PositionDescription))
                                                         {
                                                             <span class="position-badge @(employee.IsHeadOfDepartment ? "position-head" : "position-employee")">
@@ -185,16 +209,16 @@
                                                             <span class="text-muted fst-italic">-</span>
                                                         }
                                                     </td>
-                                                    <td class="phone-number">@(employee.CityPhone ?? "Не указано")</td>
-                                                    <td class="phone-number">@(employee.LocalPhone ?? "Не указано")</td>
-                                                    <td class="phone-number">@(employee.Email ?? "Не указано")</td>
+                                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.CityPhone ?? "Не указано")</td>
+                                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.Email ?? "Не указано")</td>
                                                     <td class="text-center">
-                                                        <div class="btn-group" role="group">
-                                                            <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
-                                                                <i class="fas fa-edit"></i>
+                                                        <div class="d-flex gap-2 justify-content-center">
+                                                            <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-edit me-1"></i>Изменить
                                                             </a>
-                                                            <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                                                <i class="fas fa-trash"></i>
+                                                            <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-danger">
+                                                                <i class="fas fa-trash me-1"></i>Удалить
                                                             </a>
                                                         </div>
                                                     </td>
@@ -252,23 +276,22 @@
     </div>
 </div>
 
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('search');
-        const phoneSearchInput = document.getElementById('phoneSearch');
-        const positionSearchInput = document.getElementById('positionSearch');
-        const emailSearchInput = document.getElementById('emailSearch');
-        const departmentSearchInput = document.getElementById('departmentSearch');
-        const employeesSelect = document.getElementById('employees');
-        const departmentsSelect = document.getElementById('departments');
-        const positionsSelect = document.getElementById('positions');
-        const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
-        const tbody = document.getElementById('employeesTable');
-        
-        let typingTimer;
-
-        function performSearch() {
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const employeesSelect = document.getElementById('employees');
+    const departmentsSelect = document.getElementById('departments');
+    const positionsSelect = document.getElementById('positions');
+    const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
+    const phoneSearchInput = document.getElementById('phoneSearch');
+    const positionSearchInput = document.getElementById('positionSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
+    const departmentSearchInput = document.getElementById('departmentSearch');
+    const tbody = document.getElementById('employeesTable');
+    
+    let typingTimer;
+    
+    function performSearch() {
             const searchTerm = searchInput.value;
             const phoneSearch = phoneSearchInput.value;
             const positionSearch = positionSearchInput.value;
@@ -299,7 +322,7 @@
                 .then(data => {
                     if (data.employees && data.employees.length > 0) {
                         const grouped = data.employees.reduce((groups, emp) => {
-                            const dept = emp.departmentName;
+                            const dept = emp.DepartmentName;
                             if (!groups[dept]) groups[dept] = [];
                             groups[dept].push(emp);
                             return groups;
@@ -317,46 +340,46 @@
                                         <span class="department-name-badge">${deptName}</span>
                                     </div>
 
-                                    <table class="employees-table">
-                                        <thead>
+                                    <table id="employeesTable" class="table mb-0">
+                                        <thead class="table-dark sticky-header">
                                             <tr>
-                                                <th style="width: 30%;">Должность / ФИО</th>
-                                                <th style="width: 15%;">Городской номер</th>
-                                                <th style="width: 15%;">Местный номер</th>
-                                                <th style="width: 20%;">Email</th>
-                                                <th style="width: 20%;">Действия</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Местный номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
+                                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                             `;
                             grouped[deptName].forEach(emp => {
                                 let positionBadge = '';
-                                if (emp.positionDescription) {
-                                    const isHead = emp.isHeadOfDepartment;
+                                if (emp.PositionDescription) {
+                                    const isHead = emp.IsHeadOfDepartment;
                                     const badgeClass = isHead ? 'position-head' : 'position-employee';
                                     
-                                    positionBadge = `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>`;
-                                    if (emp.fullName && emp.fullName !== '-') {
-                                        positionBadge += `<strong>${emp.fullName}</strong>`;
+                                    positionBadge = `<span class="position-badge ${badgeClass}">${emp.PositionDescription}</span>`;
+                                    if (emp.FullName && emp.FullName !== '-') {
+                                        positionBadge += `<strong>${emp.FullName}</strong>`;
                                     }
                                 } else {
                                     positionBadge = '<span class="text-muted fst-italic">-</span>';
                                 }
 
                                 html += `
-                                            <tr>
+                                            <tr data-department-id="${emp.DepartmentId}">
                                                 <td class="employee-name">
                                                     ${positionBadge}
                                                 </td>
-                                                <td class="phone-number">${emp.cityPhone || 'Не указано'}</td>
-                                                <td class="phone-number">${emp.localPhone || 'Не указано'}</td>
-                                                <td class="phone-number">${emp.email || 'Не указано'}</td>
+                                                <td class="phone-number">${emp.CityPhone || 'Не указано'}</td>
+                                                <td class="phone-number">${emp.LocalPhone || 'Не указано'}</td>
+                                                <td class="phone-number">${emp.Email || 'Не указано'}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group" role="group">
-                                                        <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
+                                                        <a href="/Employees/Edit?id=${emp.Id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="/Employees/Delete?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
+                                                        <a href="/Employees/Delete?id=${emp.Id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </div>
@@ -457,7 +480,7 @@
                     .then(data => {
                         if (data.employees && data.employees.length > 0) {
                             const availablePositions = [...new Set(data.employees
-                                .map(emp => emp.positionDescription)
+                                .map(emp => emp.PositionDescription)
                                 .filter(pos => pos && pos.trim() !== '')
                             )].sort();
                             
@@ -483,86 +506,10 @@
                 Array.from(employeesSelect.options).forEach(option => {
                     option.style.display = '';
                 });
-                const note = document.getElementById('employeesEmptyNoteManage');
-                if (note) note.style.display = 'none';
-            } else {
-                const params = new URLSearchParams();
-                selectedDepartments.forEach(id => params.append('departments', id));
-                
-                fetch(`/api/search?${params.toString()}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.employees && data.employees.length > 0) {
-                            const availableEmployees = [...new Set(data.employees
-                                .map(emp => emp.fullName)
-                                .filter(name => name && name.trim() !== '')
-                            )].sort();
-                            
-                            Array.from(employeesSelect.options).forEach(option => {
-                                if (option.value === '') {
-                                    option.style.display = ''; 
-                                } else {
-                                    option.style.display = availableEmployees.includes(option.value) ? '' : 'none';
-                                }
-                            });
-                            const hasAny = availableEmployees.length > 0;
-                            const note = document.getElementById('employeesEmptyNoteManage');
-                            if (note) note.style.display = hasAny ? 'none' : 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при обновлении списка сотрудников:', error);
-                    });
-            }
         }
 
-        employeesSelect.addEventListener('change', performSearch);
-        departmentsSelect.addEventListener('change', function() {
-            updatePositionsList();
-            updateEmployeesList();
-            performSearch();
-        });
         positionsSelect.addEventListener('change', performSearch);
-        if (departmentSearchInput) {
-            departmentSearchInput.addEventListener('input', function () {
-                clearTimeout(typingTimer);
-                typingTimer = setTimeout(performSearch, 300);
-            });
-        }
         
-        function resetFilters() {
-            searchInput.value = '';
-            phoneSearchInput.value = '';
-            positionSearchInput.value = '';
-            emailSearchInput.value = '';
-
-            Array.from(employeesSelect.options).forEach(option => option.selected = false);
-            Array.from(departmentsSelect.options).forEach(option => option.selected = false);
-            Array.from(positionsSelect.options).forEach(option => option.selected = false);
-
-            departmentsPerPageSelect.value = '0';
-            if (departmentSearchInput) departmentSearchInput.value = '';
-
-            const paginationNavLocal = document.getElementById('paginationNav');
-            if (paginationNavLocal) {
-                paginationNavLocal.style.display = 'none';
-            }
-            const paginationInfo = document.getElementById('paginationInfo');
-            if (paginationInfo) {
-                paginationInfo.textContent = '';
-            }
-            const paginationInfoSecond = document.querySelector('#paginationInfo + .d-block.d-md-inline');
-            if (paginationInfoSecond) {
-                paginationInfoSecond.textContent = '';
-            }
-
-            performSearch();
-        }
-
-        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-        if (resetFiltersBtn) {
-            resetFiltersBtn.addEventListener('click', resetFilters);
-        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const departmentsPerPageFromUrl = urlParams.get('departmentsPerPage');
@@ -663,10 +610,428 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const employeesSelect = document.getElementById('employees');
+    const departmentsSelect = document.getElementById('departments');
+    const positionsSelect = document.getElementById('positions');
+    const departmentsPerPageSelect = document.getElementById('departmentsPerPage');
+    const phoneSearchInput = document.getElementById('phoneSearch');
+    const positionSearchInput = document.getElementById('positionSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
+    const departmentSearchInput = document.getElementById('departmentSearch');
+    const tbody = document.getElementById('employeesTable');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    
+    let typingTimer;
+    
+    function performSearch() {
+        const searchTerm = searchInput.value;
+        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
+        const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
+        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
+        const departmentsPerPage = departmentsPerPageSelect.value;
+        const phoneSearch = phoneSearchInput.value;
+        const positionSearch = positionSearchInput.value;
+        const emailSearch = emailSearchInput.value;
+        const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
+
+        tbody.innerHTML = `<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>`;
+
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (phoneSearch) params.append('phoneSearch', phoneSearch);
+        if (positionSearch) params.append('positionSearch', positionSearch);
+        if (emailSearch) params.append('emailSearch', emailSearch);
+        if (departmentSearch) params.append('departmentSearch', departmentSearch);
+        selectedDepartments.forEach(id => params.append('departments', id));
+        selectedEmployees.forEach(emp => params.append('selectedEmployees', emp));
+        selectedPositions.forEach(pos => params.append('positions', pos));
+        if (departmentsPerPage) params.append('departmentsPerPage', departmentsPerPage);
+        
+        fetch(`/api/search?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.employees && data.employees.length > 0) {
+                    const grouped = data.employees.reduce((groups, emp) => {
+                        const dept = emp.departmentName;
+                        if (!groups[dept]) groups[dept] = [];
+                        groups[dept].push(emp);
+                        return groups;
+                    }, {});
+
+                    let html = '';
+                    Object.keys(grouped).sort().forEach(deptName => {
+                        html += `
+                            <div class="department-section">
+                                <div class="department-header">
+                                    <span class="department-name-badge">${deptName}</span>
+                                </div>
+
+                                <table id="employeesTable" class="table mb-0">
+                                    <thead class="table-dark sticky-header">
+                                        <tr>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Местный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        grouped[deptName].forEach(emp => {
+                            let positionBadge = '';
+                            if (emp.positionDescription) {
+                                const isHead = emp.isHeadOfDepartment;
+                                const badgeClass = isHead ? 'position-head' : 'position-employee';
+                                
+                                positionBadge = `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>`;
+                                if (emp.fullName && emp.fullName !== '-') {
+                                    positionBadge += `<strong>${emp.fullName}</strong>`;
+                                }
+                            } else {
+                                positionBadge = '<span class="text-muted fst-italic">-</span>';
+                            }
+
+                            html += `
+                                        <tr data-department-id="${emp.departmentId}">
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                                ${positionBadge}
+                                            </td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.cityPhone || 'Не указано'}</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.email || 'Не указано'}</td>
+                                            <td class="text-center">
+                                                <div class="d-flex gap-2 justify-content-center">
+                                                    <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary" title="Редактировать">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="/Employees/Delete?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                            `;
+                        });
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+
+                    const badgeElement = document.querySelector('.search-results-header .badge');
+                    if (badgeElement) {
+                        badgeElement.textContent = data.employees.length;
+                    }
+                    
+                    const headerElement = document.querySelector('.card-header h5');
+                    if (headerElement) {
+                        headerElement.textContent = `Список сотрудников (${data.employees.length})`;
+                    }
+                    
+                    const paginationNav = document.getElementById('paginationNav');
+                    if (paginationNav) {
+                        if (departmentsPerPage === '0') {
+                            paginationNav.style.display = 'none';
+                        } else {
+                            paginationNav.style.display = paginationNav.children.length > 0 ? 'block' : 'none';
+                        }
+                    }
+                    
+                } else {
+                    tbody.innerHTML = `<div class="text-center text-muted py-4">Сотрудники не найдены</div>`;
+
+                    const badgeElement = document.querySelector('.search-results-header .badge');
+                    if (badgeElement) {
+                        badgeElement.textContent = '0';
+                    }
+
+                    const headerElement = document.querySelector('.card-header h5');
+                    if (headerElement) {
+                        headerElement.textContent = 'Список сотрудников (0)';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка поиска:', error);
+                tbody.innerHTML = `<div class="text-center text-danger py-4">Ошибка при выполнении поиска</div>`;
+
+                const badgeElement = document.querySelector('.search-results-header .badge');
+                if (badgeElement) {
+                    badgeElement.textContent = '0';
+                }
+
+                const headerElement = document.querySelector('.card-header h5');
+                if (headerElement) {
+                    headerElement.textContent = 'Список сотрудников (0)';
+                }
+            });
+    }
+
+    function updateEmployeesList() {
+        const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
+
+        const currentSelected = Array.from(employeesSelect.selectedOptions).map(option => option.value);
+        
+        if (selectedDepartments.length === 0) {
+            employeesSelect.innerHTML = '';
+            const allEmployees = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).OrderBy(e => e.FullName).Select(e => e.FullName)));
+            allEmployees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee;
+                option.textContent = employee;
+                if (currentSelected.includes(employee)) {
+                    option.selected = true;
+                }
+                employeesSelect.appendChild(option);
+            });
+        } else {
+            const params = new URLSearchParams();
+            selectedDepartments.forEach(id => params.append('departments', id));
+            
+            fetch(`/api/search?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.employees && data.employees.length > 0) {
+                        const availableEmployees = [...new Set(data.employees
+                            .map(emp => emp.fullName)
+                            .filter(name => name && name.trim() !== '' && name.trim() !== '-')
+                        )].sort();
+
+                        employeesSelect.innerHTML = '';
+                        
+                        if (availableEmployees.length > 0) {
+                            availableEmployees.forEach(employee => {
+                                const option = document.createElement('option');
+                                option.value = employee;
+                                option.textContent = employee;
+                                if (currentSelected.includes(employee)) {
+                                    option.selected = true;
+                                }
+                                employeesSelect.appendChild(option);
+                            });
+                        } else {
+                            const placeholderOption = document.createElement('option');
+                            placeholderOption.value = '';
+                            placeholderOption.textContent = 'Нет сотрудников с ФИО в выбранных отделах';
+                            placeholderOption.disabled = true;
+                            placeholderOption.selected = false;
+                            placeholderOption.style.color = '#6c757d';
+                            placeholderOption.style.fontStyle = 'italic';
+                            placeholderOption.style.backgroundColor = 'transparent';
+                            placeholderOption.setAttribute('data-placeholder', 'true');
+                            employeesSelect.appendChild(placeholderOption);
+                        }
+                    } else {
+                        employeesSelect.innerHTML = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при обновлении списка сотрудников:', error);
+                    
+                    employeesSelect.innerHTML = '';
+                    
+                    const placeholderOption = document.createElement('option');
+                    placeholderOption.value = '';
+                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.disabled = true;
+                    placeholderOption.selected = false;
+                    placeholderOption.style.color = '#dc3545';
+                    placeholderOption.style.fontStyle = 'italic';
+                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                    placeholderOption.setAttribute('data-placeholder', 'true');
+                    employeesSelect.appendChild(placeholderOption);
+                });
+        }
+    }
+
+    function updatePositionsList() {
+        const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
+
+        const currentSelected = Array.from(positionsSelect.selectedOptions).map(option => option.value);
+        
+        if (selectedDepartments.length === 0) {
+            positionsSelect.innerHTML = '';
+            const allPositions = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.PositionDescription)).OrderBy(e => e.PositionDescription).Select(e => e.PositionDescription).Distinct()));
+            allPositions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position;
+                option.textContent = position;
+                if (currentSelected.includes(position)) {
+                    option.selected = true;
+                }
+                positionsSelect.appendChild(option);
+            });
+        } else {
+            const params = new URLSearchParams();
+            selectedDepartments.forEach(id => params.append('departments', id));
+            
+            fetch(`/api/search?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.employees && data.employees.length > 0) {
+                        const availablePositions = [...new Set(data.employees
+                            .map(emp => emp.positionDescription)
+                            .filter(pos => pos && pos.trim() !== '' && pos.trim() !== '-')
+                        )].sort();
+
+                        positionsSelect.innerHTML = '';
+                        
+                        if (availablePositions.length > 0) {
+                            availablePositions.forEach(position => {
+                                const option = document.createElement('option');
+                                option.value = position;
+                                option.textContent = position;
+                                if (currentSelected.includes(position)) {
+                                    option.selected = true;
+                                }
+                                positionsSelect.appendChild(option);
+                            });
+                        } else {
+                            const placeholderOption = document.createElement('option');
+                            placeholderOption.value = '';
+                            placeholderOption.textContent = 'Нет должностей в выбранных отделах';
+                            placeholderOption.disabled = true;
+                            placeholderOption.selected = false;
+                            placeholderOption.style.color = '#6c757d';
+                            placeholderOption.style.fontStyle = 'italic';
+                            placeholderOption.style.backgroundColor = 'transparent';
+                            placeholderOption.setAttribute('data-placeholder', 'true');
+                            positionsSelect.appendChild(placeholderOption);
+                        }
+                    } else {
+                        positionsSelect.innerHTML = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при обновлении списка должностей:', error);
+
+                    positionsSelect.innerHTML = '';
+                    
+                    const placeholderOption = document.createElement('option');
+                    placeholderOption.value = '';
+                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.disabled = true;
+                    placeholderOption.selected = false;
+                    placeholderOption.style.color = '#dc3545';
+                    placeholderOption.style.fontStyle = 'italic';
+                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                    placeholderOption.setAttribute('data-placeholder', 'true');
+                    positionsSelect.appendChild(placeholderOption);
+                });
+        }
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        phoneSearchInput.value = '';
+        positionSearchInput.value = '';
+        emailSearchInput.value = '';
+        if (departmentSearchInput) departmentSearchInput.value = '';
+        
+        Array.from(employeesSelect.options).forEach(option => option.selected = false);
+        Array.from(departmentsSelect.options).forEach(option => option.selected = false);
+        Array.from(positionsSelect.options).forEach(option => option.selected = false);
+
+        departmentsPerPageSelect.value = '0';
+
+        const paginationNav = document.getElementById('paginationNav');
+        if (paginationNav) {
+            paginationNav.style.display = 'none';
+        }
+
+        updateEmployeesList();
+        updatePositionsList();
+        performSearch();
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    phoneSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    positionSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    emailSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    if (departmentSearchInput) {
+        departmentSearchInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                syncDepartmentFilter();
+                updateEmployeesList();
+                updatePositionsList();
+                performSearch();
+            }, 300);
+        });
+    }
+    
+    function syncDepartmentFilter() {
+        const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
+        if (departmentSearch) {
+            const matchingDepartments = Array.from(departmentsSelect.options).filter(option => 
+                option.value && option.text.toLowerCase().includes(departmentSearch.toLowerCase())
+            );
+            
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+
+            matchingDepartments.forEach(option => {
+                option.selected = true;
+            });
+        }
+    }
+
+    employeesSelect.addEventListener('change', function() {
+        Array.from(employeesSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    departmentsSelect.addEventListener('change', function() {
+        updateEmployeesList();
+        updatePositionsList();
+        performSearch();
+    });
+
+    positionsSelect.addEventListener('change', function() {
+        Array.from(positionsSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    departmentsPerPageSelect.addEventListener('change', function() {
+        performSearch();
+    });
+
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+
     const printBtn = document.getElementById('printBtn');
     if (printBtn) {
         printBtn.addEventListener('click', function() {
-            console.log('Print button clicked');
             const search = document.getElementById('search')?.value || '';
             const phoneSearch = document.getElementById('phoneSearch')?.value || '';
             const departments = Array.from(document.getElementById('departments')?.selectedOptions || [])
@@ -694,8 +1059,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '@Url.Page("/Print/PrintEmployees")' + (params.toString() ? '?' + params.toString() : '');
             window.open(url, '_blank');
         });
-    } else {
-        console.log('Print button not found!');
     }
 });
 </script>

@@ -1,25 +1,32 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Identity;
 using EmployeeDirectory.Services;
 using EmployeeDirectory.Models;
 
 namespace EmployeeDirectory.Pages.Employees
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator,Manager,DepartmentEditor")]
     public class ManageModel : PageModel
     {
         private readonly IEmployeeService _employeeService;
         private readonly IDepartmentService _departmentService;
         private readonly IPositionService _positionService;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDepartmentEditorService _editorService;
 
         public ManageModel(
             IEmployeeService employeeService,
             IDepartmentService departmentService,
-            IPositionService positionService)
+            IPositionService positionService,
+            UserManager<ApplicationUser> userManager,
+            IDepartmentEditorService editorService)
         {
             _employeeService = employeeService;
             _departmentService = departmentService;
             _positionService = positionService;
+            _userManager = userManager;
+            _editorService = editorService;
         }
 
         public IEnumerable<Employee> Employees { get; set; } = new List<Employee>();
@@ -36,8 +43,23 @@ namespace EmployeeDirectory.Pages.Employees
             PageNumber = pageNumber;
             DepartmentsPerPage = departmentsPerPage;
 
-            var allEmployees = await _employeeService.GetAllEmployeesAsync();
-            Departments = await _departmentService.GetAllDepartmentsAsync();
+            var currentUser = await _userManager.GetUserAsync(User);
+            IEnumerable<Employee> allEmployees;
+            IEnumerable<Department> allDepartments;
+
+            if (currentUser != null && await _editorService.IsDepartmentEditorAsync(currentUser.Id))
+            {
+                allEmployees = await _employeeService.GetEmployeesByDepartmentAsync(currentUser.DepartmentId ?? 0);
+                allDepartments = new List<Department> { currentUser.Department! };
+            }
+            else
+            {
+                allEmployees = await _employeeService.GetAllEmployeesAsync();
+                allDepartments = await _departmentService.GetAllDepartmentsAsync();
+            }
+
+            Employees = allEmployees;
+            Departments = allDepartments;
             Positions = await _positionService.GetAllPositionsAsync();
 
             TotalEmployees = allEmployees.Count();

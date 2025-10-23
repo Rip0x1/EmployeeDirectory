@@ -63,6 +63,11 @@ namespace EmployeeDirectory.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (Input.Role == "DepartmentEditor" && !Input.DepartmentId.HasValue)
+            {
+                ModelState.AddModelError("Input.DepartmentId", "Для редактора отдела необходимо выбрать отдел");
+            }
+
             if (!ModelState.IsValid)
             {
                 var departments = await _departmentService.GetAllDepartmentsAsync();

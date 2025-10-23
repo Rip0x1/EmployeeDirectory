@@ -1,0 +1,79 @@
+@page
+@model EmployeeDirectory.Pages.Departments.DeleteEditorModel
+@{
+    ViewData["Title"] = "Удалить редактора";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-times me-2"></i>Удалить редактора</h2>
+                <a asp-page="/Departments/ManageEditors" asp-route-departmentId="@Model.DepartmentId" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                </a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Подтверждение удаления</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Внимание!</strong> Вы собираетесь удалить редактора отдела. Это действие нельзя отменить.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-user me-2"></i>Логин
+                                </label>
+                                <input type="text" class="form-control" value="@Model.Editor.UserName" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card me-2"></i>Полное имя
+                                </label>
+                                <input type="text" class="form-control" value="@Model.Editor.FullName" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-building me-2"></i>Отдел
+                                </label>
+                                <input type="text" class="form-control" value="@Model.DepartmentName" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar me-2"></i>Дата создания
+                                </label>
+                                <input type="text" class="form-control" value="@Model.Editor.CreatedAt.ToString("dd.MM.yyyy")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Удалить редактора
+                            </button>
+                            <a asp-page="/Departments/ManageEditors" asp-route-departmentId="@Model.DepartmentId" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,9 +8,14 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2><i class="fas fa-user-shield me-2"></i>Управление пользователями</h2>
-        <a asp-page="/Users/Create" asp-route-returnUrl="/Users/Manage" class="btn btn-success">
-            <i class="fas fa-plus me-1"></i>Добавить пользователя
-        </a>
+        <div class="d-flex gap-2">
+            <a asp-page="/Users/Create" asp-route-returnUrl="/Users/Manage" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Добавить пользователя
+            </a>
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+            </a>
+        </div>
     </div>
 
     @if (TempData["Success"] != null)
@@ -52,18 +57,22 @@
                                     {
                                         <span class="badge bg-warning text-dark">Начальник отдела</span>
                                     }
+                                    else if (user.Roles.Contains("DepartmentEditor"))
+                                    {
+                                        <span class="badge bg-info">Редактор отдела</span>
+                                    }
                                     else
                                     {
                                         <span class="badge bg-secondary">Пользователь</span>
                                     }
                                 </td>
                                 <td class="text-center" style="">
-                                    <div class="btn-group" role="group">
-                                        <a asp-page="/Users/Edit" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-warning" title="Редактировать">
-                                            <i class="fas fa-edit"></i>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <a asp-page="/Users/Edit" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit me-1"></i>Изменить
                                         </a>
-                                        <a asp-page="/Users/Delete" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                            <i class="fas fa-trash"></i>
+                                        <a asp-page="/Users/Delete" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash me-1"></i>Удалить
                                         </a>
                                     </div>
                                 </td>

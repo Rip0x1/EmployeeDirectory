@@ -8,24 +8,27 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EmployeeDirectory.Pages.Employees
 {
-    [Authorize(Roles = "Manager,Administrator")]
+    [Authorize(Roles = "Manager,Administrator,DepartmentEditor")]
     public class CreateModel : PageModel
     {
         private readonly IEmployeeService _employeeService;
         private readonly IDepartmentService _departmentService;
         private readonly IPositionService _positionService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDepartmentEditorService _editorService;
 
         public CreateModel(
             IEmployeeService employeeService,
             IDepartmentService departmentService,
             IPositionService positionService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IDepartmentEditorService editorService)
         {
             _employeeService = employeeService;
             _departmentService = departmentService;
             _positionService = positionService;
             _userManager = userManager;
+            _editorService = editorService;
         }
 
         [BindProperty]
@@ -52,9 +55,8 @@ namespace EmployeeDirectory.Pages.Employees
             }
 
             var departments = await _departmentService.GetAllDepartmentsAsync();
-            var positions = await _positionService.GetAllPositionsAsync();
 
-            if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
+            if ((User.IsInRole("Manager") || User.IsInRole("DepartmentEditor")) && !User.IsInRole("Administrator"))
             {
                 if (user.DepartmentId == null)
                 {
@@ -63,6 +65,8 @@ namespace EmployeeDirectory.Pages.Employees
                 }
                 departments = departments.Where(d => d.Id == user.DepartmentId.Value);
             }
+
+            var positions = await _positionService.GetAllPositionsAsync();
 
             Departments = new SelectList(departments, "Id", "Name");
             Positions = new SelectList(positions, "Id", "Name");
@@ -95,17 +99,17 @@ namespace EmployeeDirectory.Pages.Employees
             }
             
             ModelState.Remove("Employee.Department");
-            ModelState.Remove("Employee.Position");
 
             if (!ModelState.IsValid)
             {
                 var departments = await _departmentService.GetAllDepartmentsAsync();
-                var positions = await _positionService.GetAllPositionsAsync();
 
                 if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
                 {
                     departments = departments.Where(d => d.Id == user.DepartmentId.Value);
                 }
+
+                var positions = await _positionService.GetAllPositionsAsync();
 
                 Departments = new SelectList(departments, "Id", "Name");
                 Positions = new SelectList(positions, "Id", "Name");
@@ -125,8 +129,8 @@ namespace EmployeeDirectory.Pages.Employees
                 {
                     Employee.DepartmentId = DepartmentId;
                 }
-                Employee.PositionId = null; 
 
+                Employee.PositionId = PositionId;
                 Employee.CreatedAt = DateTime.UtcNow;
                 await _employeeService.AddEmployeeAsync(Employee);
                 
@@ -150,12 +154,13 @@ namespace EmployeeDirectory.Pages.Employees
                 TempData["Error"] = $"Ошибка при добавлении сотрудника: {ex.Message}";
                 
                 var departments = await _departmentService.GetAllDepartmentsAsync();
-                var positions = await _positionService.GetAllPositionsAsync();
 
                 if (User.IsInRole("Manager") && !User.IsInRole("Administrator"))
                 {
                     departments = departments.Where(d => d.Id == user.DepartmentId.Value);
                 }
+
+                var positions = await _positionService.GetAllPositionsAsync();
 
                 Departments = new SelectList(departments, "Id", "Name");
                 Positions = new SelectList(positions, "Id", "Name");

@@ -31,52 +31,66 @@
             
             <h1 class="mb-4">Справочник сотрудников</h1>
             
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0"><i class="fas fa-search me-2"></i>Поиск и фильтрация</h6>
+            <div class="search-filters-container">
+                <div class="search-filters-header">
+                    <h6><i class="fas fa-search"></i>Поиск и фильтрация</h6>
                 </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-input-group">
                             <label for="search" class="form-label">
-                                <i class="fas fa-search me-1"></i>Поиск по ФИО
+                                <i class="fas fa-search"></i>Поиск по ФИО
                             </label>
                             <input type="text" class="form-control" id="search" name="search" 
                                    value="@Model.SearchTerm" placeholder="Введите ФИО...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-input-group">
                             <label for="phoneSearch" class="form-label">
-                                <i class="fas fa-phone me-1"></i>Поиск по телефону
+                                <i class="fas fa-phone"></i>Поиск по телефону
                             </label>
                             <input type="text" class="form-control" id="phoneSearch" name="phoneSearch" 
                                    placeholder="Городской или местный номер...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-input-group">
                             <label for="positionSearch" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Поиск по должности
+                                <i class="fas fa-user-tie"></i>Поиск по должности
                             </label>
                             <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
                                    placeholder="Введите должность...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                </div>
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-6">
+                        <div class="search-input-group">
                             <label for="emailSearch" class="form-label">
-                                <i class="fas fa-envelope me-1"></i>Поиск по Email
+                                <i class="fas fa-envelope"></i>Поиск по Email
                             </label>
                             <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
                                    placeholder="Введите email...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-6">
+                        <div class="search-input-group">
                             <label for="departmentSearch" class="form-label">
-                                <i class="fas fa-building me-1"></i>Поиск по отделу
+                                <i class="fas fa-building"></i>Поиск по отделу
                             </label>
                             <input type="text" class="form-control" id="departmentSearch" placeholder="Введите название отдела" />
                         </div>
                     </div>
-                    
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                </div>
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-select-group">
                             <label for="employees" class="form-label">
-                                <i class="fas fa-users me-1"></i>ФИО
+                                <i class="fas fa-users"></i>ФИО
                             </label>
                             <select class="form-select" id="employees" name="employees" multiple size="3">
                                 @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
@@ -91,12 +105,13 @@
                                     <option disabled>Нет доступных сотрудников</option>
                                 }
                             </select>
-                            <div class="form-text text-muted" id="employeesEmptyNote" style="display:none">Подходящие ФИО отсутствуют</div>
-                            <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-select-group">
                             <label for="departments" class="form-label">
-                                <i class="fas fa-building me-1"></i>Отделы
+                                <i class="fas fa-building"></i>Отделы
                             </label>
                             <select class="form-select" id="departments" name="departments" multiple size="3">
                                 @if (Model.Departments.Any())
@@ -111,11 +126,13 @@
                                     <option disabled>Нет доступных отделов</option>
                                 }
                             </select>
-                            <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-select-group">
                             <label for="positions" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Должности
+                                <i class="fas fa-user-tie"></i>Должности
                             </label>
                             <select class="form-select" id="positions" name="positions" multiple size="3">
                                 @if (Model.Employees.Select(e => !string.IsNullOrEmpty(e.PositionDescription) ? e.PositionDescription : e.Position?.Name).Where(p => !string.IsNullOrEmpty(p)).Any())
@@ -130,35 +147,39 @@
                                     <option disabled>Нет доступных должностей</option>
                                 }
                             </select>
-                            <div class="form-text text-muted" id="positionsEmptyNote" style="display:none">Подходящие должности отсутствуют</div>
-                            <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                         </div>
                     </div>
                 </div>
-</div>
+                
+                <div class="search-actions">
+                    <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-times"></i>Сброс фильтров
+                    </button>
+                </div>
+            </div>
            
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <h5 class="mb-0">Список сотрудников (@Model.Employees.Count())</h5>
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <select class="form-select" id="departmentsPerPage" style="width: auto;">
-                                <option value="1">1 отдел</option>
-                                <option value="2">2 отдела</option>
-                                <option value="3">3 отдела</option>
-                                <option value="4">4 отдела</option>
-                                <option value="5">5 отделов</option>
-                                <option value="0" selected>Все отделы</option>
-                            </select>
-                            <button type="button" id="printBtn" class="btn btn-outline-primary">
-                                <i class="fas fa-print me-1"></i>Печать
-                            </button>
-                            <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger">
-                                <i class="fas fa-times me-1"></i>Сброс фильтров
-                            </button>
-                        </div>
+            <div class="search-results-header">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <select class="form-select" id="departmentsPerPage" style="width: auto; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                            <option value="1" style="color: #333; background: white;">1 отдел</option>
+                            <option value="2" style="color: #333; background: white;">2 отдела</option>
+                            <option value="3" style="color: #333; background: white;">3 отдела</option>
+                            <option value="4" style="color: #333; background: white;">4 отдела</option>
+                            <option value="5" style="color: #333; background: white;">5 отделов</option>
+                            <option value="0" selected style="color: #333; background: white;">Все отделы</option>
+                        </select>
+                        <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                            <i class="fas fa-print"></i>Печать
+                        </button>
                     </div>
                 </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body p-0">
                 <div class="card-body p-0">
                     <div id="employeesTable">
                         @{
@@ -171,24 +192,24 @@
                                     <span class="department-name-badge">@departmentGroup.Key</span>
                                 </div>
 
-                                <table class="employees-table">
-                                    <thead>
+                                <table class="table mb-0">
+                                    <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th style="width: 40%;">Должность / ФИО</th>
-                                            <th style="width: 20%;">Городской номер</th>
-                                            <th style="width: 20%;">Местный номер</th>
-                                            <th style="width: 20%;">Email</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Местный номер</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var employee in departmentGroup)
                                         {
                                             <tr>
-                                                <td class="employee-name">
+                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                     @{
                                                         var positionText = !string.IsNullOrEmpty(employee.PositionDescription) 
-                                                            ? employee.PositionDescription 
-                                                            : employee.Position?.Name;
+                                                        ? employee.PositionDescription 
+                                                        : employee.Position?.Name;
                                                     }
                                                     @if (!string.IsNullOrEmpty(positionText))
                                                     {
@@ -205,13 +226,13 @@
                                                         <span class="text-muted fst-italic">-</span>
                                                     }
                                                 </td>
-                                                <td class="phone-number">
+                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                     @(employee.CityPhone ?? "Не указано")
                                                 </td>
-                                                <td class="phone-number">
+                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                     @(employee.LocalPhone ?? "Не указано")
                                                 </td>
-                                                <td class="phone-number">
+                                                <td class="text-center">
                                                     @(employee.Email ?? "Не указано")
                                                 </td>
                                             </tr>
@@ -910,13 +931,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <span class="department-name-badge">${deptName}</span>
 </div>
 
-                                <table class="employees-table">
-                                    <thead>
+                                <table class="table mb-0">
+                                    <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th style="width: 40%;">Должность / ФИО</th>
-                                            <th style="width: 20%;">Городской номер</th>
-                                            <th style="width: 20%;">Местный номер</th>
-                                            <th style="width: 20%;">Email</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Местный номер</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -965,6 +986,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const totalEmployees = departmentsToShow.reduce((total, deptName) => {
                         return total + (grouped[deptName] ? grouped[deptName].length : 0);
                     }, 0);
+                    
+                    const badgeElement = document.querySelector('.search-results-header .badge');
+                    if (badgeElement) {
+                        badgeElement.textContent = totalEmployees;
+                    }
+                    
                     const headerElement = document.querySelector('.card-header h5');
                     if (headerElement) {
                         headerElement.textContent = `Список сотрудников (${totalEmployees})`;
@@ -982,6 +1009,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         tbody.innerHTML = `<div class="text-center text-muted py-4">Сотрудники не найдены</div>`;
                         
+                        const badgeElement = document.querySelector('.search-results-header .badge');
+                        if (badgeElement) {
+                            badgeElement.textContent = '0';
+                        }
+                        
                         const headerElement = document.querySelector('.card-header h5');
                         if (headerElement) {
                             headerElement.textContent = 'Список сотрудников (0)';
@@ -992,6 +1024,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Ошибка поиска:', error);
                 tbody.innerHTML = `<div class="text-center text-danger py-4">Ошибка при выполнении поиска</div>`;
                 
+                const badgeElement = document.querySelector('.search-results-header .badge');
+                if (badgeElement) {
+                    badgeElement.textContent = '0';
+                }
+                
                 const headerElement = document.querySelector('.card-header h5');
                 if (headerElement) {
                     headerElement.textContent = 'Список сотрудников (0)';
@@ -1001,23 +1038,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
+        this.searchTimeout = setTimeout(() => {
+            updateEmployeesList();
+            updatePositionsList();
+            performSearch();
+        }, 300);
     });
 
     phoneSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
+        this.searchTimeout = setTimeout(() => {
+            updateEmployeesList();
+            updatePositionsList();
+            performSearch();
+        }, 300);
     });
 
     function updatePositionsList() {
         const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
         
         if (selectedDepartments.length === 0) {
-            Array.from(positionsSelect.options).forEach(option => {
-                option.style.display = '';
+            positionsSelect.innerHTML = '';
+            const allPositions = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.PositionDescription)).OrderBy(e => e.PositionDescription).Select(e => e.PositionDescription).Distinct()));
+            allPositions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position;
+                option.textContent = position;
+                positionsSelect.appendChild(option);
             });
-            const note = document.getElementById('positionsEmptyNote');
-            if (note) note.style.display = 'none';
         } else {
             const params = new URLSearchParams();
             selectedDepartments.forEach(id => params.append('departments', id));
@@ -1026,25 +1074,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.employees && data.employees.length > 0) {
+                        const allPositions = data.employees.map(emp => emp.positionDescription);
                         const availablePositions = [...new Set(data.employees
                             .map(emp => emp.positionDescription)
-                            .filter(pos => pos && pos.trim() !== '')
+                            .filter(pos => pos && pos.trim() !== '' && pos.trim() !== '-')
                         )].sort();
+                            
+                        positionsSelect.innerHTML = '';
                         
-                        Array.from(positionsSelect.options).forEach(option => {
-                            if (option.value === '') {
-                                option.style.display = '';
-                            } else {
-                                option.style.display = availablePositions.includes(option.value) ? '' : 'none';
-                            }
-                        });
+                        if (availablePositions.length > 0) {
+                            availablePositions.forEach(position => {
+                                const option = document.createElement('option');
+                                option.value = position;
+                                option.textContent = position;
+                                positionsSelect.appendChild(option);
+                            });
+                        } else {
+                            const placeholderOption = document.createElement('option');
+                            placeholderOption.value = '';
+                            placeholderOption.textContent = 'Нет должностей в выбранных отделах';
+                            placeholderOption.disabled = true;
+                            placeholderOption.selected = false;
+                            placeholderOption.style.color = '#6c757d';
+                            placeholderOption.style.fontStyle = 'italic';
+                            placeholderOption.style.backgroundColor = 'transparent';
+                            placeholderOption.setAttribute('data-placeholder', 'true');
+                            positionsSelect.appendChild(placeholderOption);
+                        }
                         const hasAny = availablePositions.length > 0;
-                        const note = document.getElementById('positionsEmptyNote');
-                        if (note) note.style.display = hasAny ? 'none' : 'block';
+                        
+                        updateEmployeeCounter();
+                    } else {
+                        positionsSelect.innerHTML = '';
+                        
+                        const placeholderOption = document.createElement('option');
+                        placeholderOption.value = '';
+                        placeholderOption.textContent = 'В выбранных отделах нет должностей';
+                        placeholderOption.disabled = true;
+                        placeholderOption.selected = false;
+                        placeholderOption.style.color = '#dc3545';
+                        placeholderOption.style.fontStyle = 'italic';
+                        placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                        placeholderOption.setAttribute('data-placeholder', 'true');
+                        positionsSelect.appendChild(placeholderOption);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка при обновлении списка должностей:', error);
+                    
+                    positionsSelect.innerHTML = '';
+                    
+                    const placeholderOption = document.createElement('option');
+                    placeholderOption.value = '';
+                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.disabled = true;
+                    placeholderOption.selected = false;
+                    placeholderOption.style.color = '#dc3545';
+                    placeholderOption.style.fontStyle = 'italic';
+                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                    placeholderOption.setAttribute('data-placeholder', 'true');
+                    positionsSelect.appendChild(placeholderOption);
                 });
         }
     }
@@ -1053,11 +1142,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
         
         if (selectedDepartments.length === 0) {
-            Array.from(employeesSelect.options).forEach(option => {
-                option.style.display = '';
+            employeesSelect.innerHTML = '';
+            const allEmployees = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).OrderBy(e => e.FullName).Select(e => e.FullName)));
+            allEmployees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee;
+                option.textContent = employee;
+                employeesSelect.appendChild(option);
             });
-                const note = document.getElementById('employeesEmptyNote');
-                if (note) note.style.display = 'none';
         } else {
             const params = new URLSearchParams();
             selectedDepartments.forEach(id => params.append('departments', id));
@@ -1066,36 +1158,91 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.employees && data.employees.length > 0) {
+                        const allEmployees = data.employees.map(emp => emp.fullName);
                         const availableEmployees = [...new Set(data.employees
                             .map(emp => emp.fullName)
-                            .filter(name => name && name.trim() !== '')
+                            .filter(name => name && name.trim() !== '' && name.trim() !== '-')
                         )].sort();
                         
-                        Array.from(employeesSelect.options).forEach(option => {
-                            if (option.value === '') {
-                                option.style.display = ''; 
-                            } else {
-                                option.style.display = availableEmployees.includes(option.value) ? '' : 'none';
-                            }
-                        });
-                            const hasAny = availableEmployees.length > 0;
-                            const note = document.getElementById('employeesEmptyNote');
-                            if (note) note.style.display = hasAny ? 'none' : 'block';
+                        employeesSelect.innerHTML = '';
+                        
+                        if (availableEmployees.length > 0) {
+                            availableEmployees.forEach(employee => {
+                                const option = document.createElement('option');
+                                option.value = employee;
+                                option.textContent = employee;
+                                employeesSelect.appendChild(option);
+                            });
+                        } else {
+                            const placeholderOption = document.createElement('option');
+                            placeholderOption.value = '';
+                            placeholderOption.textContent = 'Нет сотрудников с ФИО в выбранных отделах';
+                            placeholderOption.disabled = true;
+                            placeholderOption.selected = false;
+                            placeholderOption.style.color = '#6c757d';
+                            placeholderOption.style.fontStyle = 'italic';
+                            placeholderOption.style.backgroundColor = 'transparent';
+                            placeholderOption.setAttribute('data-placeholder', 'true');
+                            employeesSelect.appendChild(placeholderOption);
+                        }
+                        const hasAny = availableEmployees.length > 0;
+                        
+                        updateEmployeeCounter();
+                    } else {
+                        employeesSelect.innerHTML = '';
+                        
+                        const placeholderOption = document.createElement('option');
+                        placeholderOption.value = '';
+                        placeholderOption.textContent = 'В выбранных отделах нет сотрудников с ФИО';
+                        placeholderOption.disabled = true;
+                        placeholderOption.selected = false;
+                        placeholderOption.style.color = '#dc3545';
+                        placeholderOption.style.fontStyle = 'italic';
+                        placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                        placeholderOption.setAttribute('data-placeholder', 'true');
+                        employeesSelect.appendChild(placeholderOption);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка при обновлении списка сотрудников:', error);
+                    
+                    employeesSelect.innerHTML = '';
+                    
+                    const placeholderOption = document.createElement('option');
+                    placeholderOption.value = '';
+                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.disabled = true;
+                    placeholderOption.selected = false;
+                    placeholderOption.style.color = '#dc3545';
+                    placeholderOption.style.fontStyle = 'italic';
+                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                    placeholderOption.setAttribute('data-placeholder', 'true');
+                    employeesSelect.appendChild(placeholderOption);
                 });
         }
     }
 
-    employeesSelect.addEventListener('change', performSearch);
-    departmentsSelect.addEventListener('change', function() {
-        updatePositionsList();
-        updateEmployeesList();
+    employeesSelect.addEventListener('change', function() {
+        Array.from(employeesSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
         performSearch();
     });
-    positionsSelect.addEventListener('change', performSearch);
+    departmentsSelect.addEventListener('change', function() {
+        updateEmployeesList();
+        updatePositionsList();
+        performSearch();
+    });
+    positionsSelect.addEventListener('change', function() {
+        Array.from(positionsSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
         departmentsPerPageSelect.addEventListener('change', function() {
             const selectedValue = this.value;
             if (selectedValue === '0') {
@@ -1109,20 +1256,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     positionSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
+        this.searchTimeout = setTimeout(() => {
+            updateEmployeesList();
+            updatePositionsList();
+            performSearch();
+        }, 300);
     });
     
     emailSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
+        this.searchTimeout = setTimeout(() => {
+            updateEmployeesList();
+            updatePositionsList();
+            performSearch();
+        }, 300);
     });
     if (departmentSearchInput) {
         departmentSearchInput.addEventListener('input', function () {
             clearTimeout(typingTimer);
-            typingTimer = setTimeout(performSearch, 300);
+            typingTimer = setTimeout(() => {
+                syncDepartmentFilter();
+                updateEmployeesList();
+                updatePositionsList();
+                performSearch();
+            }, 300);
         });
     }
     
+    function syncDepartmentFilter() {
+        const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
+        if (departmentSearch) {
+            const matchingDepartments = Array.from(departmentsSelect.options).filter(option => 
+                option.value && option.text.toLowerCase().includes(departmentSearch.toLowerCase())
+            );
+            
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+            
+            matchingDepartments.forEach(option => {
+                option.selected = true;
+            });
+            
+            updateEmployeesList();
+            updatePositionsList();
+        }
+    }
+    
+    function updateEmployeeCounter() {
+        const visibleRows = document.querySelectorAll('#employeesTable tbody tr:not([style*="display: none"])');
+        const totalEmployees = visibleRows.length;
+        
+        const badgeElement = document.querySelector('.search-results-header .badge');
+        if (badgeElement) {
+            badgeElement.textContent = totalEmployees;
+        }
+
+        const headerElement = document.querySelector('.card-header h5');
+        if (headerElement) {
+            headerElement.textContent = `Список сотрудников (${totalEmployees})`;
+        }
+    }
     
     function handleResponsiveColumns() {
         const width = window.innerWidth;
@@ -1174,15 +1368,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (positionSearch) params.append('positionSearch', positionSearch);
             if (emailSearch) params.append('emailSearch', emailSearch);
             if (departmentSearch) params.append('departmentSearch', departmentSearch);
-            departments.forEach(id => params.append('departmentIds', id));
-            if (employees.length > 0) params.append('employeeNames', employees.join(','));
-            if (positions.length > 0) params.append('positionNames', positions.join(','));
+            departments.forEach(id => params.append('departments', id));
+            employees.forEach(emp => params.append('selectedEmployees', emp));
+            positions.forEach(pos => params.append('positions', pos));
             
             const url = '@Url.Page("/Print/PrintIndex")' + (params.toString() ? '?' + params.toString() : '');
             window.open(url, '_blank');
         });
     } else {
-        console.log('Print button not found!');
     }
     
     function updateEmployeeCount() {
@@ -1218,6 +1411,8 @@ document.addEventListener('DOMContentLoaded', function() {
             paginationNav.style.display = 'none';
         }
 
+        updateEmployeesList();
+        updatePositionsList();
         performSearch();
     }
     

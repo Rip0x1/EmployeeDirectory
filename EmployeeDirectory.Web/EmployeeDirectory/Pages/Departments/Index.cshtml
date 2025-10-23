@@ -9,53 +9,72 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-building me-2"></i>Мой отдел</h2>
-                <div class="d-flex justify-content-end">
+                <div class="d-flex gap-2">
+                    @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                    {
+                        <a asp-page="/Departments/ManageEditors" asp-route-departmentId="@Model.DepartmentId" class="btn btn-warning">
+                            <i class="fas fa-users-cog me-1"></i>Управление редакторами
+                        </a>
+                        <a asp-page="/Departments/AddEditor" asp-route-departmentId="@Model.DepartmentId" class="btn btn-info">
+                            <i class="fas fa-user-plus me-1"></i>Добавить редактора
+                        </a>
+                    }
                     <a asp-page="/Employees/Create" asp-route-returnUrl="/Departments" class="btn btn-success">
                         <i class="fas fa-plus me-1"></i>Добавить сотрудника
                     </a>
                 </div>
             </div>
+            
 
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0"><i class="fas fa-search me-2"></i>Поиск и фильтрация</h6>
+            <div class="search-filters-container">
+                <div class="search-filters-header">
+                    <h6><i class="fas fa-search"></i>Поиск и фильтрация</h6>
                 </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
                             <label for="search" class="form-label">
-                                <i class="fas fa-search me-1"></i>Поиск по ФИО
+                                <i class="fas fa-search"></i>Поиск по ФИО
                             </label>
                             <input type="text" class="form-control" id="search" name="search" 
                                    placeholder="Введите ФИО...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
                             <label for="phoneSearch" class="form-label">
-                                <i class="fas fa-phone me-1"></i>Поиск по телефону
+                                <i class="fas fa-phone"></i>Поиск по телефону
                             </label>
                             <input type="text" class="form-control" id="phoneSearch" name="phoneSearch" 
                                    placeholder="Городской или местный номер...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
                             <label for="positionSearch" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Поиск по должности
+                                <i class="fas fa-user-tie"></i>Поиск по должности
                             </label>
                             <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
                                    placeholder="Введите должность...">
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
                             <label for="emailSearch" class="form-label">
-                                <i class="fas fa-envelope me-1"></i>Поиск по Email
+                                <i class="fas fa-envelope"></i>Поиск по Email
                             </label>
                             <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
                                    placeholder="Введите email...">
                         </div>
                     </div>
-                    
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                </div>
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-select-group">
                             <label for="employees" class="form-label">
-                                <i class="fas fa-users me-1"></i>ФИО
+                                <i class="fas fa-users"></i>ФИО
                             </label>
                             <select class="form-select" id="employees" name="employees" multiple size="3">
                                 @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
@@ -70,11 +89,13 @@
                                     <option disabled>Нет доступных сотрудников</option>
                                 }
                             </select>
-                            <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                         </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                        <div class="search-select-group">
                             <label for="positions" class="form-label">
-                                <i class="fas fa-user-tie me-1"></i>Должности
+                                <i class="fas fa-user-tie"></i>Должности
                             </label>
                             <select class="form-select" id="positions" name="positions" multiple size="3">
                                 @if (Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Any())
@@ -89,26 +110,32 @@
                                     <option disabled>Нет доступных должностей</option>
                                 }
                             </select>
-                            <small class="text-muted">Удерживайте Ctrl для выбора нескольких</small>
+                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
                         </div>
                     </div>
+                </div>
+                
+                <div class="search-actions">
+                    <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-times"></i>Сброс фильтров
+                    </button>
                 </div>
             </div>
 
             @if (Model.Employees.Any())
             {
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center gap-2">
-                        <h5 class="mb-0">Список сотрудников (@Model.Employees.Count())</h5>
+                <div class="search-results-header">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <button id="printDepartmentBtn" class="btn btn-outline-primary">
-                                <i class="fas fa-print me-1"></i>Печать
-                            </button>
-                            <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger">
-                                <i class="fas fa-times me-1"></i>Сброс фильтров
+                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                <i class="fas fa-print"></i>Печать
                             </button>
                         </div>
                     </div>
+                </div>
+                
+                <div class="card">
                     <div class="card-body p-0">
                         <div id="employeesTable">
                             <div class="department-section">
@@ -116,21 +143,21 @@
                                     <span class="department-name-badge">@Model.DepartmentName</span>
                                 </div>
 
-                                <table class="employees-table">
-                                    <thead>
+                                <table id="employeesTable" class="table mb-0">
+                                    <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th style="width: 30%;">Должность / ФИО</th>
-                                            <th style="width: 15%;">Городской номер</th>
-                                            <th style="width: 15%;">Местный номер</th>
-                                            <th style="width: 20%;">Email</th>
-                                            <th style="width: 20%;">Действия</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Местный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     @foreach (var employee in Model.Employees)
                                     {
                                         <tr>
-                                            <td class="employee-name">
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                 @if (!string.IsNullOrEmpty(employee.PositionDescription))
                                                 {
                                                     <span class="position-badge @(employee.IsHeadOfDepartment ? "position-head" : "position-employee")">
@@ -146,16 +173,16 @@
                                                     <span class="text-muted fst-italic">-</span>
                                                 }
                                             </td>
-                                            <td class="phone-number">@(employee.CityPhone ?? "Не указано")</td>
-                                            <td class="phone-number">@(employee.LocalPhone ?? "Не указано")</td>
-                                            <td class="phone-number">@(employee.Email ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.CityPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.Email ?? "Не указано")</td>
                                             <td class="text-center">
-                                                <div class="btn-group" role="group">
-                                                    <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-warning" title="Редактировать">
-                                                        <i class="fas fa-edit"></i>
+                                                <div class="d-flex gap-2 justify-content-center">
+                                                    <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-edit me-1"></i>Изменить
                                                     </a>
-                                                    <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                                        <i class="fas fa-trash"></i>
+                                                    <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-trash me-1"></i>Удалить
                                                     </a>
                                                 </div>
                                             </td>
@@ -275,34 +302,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function resetFilters() {
-        searchInput.value = '';
-        positionSearchInput.value = '';
-        phoneSearchInput.value = '';
-        emailSearchInput.value = '';
-        
-        Array.from(employeesSelect.options).forEach(option => option.selected = false);
-        Array.from(positionsSelect.options).forEach(option => option.selected = false);
-        
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        rows.forEach(row => {
-            if (!row.classList.contains('text-center')) {
-                row.style.display = '';
-            }
-        });
-        
-        updateEmployeeCount();
-    }
 
     searchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(performSearch, 300);
     });
     
-    positionSearchInput.addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
-    });
     
     phoneSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
@@ -315,16 +320,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     employeesSelect.addEventListener('change', function() {
-        updatePositionsList();
         performSearch();
     });
     
     positionsSelect.addEventListener('change', performSearch);
 
-    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-    if (resetFiltersBtn) {
-        resetFiltersBtn.addEventListener('click', resetFilters);
-    }
     
     updateEmployeeCount();
     
@@ -365,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     employeesSelect.addEventListener('change', function() {
-        updatePositionsList();
         performSearch();
     });
     positionsSelect.addEventListener('change', performSearch);
@@ -451,8 +450,157 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const employeesSelect = document.getElementById('employees');
+    const positionsSelect = document.getElementById('positions');
+    const phoneSearchInput = document.getElementById('phoneSearch');
+    const positionSearchInput = document.getElementById('positionSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
+    const tbody = document.getElementById('employeesTable');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    
+    const originalTableHTML = tbody.innerHTML;
+    
+    let typingTimer;
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
+        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
+        const phoneSearch = phoneSearchInput.value.toLowerCase();
+        const positionSearch = positionSearchInput.value.toLowerCase();
+        const emailSearch = emailSearchInput.value.toLowerCase();
+
+        const rows = document.querySelectorAll('#employeesTable tbody tr');
+        
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 5) return;
+            
+            const positionName = cells[0] ? cells[0].textContent.toLowerCase() : '';
+            const cityPhone = cells[1] ? cells[1].textContent.toLowerCase() : '';
+            const localPhone = cells[2] ? cells[2].textContent.toLowerCase() : '';
+            const email = cells[3] ? cells[3].textContent.toLowerCase() : '';
+            
+            let showRow = true;
+            
+            if (searchTerm && !positionName.includes(searchTerm)) {
+                showRow = false;
+            }
+            
+            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch)) {
+                showRow = false;
+            }
+            
+            if (positionSearch && !positionName.includes(positionSearch)) {
+                showRow = false;
+            }
+            
+            if (emailSearch && !email.includes(emailSearch)) {
+                showRow = false;
+            }
+            
+            if (selectedEmployees.length > 0) {
+                if (!selectedEmployees.some(emp => positionName.includes(emp.toLowerCase()))) {
+                    showRow = false;
+                }
+            }
+            
+            if (selectedPositions.length > 0) {
+                if (!selectedPositions.some(pos => positionName.includes(pos.toLowerCase()))) {
+                    showRow = false;
+                }
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+        });
+        
+        const visibleRows = document.querySelectorAll('#employeesTable tbody tr:not([style*="display: none"])');
+        if (visibleRows.length === 0) {
+            const employeesTable = document.getElementById('employeesTable');
+            if (employeesTable) {
+                employeesTable.innerHTML = '<div class="text-center text-muted py-4">Сотрудники не найдены</div>';
+            }
+        }
+        
+        updateEmployeeCounter();
+    }
+    
+    function updateEmployeeCounter() {
+        const visibleRows = document.querySelectorAll('#employeesTable tbody tr:not([style*="display: none"])');
+        const totalEmployees = visibleRows.length;
+        
+        const badgeElement = document.querySelector('.search-results-header .badge');
+        if (badgeElement) {
+            badgeElement.textContent = totalEmployees;
+        }
+        
+        const headerElement = document.querySelector('.card-header h5');
+        if (headerElement) {
+            headerElement.textContent = `Список сотрудников (${totalEmployees})`;
+        }
+    }
+
+
+
+    function resetFilters() {
+        searchInput.value = '';
+        phoneSearchInput.value = '';
+        positionSearchInput.value = '';
+        emailSearchInput.value = '';
+        
+        Array.from(employeesSelect.options).forEach(option => option.selected = false);
+        Array.from(positionsSelect.options).forEach(option => option.selected = false);
+
+        tbody.innerHTML = originalTableHTML;
+        
+        updateEmployeeCounter();
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    phoneSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+
+    emailSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    positionSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    employeesSelect.addEventListener('change', function() {
+        Array.from(employeesSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    positionsSelect.addEventListener('change', function() {
+        Array.from(positionsSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+
     const printDepartmentBtn = document.getElementById('printDepartmentBtn');
-    console.log('Print department button found:', printDepartmentBtn);
     if (printDepartmentBtn) {
         printDepartmentBtn.addEventListener('click', function() {
             const search = document.getElementById('search')?.value || '';
@@ -476,8 +624,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '@Url.Page("/Print/PrintDepartments")' + '?' + params.toString();
             window.open(url, '_blank');
         });
-    } else {
-        console.log('Print department button not found!');
     }
 });
 </script>

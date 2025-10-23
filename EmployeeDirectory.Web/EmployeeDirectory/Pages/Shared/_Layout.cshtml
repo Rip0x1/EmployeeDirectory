@@ -29,7 +29,7 @@
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                            @if (User.IsInRole("Manager") || User.IsInRole("Administrator") || User.IsInRole("DepartmentEditor"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-page="/Departments/Index">

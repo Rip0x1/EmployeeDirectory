@@ -5,22 +5,27 @@
     ViewData["Title"] = "Удалить пользователя";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-danger text-white">
-                    <h4><i class="fas fa-exclamation-triangle me-2"></i>Удалить пользователя</h4>
-                </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-times me-2"></i>Удалить пользователя</h2>
+            </div>
+
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <p>Вы уверены, что хотите удалить пользователя <strong>@Model.UserToDelete?.UserName</strong>?</p>
                     <p class="text-muted">Это действие нельзя отменить.</p>
                     <form method="post">
                         <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
                         <input type="hidden" asp-for="UserId" />
-                        <div class="d-flex justify-content-end gap-2">
-                            <a class="btn btn-secondary" href="@(Model.ReturnUrl ?? Url.Page("/Users/Manage"))">Отмена</a>
-                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Удалить
+                            </button>
+                            <a class="btn btn-secondary" href="@(Model.ReturnUrl ?? Url.Page("/Users/Manage"))">
+                                <i class="fas fa-times me-2"></i>Отмена
+                            </a>
                         </div>
                     </form>
                 </div>

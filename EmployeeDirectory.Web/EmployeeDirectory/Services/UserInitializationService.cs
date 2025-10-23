@@ -29,16 +29,24 @@ namespace EmployeeDirectory.Services
 
         private async Task CreateRolesAsync()
         {
-            string[] roles = { "Manager", "Administrator" };
+            string[] roles = { "Manager", "Administrator", "DepartmentEditor" };
 
             foreach (string role in roles)
             {
                 if (!await _roleManager.RoleExistsAsync(role))
                 {
+                    string description = role switch
+                    {
+                        "Manager" => "Начальник отдела",
+                        "Administrator" => "Администратор",
+                        "DepartmentEditor" => "Редактор отдела",
+                        _ => role
+                    };
+
                     await _roleManager.CreateAsync(new ApplicationRole
                     {
                         Name = role,
-                        Description = role == "Manager" ? "Начальник отдела" : "Администратор"
+                        Description = description
                     });
                 }
             }

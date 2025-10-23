@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EmployeeDirectory.Pages.Departments
 {
-    [Authorize(Roles = "Manager,Administrator")]
+    [Authorize(Roles = "Manager,Administrator,DepartmentEditor")]
     public class IndexModel : PageModel
     {
         private readonly IEmployeeService _employeeService;
@@ -40,10 +40,11 @@ namespace EmployeeDirectory.Pages.Departments
             }
 
             DepartmentId = user.DepartmentId.Value;
+            
             var department = await _departmentService.GetDepartmentByIdAsync(DepartmentId);
             if (department == null)
             {
-                TempData["Error"] = "Отдел не найден.";
+                TempData["Error"] = $"Отдел с ID {DepartmentId} не найден в базе данных. Обратитесь к администратору.";
                 return RedirectToPage("/Index");
             }
 

@@ -56,6 +56,7 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IPositionService, PositionService>();
+            builder.Services.AddScoped<IDepartmentEditorService, DepartmentEditorService>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ILogService, LogService>();
             builder.Services.AddScoped<UserInitializationService>();

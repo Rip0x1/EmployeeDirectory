@@ -25,7 +25,6 @@ namespace EmployeeDirectory.Services
             return await _context.Departments
                 .Include(d => d.Head)
                 .Include(d => d.Employees)
-                    .ThenInclude(e => e.Position)
                 .OrderBy(d => d.Name)
                 .ToListAsync();
         }

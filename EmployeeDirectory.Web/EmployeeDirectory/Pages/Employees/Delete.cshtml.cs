@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EmployeeDirectory.Pages.Employees
 {
-    [Authorize(Roles = "Manager,Administrator")]
+    [Authorize(Roles = "Manager,Administrator,DepartmentEditor")]
     public class DeleteModel : PageModel
     {
         private readonly IEmployeeService _employeeService;

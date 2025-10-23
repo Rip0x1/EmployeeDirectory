@@ -59,8 +59,7 @@ namespace EmployeeDirectory.Pages.Print
                 filteredEmployees = filteredEmployees.Where(e => 
                     e.FullName != null && e.FullName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
                     e.PositionDescription != null && e.PositionDescription.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    e.Position != null && e.Position.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)
-                );
+                    e.Position != null && e.Position.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrEmpty(PhoneSearch))
@@ -75,8 +74,7 @@ namespace EmployeeDirectory.Pages.Print
             {
                 filteredEmployees = filteredEmployees.Where(e => 
                     e.PositionDescription != null && e.PositionDescription.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase) ||
-                    e.Position != null && e.Position.Name.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase)
-                );
+                    e.Position != null && e.Position.Name.Contains(PositionSearch, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrEmpty(EmailSearch))
