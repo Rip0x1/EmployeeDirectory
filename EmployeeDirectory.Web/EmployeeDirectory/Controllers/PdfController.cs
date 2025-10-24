@@ -108,12 +108,14 @@ namespace EmployeeDirectory.Controllers
 
             if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out var start))
             {
-                query = query.Where(l => l.TimestampUtc >= start);
+                var startUtc = start.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(start, DateTimeKind.Utc) : start.ToUniversalTime();
+                query = query.Where(l => l.TimestampUtc >= startUtc);
             }
 
             if (!string.IsNullOrEmpty(endDate) && DateTime.TryParse(endDate, out var end))
             {
-                query = query.Where(l => l.TimestampUtc <= end);
+                var endUtc = end.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(end, DateTimeKind.Utc) : end.ToUniversalTime();
+                query = query.Where(l => l.TimestampUtc <= endUtc);
             }
 
             var logs = await query
