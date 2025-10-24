@@ -251,3 +251,16 @@ http {
     }
 }
 ```
+
+---
+
+## 🌐 Фото
+<img width="1902" height="994" alt="{9D5CC7A3-28C3-4315-B9D7-FF0C302DE7B8}" src="https://github.com/user-attachments/assets/86d763cf-42e9-4afc-9702-5aeab26bd809" />
+<img width="1920" height="740" alt="{7614CBC9-A60B-4ECA-A881-7383B83744F1}" src="https://github.com/user-attachments/assets/b5ffdd9b-6563-4d2e-a5cb-9b83bd07e33b" />
+<img width="1920" height="369" alt="{D9927645-C12E-4DB0-B137-349F7B71F05D}" src="https://github.com/user-attachments/assets/1587d8d2-ad38-4b5a-a427-8a79e399a2df" />
+<img width="1920" height="306" alt="{7B370C80-2D66-489C-8047-1A0E5462A984}" src="https://github.com/user-attachments/assets/9fc35fbe-c789-424d-a5c8-13611cce6fa8" />
+<img width="1920" height="713" alt="{4A395A62-43E9-485D-BF92-83A1CE9F9503}" src="https://github.com/user-attachments/assets/55d20768-c9ef-49ba-b002-301b446965f8" />
+
+
+
+
