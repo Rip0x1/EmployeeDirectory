@@ -101,31 +101,16 @@ namespace EmployeeDirectory
             });
 
 
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
-                await dataSeeder.SeedDataAsync();
-            }
-
-            app.MapRazorPages();
-            app.MapControllers();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 var userInit = scope.ServiceProvider.GetRequiredService<UserInitializationService>();
+                var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
                 try
                 {
                     context.Database.Migrate();
                     await userInit.InitializeAsync();
+                    await dataSeeder.SeedDataAsync();
                 }
                 catch (Exception ex)
                 {
@@ -133,6 +118,17 @@ namespace EmployeeDirectory
                     logger.LogError(ex, "An error occurred while migrating the database");
                 }
             }
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapRazorPages();
+            app.MapControllers();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

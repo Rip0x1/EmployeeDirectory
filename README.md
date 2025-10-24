@@ -1,107 +1,253 @@
-## EmployeeDirectory — справочник сотрудников
+# Employee Directory - Справочник сотрудников
 
-Короткая инструкция по запуску, публикации и базовой настройке.
+Веб-приложение для управления сотрудниками организации с поддержкой Docker.
 
-### Возможности
-- Управление сотрудниками и отделами (назначение начальников отделов)
-- Управление пользователями и ролями (Administrator, Manager)
-- Логи системы с фильтрами и печатью
-- Печать списков сотрудников (все, по отделам, по фильтрам)
-- PostgreSQL + ASP.NET Core Identity
+## 🚀 Быстрый старт
 
 ### Требования
-- .NET 8 SDK
-- PostgreSQL 14+ (или совместимая версия)
+- Docker Desktop (Windows/Mac) или Docker Engine (Linux)
+- 2 GB свободной памяти
+- Порты 5000 и 7777 должны быть свободны
 
-### Быстрый старт (локально)
-1. Настройте строку подключения в `EmployeeDirectory/appsettings.Development.json`.
-2. Выполните миграции:
+### Запуск локально
+
 ```bash
-dotnet ef database update --project EmployeeDirectory/EmployeeDirectory.csproj
+# Клонировать репозиторий
+git clone <repository-url>
+cd <project-directory>
+
+# Запустить все контейнеры
+docker-compose up -d
+
+# Приложение будет доступно на http://localhost:5000
 ```
-3. Запустите приложение:
+
+### Учетные данные по умолчанию
+- **Логин:** `admin`
+- **Пароль:** `admin123`
+
+---
+
+## 📋 Управление контейнерами
+
+### Основные команды
+
 ```bash
-dotnet run --project EmployeeDirectory/EmployeeDirectory.csproj
+# Запустить все контейнеры
+docker-compose up -d
+
+# Остановить все контейнеры
+docker-compose down
+
+# Посмотреть статус
+docker ps
+
+# Посмотреть логи
+docker logs employee-directory-web
+docker logs employee-directory-db
+
+# Пересобрать после изменений в коде
+docker-compose up -d --build
+
+# Остановить и удалить все данные (ВНИМАНИЕ: БД будет очищена!)
+docker-compose down -v
 ```
-По умолчанию сайт будет доступен на `http://localhost:5000` или `https://localhost:5001` (в зависимости от профиля запуска).
 
-### Администратор по умолчанию
-При инициализации создаётся только пользователь:
-- Логин: `admin`
-- Пароль: `admin123`
-- Роль: `Administrator`
+### 🔄 Применение изменений в коде
 
-### Публикация (Release)
+После внесения изменений в код выполните:
+
 ```bash
-dotnet publish EmployeeDirectory/EmployeeDirectory.csproj -c Release -o publish
+# Остановить контейнеры
+docker-compose down
+
+# Пересобрать и запустить
+docker-compose up -d --build
 ```
-Содержимое папки `publish` — готовый артефакт. Запуск:
-```bash
-cd publish
-dotnet EmployeeDirectory.dll
-```
 
-### Доступ не только с localhost
-По умолчанию Kestrel слушает loopback. Чтобы слушать на всех интерфейсах:
-- Одноразово (сеанс):
-```bash
-# Windows
-set ASPNETCORE_URLS=http://0.0.0.0:5000 && dotnet EmployeeDirectory.dll
-
-# Linux
-ASPNETCORE_URLS=http://0.0.0.0:5000 dotnet EmployeeDirectory.dll
-```
-- Либо добавьте в `appsettings.Production.json`:
-```json
-{
-  "AllowedHosts": "*",
-  "Kestrel": {
-    "Endpoints": {
-      "Http": { "Url": "http://0.0.0.0:5000" }
-    }
-  }
-}
-```
-Откройте порт 5000 в фаерволе. Затем сайт будет доступен по `http://<IP_сервера>:5000`.
-
-### Запуск под IIS (Windows)
-1. Установите .NET Hosting Bundle.
-2. Создайте сайт в IIS, укажите путь на папку `publish`, пул — «No Managed Code».
-3. Настройте привязки (80/443), сертификат для HTTPS.
-
-### Переменные окружения (прод)
-- `ASPNETCORE_ENVIRONMENT=Production`
-- `ASPNETCORE_URLS=http://0.0.0.0:5000` (если self-host)
-- Строки подключения и секреты храните во внешних переменных/секретах ОС.
-
-### Печать
-- Главная страница: печать всех/отфильтрованных сотрудников, доступна анонимно
-- Админ: печать логов с учётом фильтров
-- Начальник отдела: печать сотрудников своего отдела
-
-### Active Directory (импорт — кратко)
-- Подход: разовый импорт или периодическая синхронизация
-- Библиотеки: `System.DirectoryServices.Protocols` или `Novell.Directory.Ldap`
-- Минимальные поля: sAMAccountName, displayName, department, title, phone
-- Маппинг выполняйте в сервисе импорта; не храните пароли из AD
+**Или через Docker Desktop:**
+1. Остановите контейнеры кнопкой "Stop"
+2. Нажмите на действие "Build & Run" рядом с `employee-directory-web`
+3. Или используйте кнопку "Rebuild" для пересборки
 
 ### Полезные команды
-```bash
-# Миграции
-dotnet ef migrations add Initial
-dotnet ef database update
 
-# Публикация
-dotnet publish -c Release -o publish
+```bash
+# Перезапустить конкретный контейнер
+docker restart employee-directory-web
+
+# Посмотреть логи в реальном времени
+docker logs -f employee-directory-web
+
+# Подключиться к базе данных
+docker exec -it employee-directory-db psql -U postgres -d EmployeeDirectory
+
+# Проверить использование ресурсов
+docker stats
 ```
 
-### Фото
-<img width="1907" height="874" alt="{FDDCBA42-5624-4842-BF8C-A828883AC0D7}" src="https://github.com/user-attachments/assets/aea52473-359a-494c-bf0a-19525487a961" />
-<img width="1920" height="926" alt="{5C431DC7-3F9B-4B69-AB8A-B52B5F097FE5}" src="https://github.com/user-attachments/assets/91921e7b-9a4f-41fe-a1fc-7755d1a29717" />
-<img width="1918" height="813" alt="{D903FDEC-C649-424E-B7AC-806DB33ADA17}" src="https://github.com/user-attachments/assets/3d9a8a69-dc9c-4305-beed-be27c5292818" />
+### 📊 Подключение через pgAdmin 4
 
+Если установлен pgAdmin 4 локально, можно подключиться к БД контейнера:
 
-### Обратная связь
-Вопросы и предложения — создавайте issue или сообщайте разработчику.
+**Параметры подключения:**
+- **Host:** `localhost` (или `127.0.0.1`)
+- **Port:** `7777`
+- **Database:** `EmployeeDirectory`
+- **Username:** `postgres`
+- **Password:** `root`
 
+**Шаги:**
+1. Откройте pgAdmin 4
+2. Правый клик на "Servers" → "Create" → "Server"
+3. На вкладке **General**:
+   - Name: `Employee Directory (Docker)`
+4. На вкладке **Connection**:
+   - Host: `localhost`
+   - Port: `7777`
+   - Database: `EmployeeDirectory`
+   - Username: `postgres`
+   - Password: `root`
+   - Сохраните пароль (Save password ✓)
+5. Нажмите "Save"
 
+**Важно:** Контейнер с БД должен быть запущен (`docker ps`).
+
+---
+
+## 🌐 Развертывание на сервере
+
+### Вариант 1: VPS/VDS с Linux
+
+#### Требования
+- Ubuntu 20.04+ или Debian 11+
+- Минимум 2 GB RAM
+- Открытые порты 80, 443 (для веб)
+- Доступ по SSH
+
+#### Шаги развертывания
+
+1. **Подключитесь к серверу:**
+```bash
+ssh user@your-server-ip
+```
+
+2. **Установите Docker:**
+```bash
+# Обновить систему
+sudo apt update && sudo apt upgrade -y
+
+# Установить Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Добавить пользователя в группу docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Установить Docker Compose
+sudo apt install docker-compose-plugin -y
+```
+
+3. **Загрузите проект на сервер:**
+```bash
+# Вариант A: через Git
+git clone <repository-url>
+cd <project-directory>
+
+# Вариант B: через SCP
+scp -r <local-project-directory> user@server-ip:/home/user/
+```
+
+4. **Создайте docker-compose.production.yml:**
+
+Создайте файл `docker-compose.production.yml`:
+
+```yaml
+name: employee-directory
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: employee-directory-db
+    environment:
+      POSTGRES_DB: EmployeeDirectory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YOUR_STRONG_PASSWORD_HERE
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  web:
+    build:
+      context: ./EmployeeDirectory.Web/EmployeeDirectory
+      dockerfile: Dockerfile
+    container_name: employee-directory-web
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=EmployeeDirectory;Username=postgres;Password=YOUR_STRONG_PASSWORD_HERE
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: employee-directory-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+5. **Создайте nginx.conf:**
+
+```nginx
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream app {
+        server web:8080;
+    }
+
+    server {
+        listen 80;
+        server_name your-domain.com;
+
+        location / {
+            proxy_pass http://app;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection keep-alive;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+```
