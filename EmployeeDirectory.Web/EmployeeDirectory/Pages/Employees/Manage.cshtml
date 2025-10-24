@@ -869,6 +869,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateEmployeesList();
             updatePositionsList();
+        } else {
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+            updateEmployeesList();
+            updatePositionsList();
         }
     }
     
@@ -890,6 +896,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateEmployeesList();
             updatePositionsList();
+        } else {
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+            updateEmployeesList();
+            updatePositionsList();
         }
     }
     
@@ -906,6 +918,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             matchingDepartments.forEach(option => {
                 option.selected = true;
+            });
+        } else {
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
             });
         }
     }
