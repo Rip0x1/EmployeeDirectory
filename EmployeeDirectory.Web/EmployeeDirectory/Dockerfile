@@ -20,3 +20,4 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EmployeeDirectory.dll"]
 
 
+
