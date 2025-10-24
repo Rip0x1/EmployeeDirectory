@@ -1176,12 +1176,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedDepartments.length === 0) {
             positionsSelect.innerHTML = '';
             const allPositions = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.PositionDescription)).OrderBy(e => e.PositionDescription).Select(e => e.PositionDescription).Distinct()));
-            allPositions.forEach(position => {
-                const option = document.createElement('option');
-                option.value = position;
-                option.textContent = position;
-                positionsSelect.appendChild(option);
-            });
+            if (allPositions && allPositions.length > 0) {
+                allPositions.forEach(position => {
+                    const option = document.createElement('option');
+                    option.value = position;
+                    option.textContent = position;
+                    positionsSelect.appendChild(option);
+                });
+            } else {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.disabled = true;
+                placeholderOption.textContent = 'Нет доступных должностей';
+                positionsSelect.appendChild(placeholderOption);
+            }
         } else {
             const params = new URLSearchParams();
             selectedDepartments.forEach(id => params.append('departments', id));
@@ -1254,12 +1261,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedDepartments.length === 0) {
             employeesSelect.innerHTML = '';
             const allEmployees = @Html.Raw(Json.Serialize(Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).OrderBy(e => e.FullName).Select(e => e.FullName)));
-            allEmployees.forEach(employee => {
-                const option = document.createElement('option');
-                option.value = employee;
-                option.textContent = employee;
-                employeesSelect.appendChild(option);
-            });
+            if (allEmployees && allEmployees.length > 0) {
+                allEmployees.forEach(employee => {
+                    const option = document.createElement('option');
+                    option.value = employee;
+                    option.textContent = employee;
+                    employeesSelect.appendChild(option);
+                });
+            } else {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.disabled = true;
+                placeholderOption.textContent = 'Нет доступных сотрудников';
+                employeesSelect.appendChild(placeholderOption);
+            }
         } else {
             const params = new URLSearchParams();
             selectedDepartments.forEach(id => params.append('departments', id));
@@ -1532,9 +1546,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (departmentFullNameSearchInput) departmentFullNameSearchInput.value = '';
         if (departmentShortNameSearchInput) departmentShortNameSearchInput.value = '';
         
-        employeesSelect.selectedIndex = -1;
-        departmentsSelect.selectedIndex = -1;
-        positionsSelect.selectedIndex = -1;
+        Array.from(employeesSelect.options).forEach(option => option.selected = false);
+        Array.from(departmentsSelect.options).forEach(option => option.selected = false);
+        Array.from(positionsSelect.options).forEach(option => option.selected = false);
         
         updateEmployeesList();
         updatePositionsList();

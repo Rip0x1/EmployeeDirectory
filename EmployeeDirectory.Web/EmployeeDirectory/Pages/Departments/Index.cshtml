@@ -231,178 +231,6 @@
 </div>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search');
-    const positionSearchInput = document.getElementById('positionSearch');
-    const phoneSearchInput = document.getElementById('phoneSearch');
-    const emailSearchInput = document.getElementById('emailSearch');
-    const employeesSelect = document.getElementById('employees');
-    const positionsSelect = document.getElementById('positions');
-    const tbody = document.querySelector('#employeesTable tbody');
-    
-    function performSearch() {
-        if (!tbody) return;
-        
-        const searchTerm = searchInput.value.toLowerCase();
-        const positionSearch = positionSearchInput.value.toLowerCase();
-        const phoneSearch = phoneSearchInput.value.toLowerCase();
-        const emailSearch = emailSearchInput.value.toLowerCase();
-        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
-        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
-
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        
-        rows.forEach(row => {
-            if (row.classList.contains('text-center')) return; 
-            
-            const cells = row.querySelectorAll('td');
-            if (cells.length === 0) return;
-            
-            const fullName = cells[0].textContent.toLowerCase();
-            const cityPhone = cells[1].textContent.toLowerCase();
-            const localPhone = cells[2].textContent.toLowerCase();
-            const email = cells[3].textContent.toLowerCase();
-            const positionText = cells[0].querySelector('.position-badge')?.textContent.toLowerCase() || '';
-            
-            let showRow = true;
-
-            if (searchTerm && !fullName.includes(searchTerm) && !positionText.includes(searchTerm)) {
-                showRow = false;
-            }
-
-            if (positionSearch && !positionText.includes(positionSearch)) {
-                showRow = false;
-            }
-
-            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch)) {
-                showRow = false;
-            }
-
-            if (emailSearch && !email.includes(emailSearch)) {
-                showRow = false;
-            }
-
-            if (selectedEmployees.length > 0) {
-                const employeeName = cells[0].querySelector('strong')?.textContent || '';
-                const isEmployeeSelected = selectedEmployees.some(selected => 
-                    employeeName.toLowerCase().includes(selected.toLowerCase()) || 
-                    selected.toLowerCase().includes(employeeName.toLowerCase())
-                );
-                if (!isEmployeeSelected) {
-                    showRow = false;
-                }
-            }
-
-            if (selectedPositions.length > 0) {
-                const isPositionSelected = selectedPositions.some(selected => 
-                    positionText.includes(selected.toLowerCase()) || 
-                    selected.toLowerCase().includes(positionText)
-                );
-                if (!isPositionSelected) {
-                    showRow = false;
-                }
-            }
-
-            row.style.display = showRow ? '' : 'none';
-        });
-        
-        updateEmployeeCount();
-    }
-    
-    function updateEmployeeCount() {
-        if (!tbody) return;
-        
-        const visibleRows = Array.from(tbody.querySelectorAll('tr')).filter(row => 
-            !row.classList.contains('text-center') && 
-            row.style.display !== 'none'
-        );
-        const count = visibleRows.length;
-        const countElement = document.querySelector('.card-header h5');
-        if (countElement) {
-            countElement.textContent = `Список сотрудников (${count})`;
-        }
-    }
-
-
-    searchInput.addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
-    });
-    
-    
-    phoneSearchInput.addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
-    });
-    
-    emailSearchInput.addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(performSearch, 300);
-    });
-    
-    employeesSelect.addEventListener('change', function() {
-        performSearch();
-    });
-    
-    positionsSelect.addEventListener('change', performSearch);
-
-    
-    updateEmployeeCount();
-    
-    function updatePositionsList() {
-        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
-        
-        if (selectedEmployees.length === 0) {
-            Array.from(positionsSelect.options).forEach(option => {
-                option.style.display = '';
-            });
-        } else {
-            const availablePositions = [];
-            selectedEmployees.forEach(employeeName => {
-                const employeeRow = Array.from(document.querySelectorAll('tbody tr')).find(row => {
-                    const nameCell = row.querySelector('.employee-name');
-                    return nameCell && nameCell.textContent.includes(employeeName);
-                });
-                
-                if (employeeRow) {
-                    const positionBadge = employeeRow.querySelector('.position-badge');
-                    if (positionBadge) {
-                        const position = positionBadge.textContent.trim();
-                        if (position && !availablePositions.includes(position)) {
-                            availablePositions.push(position);
-                        }
-                    }
-                }
-            });
-            
-            Array.from(positionsSelect.options).forEach(option => {
-                if (option.value === '') {
-                    option.style.display = ''; 
-                } else {
-                    option.style.display = availablePositions.includes(option.value) ? '' : 'none';
-                }
-            });
-            
-            const hasVisibleOptions = Array.from(positionsSelect.options).some(option => option.style.display !== 'none');
-            if (!hasVisibleOptions && positionsSelect.options.length > 0) {
-                positionsSelect.innerHTML = '<option disabled>Нет доступных должностей</option>';
-            }
-        }
-    }
-
-    function updateEmployeesList() {
-        Array.from(employeesSelect.options).forEach(option => {
-            option.style.display = '';
-        });
-    }
-
-    employeesSelect.addEventListener('change', function() {
-        performSearch();
-    });
-    positionsSelect.addEventListener('change', performSearch);
-});
-</script>
 
 <style>
 .department-name-badge {
@@ -545,31 +373,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailSearchInput = document.getElementById('emailSearch');
     const tbody = document.querySelector('#employeesTable tbody');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    const employeesTableDiv = document.getElementById('employeesTable');
     
-    const originalTableHTML = tbody ? tbody.innerHTML : '';
+    const originalTableHTML = employeesTableDiv ? employeesTableDiv.innerHTML : '';
     
     let typingTimer;
     
     function performSearch() {
         if (!tbody) return;
         
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value);
-        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value);
-        const phoneSearch = phoneSearchInput.value.toLowerCase();
-        const positionSearch = positionSearchInput.value.toLowerCase();
-        const emailSearch = emailSearchInput.value.toLowerCase();
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
+        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
+        const phoneSearch = phoneSearchInput.value.toLowerCase().trim();
+        const positionSearch = positionSearchInput.value.toLowerCase().trim();
+        const emailSearch = emailSearchInput.value.toLowerCase().trim();
 
         const rows = document.querySelectorAll('#employeesTable tbody tr');
+        let visibleCount = 0;
         
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
             if (cells.length < 5) return;
             
-            const positionName = cells[0] ? cells[0].textContent.toLowerCase() : '';
-            const cityPhone = cells[1] ? cells[1].textContent.toLowerCase() : '';
-            const localPhone = cells[2] ? cells[2].textContent.toLowerCase() : '';
-            const email = cells[3] ? cells[3].textContent.toLowerCase() : '';
+            const fullName = (cells[0].querySelector('strong')?.textContent?.trim() || '').toLowerCase();
+            const positionBadge = (cells[0].querySelector('.position-badge')?.textContent?.trim() || '').toLowerCase();
+            const positionName = (fullName + ' ' + positionBadge).toLowerCase();
+            const cityPhone = (cells[1] ? cells[1].textContent.trim() : '').toLowerCase();
+            const localPhone = (cells[2] ? cells[2].textContent.trim() : '').toLowerCase();
+            const email = (cells[3] ? cells[3].textContent.trim() : '').toLowerCase();
             
             let showRow = true;
             
@@ -581,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showRow = false;
             }
             
-            if (positionSearch && !positionName.includes(positionSearch)) {
+            if (positionSearch && !positionBadge.includes(positionSearch)) {
                 showRow = false;
             }
             
@@ -590,25 +422,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (selectedEmployees.length > 0) {
-                if (!selectedEmployees.some(emp => positionName.includes(emp.toLowerCase()))) {
+                const nameMatches = selectedEmployees.some(emp => {
+                    const empClean = emp.replace(/\s+/g, ' ').trim();
+                    const fullNameClean = fullName.replace(/\s+/g, ' ').trim();
+                    return fullNameClean === empClean;
+                });
+                if (!nameMatches) {
                     showRow = false;
                 }
             }
             
             if (selectedPositions.length > 0) {
-                if (!selectedPositions.some(pos => positionName.includes(pos.toLowerCase()))) {
+                const positionMatches = selectedPositions.some(pos => {
+                    const posClean = pos.replace(/\s+/g, ' ').trim();
+                    const badgeClean = positionBadge.replace(/\s+/g, ' ').trim();
+                    return badgeClean === posClean;
+                });
+                if (!positionMatches) {
                     showRow = false;
                 }
             }
             
             row.style.display = showRow ? '' : 'none';
+            if (showRow) visibleCount++;
         });
         
-        const visibleRows = document.querySelectorAll('#employeesTable tbody tr:not([style*="display: none"])');
-        if (visibleRows.length === 0) {
-            const employeesTable = document.getElementById('employeesTable');
-            if (employeesTable) {
-                employeesTable.innerHTML = '<div class="text-center text-muted py-4">Сотрудники не найдены</div>';
+        if (visibleCount === 0 && rows.length > 0) {
+            if (employeesTableDiv && !employeesTableDiv.querySelector('.no-results-message')) {
+                const noResultsDiv = document.createElement('div');
+                noResultsDiv.className = 'no-results-message';
+                noResultsDiv.innerHTML = '<div class="text-center text-muted py-4">Сотрудники не найдены</div>';
+                employeesTableDiv.innerHTML = '';
+                employeesTableDiv.appendChild(noResultsDiv);
+            }
+        } else if (visibleCount > 0) {
+            const noResultsMsg = employeesTableDiv?.querySelector('.no-results-message');
+            if (noResultsMsg) {
+                employeesTableDiv.innerHTML = originalTableHTML;
             }
         }
         
@@ -655,7 +505,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateEmployeesList();
         updatePositionsList();
-        performSearch();
+        
+        const noResultsMsg = employeesTableDiv?.querySelector('.no-results-message');
+        if (noResultsMsg) {
+            employeesTableDiv.innerHTML = originalTableHTML;
+        }
+        
+        const rows = document.querySelectorAll('#employeesTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+        
+        updateEmployeeCounter();
     }
 
     searchInput.addEventListener('input', function() {

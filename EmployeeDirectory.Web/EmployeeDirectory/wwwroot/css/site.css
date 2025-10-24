@@ -274,6 +274,17 @@ body > main {
   border: none;
 }
 
+.btn-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-purple:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white;
+}
+
 .form-control {
   border-radius: 8px;
   border: 1px solid #e9ecef;
@@ -528,6 +539,12 @@ h3 {
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Inter', sans-serif;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.alert.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 html {
