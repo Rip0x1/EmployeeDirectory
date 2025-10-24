@@ -13,6 +13,14 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Название отдела")]
         public string Name { get; set; } = string.Empty;
 
+        [StringLength(200)]
+        [Display(Name = "Полное название отдела")]
+        public string? FullName { get; set; }
+
+        [StringLength(50)]
+        [Display(Name = "Сокращенное название отдела")]
+        public string? ShortName { get; set; }
+
         [Display(Name = "Глава отдела")]
         public int? HeadId { get; set; }
 
@@ -26,6 +34,28 @@ namespace EmployeeDirectory.Models
         public DateTime? UpdatedAt { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-        
+
+        public string GetDisplayName()
+        {
+            bool hasFullName = !string.IsNullOrWhiteSpace(FullName);
+            bool hasShortName = !string.IsNullOrWhiteSpace(ShortName);
+
+            if (hasFullName && hasShortName)
+            {
+                return $"{FullName} ({ShortName})";
+            }
+            else if (hasShortName)
+            {
+                return ShortName;
+            }
+            else if (hasFullName)
+            {
+                return FullName;
+            }
+            else
+            {
+                return Name;
+            }
+        }
     }
 }

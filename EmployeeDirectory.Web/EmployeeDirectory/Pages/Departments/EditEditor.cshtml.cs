@@ -74,7 +74,7 @@ namespace EmployeeDirectory.Pages.Departments
             if (editor.DepartmentId.HasValue)
             {
                 var department = await _context.Departments.FindAsync(editor.DepartmentId.Value);
-                DepartmentName = department?.Name ?? "Неизвестный отдел";
+                DepartmentName = department?.GetDisplayName() ?? "Неизвестный отдел";
             }
             else
             {

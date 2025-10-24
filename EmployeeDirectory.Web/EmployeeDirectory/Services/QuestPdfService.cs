@@ -15,7 +15,7 @@ namespace EmployeeDirectory.Services
         {
             var groupedEmployees = employees
                 .Where(e => e != null)
-                .GroupBy(e => e.Department?.Name ?? "Без отдела")
+                .GroupBy(e => e.Department?.GetDisplayName() ?? "Без отдела")
                 .OrderBy(g => g.Key)
                 .ToList();
 
@@ -109,7 +109,7 @@ namespace EmployeeDirectory.Services
                             header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                                 .Text("Городской").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                             header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Местный").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                .Text("Внутренний").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                             header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                                 .Text("Email").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                         });

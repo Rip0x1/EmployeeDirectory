@@ -32,8 +32,15 @@
             <h1 class="mb-4">Справочник сотрудников</h1>
             
             <div class="search-filters-container">
-                <div class="search-filters-header">
-                    <h6><i class="fas fa-search"></i>Поиск и фильтрация</h6>
+                <div class="search-filters-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h6 style="margin: 0;"><i class="fas fa-search"></i>Поиск и фильтрация</h6>
+                    <div class="expand-search-toggle">
+                        <label for="expandSearch" class="expand-search-label">
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                            <span>Расширенный</span>
+                        </label>
+                        <input type="checkbox" id="expandSearch" style="display: none;">
+                    </div>
                 </div>
                 
                 <div class="row g-3 mb-3 justify-content-center">
@@ -52,31 +59,10 @@
                                 <i class="fas fa-phone"></i>Поиск по телефону
                             </label>
                             <input type="text" class="form-control" id="phoneSearch" name="phoneSearch" 
-                                   placeholder="Городской или местный номер...">
+                                   placeholder="Городской или внутренний номер...">
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                        <div class="search-input-group">
-                            <label for="positionSearch" class="form-label">
-                                <i class="fas fa-user-tie"></i>Поиск по должности
-                            </label>
-                            <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
-                                   placeholder="Введите должность...">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row g-3 mb-3 justify-content-center">
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-6">
-                        <div class="search-input-group">
-                            <label for="emailSearch" class="form-label">
-                                <i class="fas fa-envelope"></i>Поиск по Email
-                            </label>
-                            <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
-                                   placeholder="Введите email...">
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-6">
                         <div class="search-input-group">
                             <label for="departmentSearch" class="form-label">
                                 <i class="fas fa-building"></i>Поиск по отделу
@@ -86,68 +72,112 @@
                     </div>
                 </div>
                 
-                <div class="row g-3 mb-3 justify-content-center">
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                        <div class="search-select-group">
-                            <label for="employees" class="form-label">
-                                <i class="fas fa-users"></i>ФИО
-                            </label>
-                            <select class="form-select" id="employees" name="employees" multiple size="3">
-                                @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
-                                {
-                                    @foreach (var employee in Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Select(e => e.FullName).Distinct().OrderBy(e => e))
-                                    {
-                                        <option value="@employee">@employee</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option disabled>Нет доступных сотрудников</option>
-                                }
-                            </select>
-                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                <div id="advancedSearch" style="display: none; border-top: 2px solid rgba(86, 171, 47, 0.2); padding-top: 20px; margin-top: 10px;">
+                    <div class="row g-3 mb-3 justify-content-center">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-input-group">
+                                <label for="positionSearch" class="form-label">
+                                    <i class="fas fa-user-tie"></i>Поиск по должности
+                                </label>
+                                <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
+                                       placeholder="Введите должность...">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-input-group">
+                                <label for="emailSearch" class="form-label">
+                                    <i class="fas fa-envelope"></i>Поиск по Email
+                                </label>
+                                <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
+                                       placeholder="Введите email...">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                        <div class="search-select-group">
-                            <label for="departments" class="form-label">
-                                <i class="fas fa-building"></i>Отделы
-                            </label>
-                            <select class="form-select" id="departments" name="departments" multiple size="3">
-                                @if (Model.Departments.Any())
-                                {
-                                    @foreach (var dept in Model.Departments)
-                                    {
-                                        <option value="@dept.Id">@dept.Name</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option disabled>Нет доступных отделов</option>
-                                }
-                            </select>
-                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                    
+                    <div class="row g-3 mb-3 justify-content-center">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-input-group">
+                                <label for="departmentFullNameSearch" class="form-label">
+                                    <i class="fas fa-building"></i>Поиск по полному названию отдела
+                                </label>
+                                <input type="text" class="form-control" id="departmentFullNameSearch" name="departmentFullNameSearch" 
+                                       placeholder="Введите полное название...">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-input-group">
+                                <label for="departmentShortNameSearch" class="form-label">
+                                    <i class="fas fa-building"></i>Поиск по сокращенному названию отдела
+                                </label>
+                                <input type="text" class="form-control" id="departmentShortNameSearch" name="departmentShortNameSearch" 
+                                       placeholder="Введите сокращенное название...">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-                        <div class="search-select-group">
-                            <label for="positions" class="form-label">
-                                <i class="fas fa-user-tie"></i>Должности
-                            </label>
-                            <select class="form-select" id="positions" name="positions" multiple size="3">
-                                @if (Model.Employees.Select(e => !string.IsNullOrEmpty(e.PositionDescription) ? e.PositionDescription : e.Position?.Name).Where(p => !string.IsNullOrEmpty(p)).Any())
-                                {
-                                    @foreach (var position in Model.Employees.Select(e => !string.IsNullOrEmpty(e.PositionDescription) ? e.PositionDescription : e.Position?.Name).Where(p => !string.IsNullOrEmpty(p)).Distinct().OrderBy(p => p))
+                    
+                    <div class="row g-3 mb-3 justify-content-center">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-select-group">
+                                <label for="employees" class="form-label">
+                                    <i class="fas fa-users"></i>ФИО
+                                </label>
+                                <select class="form-select" id="employees" name="employees" multiple size="3">
+                                    @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
                                     {
-                                        <option value="@position">@position</option>
+                                        @foreach (var employee in Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Select(e => e.FullName).Distinct().OrderBy(e => e))
+                                        {
+                                            <option value="@employee">@employee</option>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <option disabled>Нет доступных должностей</option>
-                                }
-                            </select>
-                            <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                                    else
+                                    {
+                                        <option disabled>Нет доступных сотрудников</option>
+                                    }
+                                </select>
+                                <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-select-group">
+                                <label for="departments" class="form-label">
+                                    <i class="fas fa-building"></i>Отделы
+                                </label>
+                                <select class="form-select" id="departments" name="departments" multiple size="3">
+                                    @if (Model.Departments.Any())
+                                    {
+                                        @foreach (var dept in Model.Departments)
+                                        {
+                                            <option value="@dept.Id" data-fullname="@(dept.FullName ?? "")" data-shortname="@(dept.ShortName ?? "")">@dept.GetDisplayName()</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>Нет доступных отделов</option>
+                                    }
+                                </select>
+                                <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-select-group">
+                                <label for="positions" class="form-label">
+                                    <i class="fas fa-user-tie"></i>Должности
+                                </label>
+                                <select class="form-select" id="positions" name="positions" multiple size="3">
+                                    @if (Model.Employees.Select(e => !string.IsNullOrEmpty(e.PositionDescription) ? e.PositionDescription : e.Position?.Name).Where(p => !string.IsNullOrEmpty(p)).Any())
+                                    {
+                                        @foreach (var position in Model.Employees.Select(e => !string.IsNullOrEmpty(e.PositionDescription) ? e.PositionDescription : e.Position?.Name).Where(p => !string.IsNullOrEmpty(p)).Distinct().OrderBy(p => p))
+                                        {
+                                            <option value="@position">@position</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>Нет доступных должностей</option>
+                                    }
+                                </select>
+                                <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,10 +210,9 @@
             
             <div class="card">
                 <div class="card-body p-0">
-                <div class="card-body p-0">
                     <div id="employeesTable">
                         @{
-                            var groupedEmployees = Model.Employees.GroupBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name).OrderBy(g => g.Key);
+                            var groupedEmployees = Model.Employees.GroupBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел").OrderBy(g => g.Key);
                         }
                         @foreach (var departmentGroup in groupedEmployees)
                         {
@@ -197,7 +226,7 @@
                                         <tr>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Местный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Внутренний номер</th>
                                             <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
@@ -241,21 +270,10 @@
                                 </table>
                             </div>
                         }
-                                @if (!Model.Employees.Any())
-                                {
-                                    <div class="card">
-                                        <div class="card-body p-0">
-                                            <div class="card-body p-0">
-                                                <div id="employeesTable">
-                                                    <div class="text-center text-muted py-4">Сотрудники не найдены</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </tbody>
-                        </table>
-                        </div>
+                        @if (!Model.Employees.Any())
+                        {
+                            <div class="text-center text-muted py-4">Сотрудники не найдены</div>
+                        }
                     </div>
                 </div>
             </div>
@@ -807,14 +825,14 @@
     
     .department-name-badge {
         display: inline-block;
-        background: linear-gradient(135deg, #6f42c1, #9c27b0);
-        color: white;
+        background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 50%, #11998e 100%);
+        color: #000;
         padding: 6px 12px;
         border-radius: 15px;
         font-weight: bold;
         font-size: 0.9em;
-        border: 2px solid #6f42c1;
-        box-shadow: 0 2px 6px rgba(111, 66, 193, 0.2);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(86, 171, 47, 0.2);
         text-align: center;
         margin: 0 auto;
         width: fit-content;
@@ -869,10 +887,59 @@
         background: linear-gradient(45deg, #007bff, #0056b3);
         color: white;
     }
+    
+    .expand-search-toggle {
+        display: flex;
+        align-items: center;
+    }
+    
+    .expand-search-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 50%, #11998e 100%);
+        color: #000;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(86, 171, 47, 0.2);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .expand-search-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+    }
+    
+    .expand-search-label .expand-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    #expandSearch:checked ~ .expand-search-label .expand-icon {
+        transform: rotate(180deg);
+    }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const expandSearchCheckbox = document.getElementById('expandSearch');
+    const advancedSearch = document.getElementById('advancedSearch');
+    const expandLabel = document.querySelector('.expand-search-label');
+    
+    expandLabel.addEventListener('click', function(e) {
+        e.preventDefault();
+        expandSearchCheckbox.checked = !expandSearchCheckbox.checked;
+        
+        if (expandSearchCheckbox.checked) {
+            advancedSearch.style.display = 'block';
+        } else {
+            advancedSearch.style.display = 'none';
+        }
+    });
+    
     const searchInput = document.getElementById('search');
     const employeesSelect = document.getElementById('employees');
     const departmentsSelect = document.getElementById('departments');
@@ -882,6 +949,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const positionSearchInput = document.getElementById('positionSearch');
     const emailSearchInput = document.getElementById('emailSearch');
     const departmentSearchInput = document.getElementById('departmentSearch');
+    const departmentFullNameSearchInput = document.getElementById('departmentFullNameSearch');
+    const departmentShortNameSearchInput = document.getElementById('departmentShortNameSearch');
     const tbody = document.getElementById('employeesTable');
     
     let typingTimer;
@@ -896,6 +965,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const positionSearch = positionSearchInput.value;
         const emailSearch = emailSearchInput.value;
         const departmentSearch = departmentSearchInput ? departmentSearchInput.value.trim() : '';
+        const departmentFullNameSearch = departmentFullNameSearchInput ? departmentFullNameSearchInput.value.trim() : '';
+        const departmentShortNameSearch = departmentShortNameSearchInput ? departmentShortNameSearchInput.value.trim() : '';
 
         tbody.innerHTML = `<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>`;
 
@@ -910,6 +981,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (emailSearch) params.append('emailSearch', emailSearch);
         if (departmentSearch) {
             params.append('departmentSearch', departmentSearch);
+        }
+        if (departmentFullNameSearch) {
+            params.append('departmentFullNameSearch', departmentFullNameSearch);
+        }
+        if (departmentShortNameSearch) {
+            params.append('departmentShortNameSearch', departmentShortNameSearch);
         }
 
         fetch(`/api/search?${params.toString()}`)
@@ -940,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <tr>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Местный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Внутренний номер</th>
                                             <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
@@ -1064,8 +1141,6 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
-            updateEmployeesList();
-            updatePositionsList();
             performSearch();
         }, 300);
     });
@@ -1073,8 +1148,6 @@ document.addEventListener('DOMContentLoaded', function() {
     phoneSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
-            updateEmployeesList();
-            updatePositionsList();
             performSearch();
         }, 300);
     });
@@ -1134,12 +1207,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         const placeholderOption = document.createElement('option');
                         placeholderOption.value = '';
-                        placeholderOption.textContent = 'В выбранных отделах нет должностей';
+                        placeholderOption.textContent = 'Нет доступных должностей';
                         placeholderOption.disabled = true;
                         placeholderOption.selected = false;
-                        placeholderOption.style.color = '#dc3545';
-                        placeholderOption.style.fontStyle = 'italic';
-                        placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
                         placeholderOption.setAttribute('data-placeholder', 'true');
                         positionsSelect.appendChild(placeholderOption);
                     }
@@ -1151,12 +1221,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const placeholderOption = document.createElement('option');
                     placeholderOption.value = '';
-                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.textContent = 'Нет доступных должностей';
                     placeholderOption.disabled = true;
                     placeholderOption.selected = false;
-                    placeholderOption.style.color = '#dc3545';
-                    placeholderOption.style.fontStyle = 'italic';
-                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
                     placeholderOption.setAttribute('data-placeholder', 'true');
                     positionsSelect.appendChild(placeholderOption);
                 });
@@ -1218,12 +1285,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         const placeholderOption = document.createElement('option');
                         placeholderOption.value = '';
-                        placeholderOption.textContent = 'В выбранных отделах нет сотрудников с ФИО';
+                        placeholderOption.textContent = 'Нет доступных сотрудников';
                         placeholderOption.disabled = true;
                         placeholderOption.selected = false;
-                        placeholderOption.style.color = '#dc3545';
-                        placeholderOption.style.fontStyle = 'italic';
-                        placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
                         placeholderOption.setAttribute('data-placeholder', 'true');
                         employeesSelect.appendChild(placeholderOption);
                     }
@@ -1235,12 +1299,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const placeholderOption = document.createElement('option');
                     placeholderOption.value = '';
-                    placeholderOption.textContent = 'Ошибка загрузки данных';
+                    placeholderOption.textContent = 'Нет доступных сотрудников';
                     placeholderOption.disabled = true;
                     placeholderOption.selected = false;
-                    placeholderOption.style.color = '#dc3545';
-                    placeholderOption.style.fontStyle = 'italic';
-                    placeholderOption.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
                     placeholderOption.setAttribute('data-placeholder', 'true');
                     employeesSelect.appendChild(placeholderOption);
                 });
@@ -1271,7 +1332,6 @@ document.addEventListener('DOMContentLoaded', function() {
         departmentsPerPageSelect.addEventListener('change', function() {
             const selectedValue = this.value;
             if (selectedValue === '0') {
-                // При показе всех отделов обновляем списки и выполняем поиск
                 updateEmployeesList();
                 updatePositionsList();
                 performSearch();
@@ -1285,8 +1345,6 @@ document.addEventListener('DOMContentLoaded', function() {
     positionSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
-            updateEmployeesList();
-            updatePositionsList();
             performSearch();
         }, 300);
     });
@@ -1294,8 +1352,6 @@ document.addEventListener('DOMContentLoaded', function() {
     emailSearchInput.addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
-            updateEmployeesList();
-            updatePositionsList();
             performSearch();
         }, 300);
     });
@@ -1304,11 +1360,71 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(typingTimer);
             typingTimer = setTimeout(() => {
                 syncDepartmentFilter();
-                updateEmployeesList();
-                updatePositionsList();
                 performSearch();
             }, 300);
         });
+    }
+    
+    if (departmentFullNameSearchInput) {
+        departmentFullNameSearchInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                syncDepartmentByFullName();
+                performSearch();
+            }, 300);
+        });
+    }
+    
+    if (departmentShortNameSearchInput) {
+        departmentShortNameSearchInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                syncDepartmentByShortName();
+                performSearch();
+            }, 300);
+        });
+    }
+    
+    function syncDepartmentByFullName() {
+        const departmentFullNameSearch = departmentFullNameSearchInput ? departmentFullNameSearchInput.value.trim() : '';
+        if (departmentFullNameSearch) {
+            const matchingDepartments = Array.from(departmentsSelect.options).filter(option => 
+                option.value && option.getAttribute('data-fullname') && 
+                option.getAttribute('data-fullname').toLowerCase().includes(departmentFullNameSearch.toLowerCase())
+            );
+            
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+            
+            matchingDepartments.forEach(option => {
+                option.selected = true;
+            });
+            
+            updateEmployeesList();
+            updatePositionsList();
+        }
+    }
+    
+    function syncDepartmentByShortName() {
+        const departmentShortNameSearch = departmentShortNameSearchInput ? departmentShortNameSearchInput.value.trim() : '';
+        if (departmentShortNameSearch) {
+            const matchingDepartments = Array.from(departmentsSelect.options).filter(option => 
+                option.value && option.getAttribute('data-shortname') && 
+                option.getAttribute('data-shortname').toLowerCase().includes(departmentShortNameSearch.toLowerCase())
+            );
+            
+            Array.from(departmentsSelect.selectedOptions).forEach(option => {
+                option.selected = false;
+            });
+            
+            matchingDepartments.forEach(option => {
+                option.selected = true;
+            });
+            
+            updateEmployeesList();
+            updatePositionsList();
+        }
     }
     
     function syncDepartmentFilter() {
@@ -1390,8 +1506,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function resetFilters() {
-        // Просто перезагружаем страницу для сброса всех фильтров
-        window.location.href = window.location.pathname;
+        searchInput.value = '';
+        phoneSearchInput.value = '';
+        departmentSearchInput.value = '';
+        positionSearchInput.value = '';
+        emailSearchInput.value = '';
+        if (departmentFullNameSearchInput) departmentFullNameSearchInput.value = '';
+        if (departmentShortNameSearchInput) departmentShortNameSearchInput.value = '';
+        
+        employeesSelect.selectedIndex = -1;
+        departmentsSelect.selectedIndex = -1;
+        positionsSelect.selectedIndex = -1;
+        
+        updateEmployeesList();
+        updatePositionsList();
+        
+        performSearch();
     }
     
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');

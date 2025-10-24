@@ -17,7 +17,7 @@ namespace EmployeeDirectory.Models
         public string? CityPhone { get; set; }
 
         [StringLength(20)]
-        [Display(Name = "Местный номер")]
+        [Display(Name = "Внутренний номер")]
         public string? LocalPhone { get; set; }
 
         [StringLength(150)]

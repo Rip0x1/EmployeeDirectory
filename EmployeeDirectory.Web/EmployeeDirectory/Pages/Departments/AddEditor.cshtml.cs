@@ -69,7 +69,7 @@ namespace EmployeeDirectory.Pages.Departments
             }
 
             DepartmentId = department.Id;
-            DepartmentName = department.Name;
+            DepartmentName = department.GetDisplayName();
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)

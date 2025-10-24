@@ -48,7 +48,7 @@ namespace EmployeeDirectory.Pages.Departments
                 return RedirectToPage("/Index");
             }
 
-            DepartmentName = department.Name;
+            DepartmentName = department.GetDisplayName();
             Employees = await _employeeService.GetEmployeesByDepartmentAsync(DepartmentId);
 
             return Page();

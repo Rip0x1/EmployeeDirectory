@@ -45,7 +45,7 @@ namespace EmployeeDirectory.Pages.Departments
 
             Editor = editor;
             DepartmentId = editor.DepartmentId ?? 0;
-            DepartmentName = editor.Department?.Name ?? "Неизвестный отдел";
+            DepartmentName = editor.Department?.GetDisplayName() ?? "Неизвестный отдел";
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)

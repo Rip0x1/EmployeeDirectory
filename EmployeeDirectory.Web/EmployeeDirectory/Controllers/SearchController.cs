@@ -31,6 +31,8 @@ namespace EmployeeDirectory.Controllers
             [FromQuery] string? positionSearch,
             [FromQuery] string? emailSearch,
             [FromQuery] string? departmentSearch,
+            [FromQuery] string? departmentFullNameSearch,
+            [FromQuery] string? departmentShortNameSearch,
             [FromQuery] string? sortBy)
         {
             try
@@ -83,7 +85,12 @@ namespace EmployeeDirectory.Controllers
                 {
                     employees = employees.Where(e =>
                         (!string.IsNullOrEmpty(e.DepartmentName) && e.DepartmentName.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)) ||
-                        (e.Department != null && e.Department.Name.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)));
+                        (e.Department != null && (
+                            e.Department.Name.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase) ||
+                            (!string.IsNullOrEmpty(e.Department.FullName) && e.Department.FullName.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(e.Department.ShortName) && e.Department.ShortName.Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)) ||
+                            e.Department.GetDisplayName().Contains(departmentSearch, StringComparison.OrdinalIgnoreCase)
+                        )));
                 }
 
                 if (!string.IsNullOrEmpty(emailSearch))
@@ -92,32 +99,48 @@ namespace EmployeeDirectory.Controllers
                         !string.IsNullOrEmpty(e.Email) && e.Email.Contains(emailSearch, StringComparison.OrdinalIgnoreCase));
                 }
 
+                if (!string.IsNullOrEmpty(departmentFullNameSearch))
+                {
+                    employees = employees.Where(e =>
+                        e.Department != null && 
+                        !string.IsNullOrEmpty(e.Department.FullName) && 
+                        e.Department.FullName.Contains(departmentFullNameSearch, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(departmentShortNameSearch))
+                {
+                    employees = employees.Where(e =>
+                        e.Department != null && 
+                        !string.IsNullOrEmpty(e.Department.ShortName) && 
+                        e.Department.ShortName.Contains(departmentShortNameSearch, StringComparison.OrdinalIgnoreCase));
+                }
+
                 if (!string.IsNullOrEmpty(sortBy))
                 {
                     switch (sortBy.ToLower())
                     {
                         case "name":
                             employees = employees
-                                .OrderBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name)
+                                .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                                 .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         case "department":
                             employees = employees
-                                .OrderBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name)
+                                .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                                 .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         case "position":
                             employees = employees
-                                .OrderBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name)
+                                .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                                 .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                                 .ThenBy(e => e.PositionDescription ?? string.Empty)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         default:
                             employees = employees
-                                .OrderBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name)
+                                .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                                 .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
@@ -126,7 +149,7 @@ namespace EmployeeDirectory.Controllers
                 else
                 {
                     employees = employees
-                        .OrderBy(e => !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name)
+                        .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                         .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
                         .ThenBy(e => e.FullName ?? string.Empty);
                 }
@@ -136,7 +159,7 @@ namespace EmployeeDirectory.Controllers
                 {
                     id = e.Id,
                     fullName = e.FullName ?? "-",
-                    departmentName = !string.IsNullOrEmpty(e.DepartmentName) ? e.DepartmentName : e.Department.Name,
+                    departmentName = e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел",
                     cityPhone = e.CityPhone ?? "Не указано",
                     localPhone = e.LocalPhone ?? "Не указано",
                     email = e.Email ?? "Не указано",
