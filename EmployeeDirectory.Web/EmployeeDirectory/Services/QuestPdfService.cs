@@ -177,10 +177,83 @@ namespace EmployeeDirectory.Services
                         {
                             table.ColumnsDefinition(columns =>
                             {
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(2f);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Дата/Время").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Пользователь").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Действие").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("IP-адрес").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Сущность").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Детали").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                            });
+
+                            foreach (var log in logs)
+                            {
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(TimeZoneInfo.ConvertTimeFromUtc(log.TimestampUtc, TimeZoneInfo.Local).ToString("dd.MM.yyyy HH:mm:ss")).FontSize(7).FontColor(Colors.Black).AlignCenter();
+
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(log.UserName ?? "Система").FontSize(7).FontColor(Colors.Black).AlignCenter();
+
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(log.Action ?? "-").FontSize(7).FontColor(Colors.Black).AlignCenter();
+
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(log.IpAddress ?? "-").FontSize(7).FontColor(Colors.Black).AlignCenter();
+
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text($"{log.EntityType} ({log.EntityId})").FontSize(7).FontColor(Colors.Black).AlignCenter();
+
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(log.Details ?? "-").FontSize(7).FontColor(Colors.Black).AlignCenter();
+                            }
+                        });
+                });
+            });
+
+            return document.GeneratePdf();
+        }
+
+        public byte[] GenerateLoginLogsPdf(List<EmployeeDirectory.Models.LoginLog> logs, string orientation = "portrait")
+        {
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(orientation == "landscape" ? PageSizes.A4.Landscape() : PageSizes.A4);
+                    page.Margin(20);
+
+                    page.Header()
+                        .Text("Логи входа и выхода")
+                        .FontSize(16)
+                        .FontColor(Colors.Black)
+                        .Bold()
+                        .AlignCenter();
+
+                    page.Content()
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(1.5f);
                                 columns.RelativeColumn(1);
-                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(1.5f);
                                 columns.RelativeColumn(1);
-                                columns.RelativeColumn(2);
                             });
 
                             table.Header(header =>
@@ -190,24 +263,37 @@ namespace EmployeeDirectory.Services
                                 header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
                                     .Text("Пользователь").FontSize(10).Bold().FontColor(Colors.Black).AlignCenter();
                                 header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
-                                    .Text("IP").FontSize(10).Bold().FontColor(Colors.Black).AlignCenter();
-                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
                                     .Text("Действие").FontSize(10).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("IP-адрес").FontSize(10).Bold().FontColor(Colors.Black).AlignCenter();
+                                header.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text("Статус").FontSize(10).Bold().FontColor(Colors.Black).AlignCenter();
                             });
 
                             foreach (var log in logs)
                             {
                                 table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
-                                    .Text(log.TimestampUtc.ToString("dd.MM.yyyy HH:mm:ss")).FontSize(8).FontColor(Colors.Black).AlignCenter();
+                                    .Text(TimeZoneInfo.ConvertTimeFromUtc(log.TimestampUtc, TimeZoneInfo.Local).ToString("dd.MM.yyyy HH:mm:ss")).FontSize(8).FontColor(Colors.Black).AlignCenter();
 
                                 table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
-                                    .Text(log.UserName ?? "Система").FontSize(8).FontColor(Colors.Black).AlignCenter();
+                                    .Text(log.UserName ?? "-").FontSize(8).FontColor(Colors.Black).AlignCenter();
+
+                                var actionText = log.Action switch
+                                {
+                                    "Login" => "Вход",
+                                    "Logout" => "Выход",
+                                    "FailedLogin" => "Неудачный вход",
+                                    _ => log.Action ?? "-"
+                                };
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
+                                    .Text(actionText).FontSize(8).FontColor(Colors.Black).AlignCenter();
 
                                 table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
                                     .Text(log.IpAddress ?? "-").FontSize(8).FontColor(Colors.Black).AlignCenter();
 
+                                var statusText = log.Success ? "Успешно" : "Ошибка";
                                 table.Cell().Border(1).BorderColor(Colors.Black).Padding(3)
-                                    .Text(log.Action ?? "-").FontSize(8).FontColor(Colors.Black).AlignCenter();
+                                    .Text(statusText).FontSize(8).FontColor(Colors.Black).AlignCenter();
                             }
                         });
                 });

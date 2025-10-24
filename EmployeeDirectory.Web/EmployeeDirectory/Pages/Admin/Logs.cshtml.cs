@@ -1,5 +1,6 @@
 using EmployeeDirectory.Data;
 using EmployeeDirectory.Models;
+using EmployeeDirectory.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -41,7 +42,8 @@ namespace EmployeeDirectory.Pages.Admin
                     (l.UserName != null && EF.Functions.ILike(l.UserName, $"%{q}%")) ||
                     (l.Action != null && EF.Functions.ILike(l.Action, $"%{q}%")) ||
                     (l.EntityType != null && EF.Functions.ILike(l.EntityType, $"%{q}%")) ||
-                    (l.EntityId != null && EF.Functions.ILike(l.EntityId, $"%{q}%"))
+                    (l.EntityId != null && EF.Functions.ILike(l.EntityId, $"%{q}%")) ||
+                    (l.IpAddress != null && EF.Functions.ILike(l.IpAddress, $"%{q}%"))
                 );
             }
 
@@ -73,12 +75,20 @@ namespace EmployeeDirectory.Pages.Admin
                     <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.TimestampUtc:yyyy-MM-dd HH:mm:ss}</td>
                     <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.UserName}</td>
                     <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.Action}</td>
+                    <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.IpAddress ?? "-"}</td>
                     <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.EntityType} ({log.EntityId})</td>
                     <td class=""text-center"" style=""border-right: 3px solid rgb(33, 37, 41) !important;"">{log.Details}</td>
                 </tr>";
             }
             
             return Content(html, "text/html");
+        }
+
+        public async Task<IActionResult> OnPostClearLogsAsync([FromServices] ILogService logService)
+        {
+            await logService.DeleteAllLogsAsync();
+            TempData["Success"] = "Логи успешно очищены";
+            return RedirectToPage("/Admin/Logs");
         }
     }
 }

@@ -8,6 +8,13 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Pages\Print\**" />
+    <Content Remove="Pages\Print\**" />
+    <EmbeddedResource Remove="Pages\Print\**" />
+    <None Remove="Pages\Print\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
@@ -18,12 +25,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="8.0.0" />
     <PackageReference Include="QuestPDF" Version="2025.7.3" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Pages\Print\" />
   </ItemGroup>
 
 

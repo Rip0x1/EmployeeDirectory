@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using EmployeeDirectory.Models;
+using EmployeeDirectory.Services;
 
 namespace EmployeeDirectory.Pages.Account
 {
@@ -10,16 +11,40 @@ namespace EmployeeDirectory.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
+        private readonly ILoginLogService _loginLogService;
 
-        public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger, ILoginLogService loginLogService)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _loginLogService = loginLogService;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        private string GetClientIpAddress()
         {
-            return Page();
+            var ipAddress = HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            }
+            else
+            {
+                var ips = ipAddress.Split(',');
+                ipAddress = ips[0].Trim();
+            }
+            
+            if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+            {
+                ipAddress = "Локальный адрес (::1)";
+            }
+            
+            return ipAddress ?? "Не определен";
+        }
+
+        public Task<IActionResult> OnGetAsync()
+        {
+            return Task.FromResult<IActionResult>(Page());
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -28,6 +53,18 @@ namespace EmployeeDirectory.Pages.Account
             {
                 var userName = User.Identity.Name;
                 _logger.LogInformation("Пользователь {Name} вышел из системы", userName);
+                
+                var ipAddress = GetClientIpAddress();
+                var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+                
+                await _loginLogService.WriteLoginLogAsync(new LoginLog
+                {
+                    UserName = userName,
+                    Action = "Logout",
+                    IpAddress = ipAddress,
+                    UserAgent = userAgent,
+                    Success = true
+                });
                 
                 await _signInManager.SignOutAsync();
                 

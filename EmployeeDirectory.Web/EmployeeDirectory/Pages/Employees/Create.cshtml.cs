@@ -66,9 +66,16 @@ namespace EmployeeDirectory.Pages.Employees
                 departments = departments.Where(d => d.Id == user.DepartmentId.Value);
             }
 
+            var departmentsList = departments.ToList();
+            
+            if (!departmentsList.Any())
+            {
+                departmentsList.Add(new Department { Id = 0, Name = "Не назначен" });
+            }
+
             var positions = await _positionService.GetAllPositionsAsync();
 
-            Departments = new SelectList(departments, "Id", "Name");
+            Departments = new SelectList(departmentsList, "Id", "Name");
             Positions = new SelectList(positions, "Id", "Name");
 
             return Page();
@@ -109,9 +116,15 @@ namespace EmployeeDirectory.Pages.Employees
                     departments = departments.Where(d => d.Id == user.DepartmentId.Value);
                 }
 
+                var departmentsList = departments.ToList();
+                if (!departmentsList.Any())
+                {
+                    departmentsList.Add(new Department { Id = 0, Name = "Не назначен" });
+                }
+
                 var positions = await _positionService.GetAllPositionsAsync();
 
-                Departments = new SelectList(departments, "Id", "Name");
+                Departments = new SelectList(departmentsList, "Id", "Name");
                 Positions = new SelectList(positions, "Id", "Name");
                 
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
@@ -127,6 +140,20 @@ namespace EmployeeDirectory.Pages.Employees
                 }
                 else
                 {
+                    if (DepartmentId == 0)
+                    {
+                        TempData["Error"] = "Необходимо выбрать отдел.";
+                        var depts = await _departmentService.GetAllDepartmentsAsync();
+                        var deptsList = depts.ToList();
+                        if (!deptsList.Any())
+                        {
+                            deptsList.Add(new Department { Id = 0, Name = "Не назначен" });
+                        }
+                        Departments = new SelectList(deptsList, "Id", "Name");
+                        var positions = await _positionService.GetAllPositionsAsync();
+                        Positions = new SelectList(positions, "Id", "Name");
+                        return Page();
+                    }
                     Employee.DepartmentId = DepartmentId;
                 }
 
@@ -160,9 +187,15 @@ namespace EmployeeDirectory.Pages.Employees
                     departments = departments.Where(d => d.Id == user.DepartmentId.Value);
                 }
 
+                var departmentsList = departments.ToList();
+                if (!departmentsList.Any())
+                {
+                    departmentsList.Add(new Department { Id = 0, Name = "Не назначен" });
+                }
+
                 var positions = await _positionService.GetAllPositionsAsync();
 
-                Departments = new SelectList(departments, "Id", "Name");
+                Departments = new SelectList(departmentsList, "Id", "Name");
                 Positions = new SelectList(positions, "Id", "Name");
                 return Page();
             }

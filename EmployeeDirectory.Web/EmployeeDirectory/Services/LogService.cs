@@ -37,6 +37,13 @@ namespace EmployeeDirectory.Services
                 .OrderByDescending(l => l.TimestampUtc)
                 .ToListAsync();
         }
+
+        public async Task DeleteAllLogsAsync()
+        {
+            var allLogs = await _context.Logs.ToListAsync();
+            _context.Logs.RemoveRange(allLogs);
+            await _context.SaveChangesAsync();
+        }
     }
 }
 

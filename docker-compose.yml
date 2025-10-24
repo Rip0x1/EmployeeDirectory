@@ -27,6 +27,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=EmployeeDirectory;Username=postgres;Password=root
+      - TZ=Europe/Moscow
     ports:
       - "5000:8080"
     depends_on:

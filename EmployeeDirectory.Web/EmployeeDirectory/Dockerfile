@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
+RUN apt-get update && apt-get install -y krb5-user libgssapi-krb5-2 && rm -rf /var/lib/apt/lists/*
 EXPOSE 8080
 EXPOSE 8081
 

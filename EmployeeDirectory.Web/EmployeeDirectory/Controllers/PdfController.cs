@@ -126,5 +126,36 @@ namespace EmployeeDirectory.Controllers
 
             return File(pdfBytes, "application/pdf", $"Логи_системы_{DateTime.Now:yyyy-MM-dd}.pdf");
         }
+
+        [HttpGet("LoginLogs")]
+        public async Task<IActionResult> LoginLogs(string orientation = "portrait", string? search = null, string? startDate = null, string? endDate = null)
+        {
+            var query = _context.LoginLogs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(l => l.UserName.Contains(search) || l.IpAddress.Contains(search) || l.Action.Contains(search));
+            }
+
+            if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out var start))
+            {
+                var startUtc = start.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(start, DateTimeKind.Utc) : start.ToUniversalTime();
+                query = query.Where(l => l.TimestampUtc >= startUtc);
+            }
+
+            if (!string.IsNullOrEmpty(endDate) && DateTime.TryParse(endDate, out var end))
+            {
+                var endUtc = end.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(end.AddDays(1), DateTimeKind.Utc) : end.AddDays(1).ToUniversalTime();
+                query = query.Where(l => l.TimestampUtc < endUtc);
+            }
+
+            var logs = await query
+                .OrderByDescending(l => l.TimestampUtc)
+                .ToListAsync();
+
+            var pdfBytes = _questPdfService.GenerateLoginLogsPdf(logs, orientation);
+
+            return File(pdfBytes, "application/pdf", $"Логи_входа_{DateTime.Now:yyyy-MM-dd}.pdf");
+        }
     }
 }

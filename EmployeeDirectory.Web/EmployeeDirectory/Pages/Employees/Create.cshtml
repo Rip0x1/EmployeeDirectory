@@ -86,10 +86,16 @@
                         
                         <div class="row">
                             <div class="col-12 mb-3">
-                                <div class="form-check">
+                                <div class="form-check mb-2">
                                     <input asp-for="Employee.IsHeadOfDepartment" class="form-check-input" />
                                     <label asp-for="Employee.IsHeadOfDepartment" class="form-check-label">
                                         <i class="fas fa-crown me-1"></i>Начальник отдела
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="Employee.IsDeputy" class="form-check-input" />
+                                    <label asp-for="Employee.IsDeputy" class="form-check-label">
+                                        <i class="fas fa-user-shield me-1"></i>Заместитель отдела
                                     </label>
                                 </div>
                             </div>

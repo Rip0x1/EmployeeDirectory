@@ -231,7 +231,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var employee in departmentGroup)
+                                        @foreach (var employee in departmentGroup.OrderByDescending(e => e.IsHeadOfDepartment).ThenByDescending(e => e.IsDeputy).ThenBy(e => e.FullName))
                                         {
                                             <tr>
                                                 <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
@@ -242,7 +242,16 @@
                                                     }
                                                     @if (!string.IsNullOrEmpty(positionText))
                                                     {
-                                                        <span class="position-badge @(employee.IsHeadOfDepartment ? "position-head" : "position-employee")">
+                                                        var badgeClass = "position-employee";
+                                                        if (employee.IsHeadOfDepartment)
+                                                        {
+                                                            badgeClass = "position-head";
+                                                        }
+                                                        else if (employee.IsDeputy)
+                                                        {
+                                                            badgeClass = "position-deputy";
+                                                        }
+                                                        <span class="position-badge @badgeClass">
                                                             @positionText
                                                         </span>
                                                         @if (!string.IsNullOrEmpty(employee.FullName))
@@ -883,6 +892,11 @@
         color: #000;
     }
     
+    .position-deputy {
+        background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+        color: white;
+    }
+    
     .position-employee {
         background: linear-gradient(45deg, #007bff, #0056b3);
         color: white;
@@ -1027,8 +1041,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         grouped[deptName].forEach(emp => {
                             let positionBadge = '';
                             if (emp.positionDescription) {
-                                const isHead = emp.isHeadOfDepartment;
-                                const badgeClass = isHead ? 'position-head' : 'position-employee';
+                                let badgeClass = 'position-employee';
+                                if (emp.isHeadOfDepartment) {
+                                    badgeClass = 'position-head';
+                                } else if (emp.isDeputy) {
+                                    badgeClass = 'position-deputy';
+                                }
                                 
                                 positionBadge = `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>`;
                                 if (emp.fullName && emp.fullName !== '-') {

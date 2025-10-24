@@ -6,6 +6,7 @@ namespace EmployeeDirectory.Services
     {
         Task WriteAsync(LogEntry entry, CancellationToken cancellationToken = default);
         Task<IEnumerable<LogEntry>> GetAllLogsAsync();
+        Task DeleteAllLogsAsync();
     }
 }
 

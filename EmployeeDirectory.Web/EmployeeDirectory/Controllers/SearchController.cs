@@ -122,26 +122,30 @@ namespace EmployeeDirectory.Controllers
                         case "name":
                             employees = employees
                                 .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                                .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
+                                .ThenByDescending(e => e.IsHeadOfDepartment)
+                                .ThenByDescending(e => e.IsDeputy)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         case "department":
                             employees = employees
                                 .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                                .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
+                                .ThenByDescending(e => e.IsHeadOfDepartment)
+                                .ThenByDescending(e => e.IsDeputy)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         case "position":
                             employees = employees
                                 .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                                .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
+                                .ThenByDescending(e => e.IsHeadOfDepartment)
+                                .ThenByDescending(e => e.IsDeputy)
                                 .ThenBy(e => e.PositionDescription ?? string.Empty)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                         default:
                             employees = employees
                                 .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                                .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
+                                .ThenByDescending(e => e.IsHeadOfDepartment)
+                                .ThenByDescending(e => e.IsDeputy)
                                 .ThenBy(e => e.FullName ?? string.Empty);
                             break;
                     }
@@ -150,7 +154,8 @@ namespace EmployeeDirectory.Controllers
                 {
                     employees = employees
                         .OrderBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                        .ThenBy(e => e.IsHeadOfDepartment ? 0 : 1)
+                        .ThenByDescending(e => e.IsHeadOfDepartment)
+                        .ThenByDescending(e => e.IsDeputy)
                         .ThenBy(e => e.FullName ?? string.Empty);
                 }
                 var allDepartments = await _departmentService.GetAllDepartmentsAsync();
@@ -164,6 +169,7 @@ namespace EmployeeDirectory.Controllers
                     localPhone = e.LocalPhone ?? "Не указано",
                     email = e.Email ?? "Не указано",
                     isHeadOfDepartment = e.IsHeadOfDepartment,
+                    isDeputy = e.IsDeputy,
                     positionDescription = e.PositionDescription
                 }).ToList();
 

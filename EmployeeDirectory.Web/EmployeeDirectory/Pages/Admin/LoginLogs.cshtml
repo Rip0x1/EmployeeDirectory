@@ -1,8 +1,8 @@
 @page
-@model EmployeeDirectory.Pages.Admin.LogsModel
+@model EmployeeDirectory.Pages.Admin.LoginLogsModel
 @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Administrator")]
 @{
-    ViewData["Title"] = "Логи системы";
+    ViewData["Title"] = "Логи входа";
 }
 
 <div class="container-fluid">
@@ -16,9 +16,9 @@
                 </div>
             }
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-clipboard-list me-2"></i>Логи системы</h2>
+                <h2><i class="fas fa-sign-in-alt me-2"></i>Логи входа и выхода</h2>
                 <div class="d-flex gap-2">
-                    <button id="printLogsBtn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/Logs">
+                    <button id="printLoginLogsBtn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/LoginLogs">
                         <i class="fas fa-print me-1"></i> Печать
                     </button>
                     <form method="post" asp-page-handler="ClearLogs" onsubmit="return confirm('Вы уверены, что хотите удалить все логи? Это действие нельзя отменить.');">
@@ -34,9 +34,9 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form method="get" class="row g-2 mb-3" id="logsFilterForm">
+                    <form method="get" class="row g-2 mb-3" id="loginLogsFilterForm">
                         <div class="col-md-4">
-                            <input type="text" name="q" value="@Model.Q" class="form-control" placeholder="Поиск по всем полям..." />
+                            <input type="text" name="q" value="@Model.Q" class="form-control" placeholder="Поиск по пользователю, IP-адресу..." />
                         </div>
                         <div class="col-md-3">
                             <input type="date" name="from" value="@Model.FromDateString" class="form-control" placeholder="От даты" />
@@ -45,7 +45,7 @@
                             <input type="date" name="to" value="@Model.ToDateString" class="form-control" placeholder="До даты" />
                         </div>
                         <div class="col-md-2">
-                            <button id="logsResetBtn" class="btn btn-outline-secondary w-100" type="button">Сброс</button>
+                            <button id="loginLogsResetBtn" class="btn btn-outline-secondary w-100" type="button">Сброс</button>
                         </div>
                     </form>
                     <div class="p-0">
@@ -57,12 +57,11 @@
                                     <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Пользователь</th>
                                     <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Действие</th>
                                     <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">IP-адрес</th>
-                                    <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Сущность</th>
-                                    <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Детали</th>
+                                    <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important;">Статус</th>
                                 </tr>
                             </thead>
-                            <tbody id="logsTableBody">
-                                @await Html.PartialAsync("/Pages/Admin/_LogsTable.cshtml", Model.Items)
+                            <tbody id="loginLogsTableBody">
+                                @await Html.PartialAsync("/Pages/Admin/_LoginLogsTable.cshtml", Model.LoginLogs)
                             </tbody>
                         </table>
                     </div>
@@ -76,26 +75,17 @@
 
 @section Scripts {
     <style>
-        #logsFilterForm .form-control {
+        #loginLogsFilterForm .form-control {
             min-width: 0;
             flex: 1;
         }
-        #logsFilterForm .col-md-1 {
-            min-width: 80px;
-        }
-        #logsFilterForm .col-md-2 {
-            min-width: 120px;
-        }
-        #logsFilterForm .col-md-3 {
-            min-width: 150px;
-        }
-        #logsResetBtn {
+        #loginLogsResetBtn {
             white-space: nowrap;
         }
     </style>
     <script>
         (function() {
-            const form = document.getElementById('logsFilterForm');
+            const form = document.getElementById('loginLogsFilterForm');
             if (!form) return;
             let t;
             const debounce = (fn, d=300) => {
@@ -105,14 +95,14 @@
 
             const updateTable = () => {
                 const params = new URLSearchParams(new FormData(form));
-                fetch(`@Url.Page("/Admin/Logs", "Table")?${params.toString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+                fetch(`@Url.Page("/Admin/LoginLogs", "Table")?${params.toString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
                     .then(r => r.text())
                     .then(html => {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
                         const tbody = doc.querySelector('tbody');
                         if (tbody) {
-                            document.getElementById('logsTableBody').innerHTML = tbody.innerHTML;
+                            document.getElementById('loginLogsTableBody').innerHTML = tbody.innerHTML;
                         }
                     });
             };
@@ -124,7 +114,7 @@
                 debounce(updateTable);
             });
 
-            const resetBtn = document.getElementById('logsResetBtn');
+            const resetBtn = document.getElementById('loginLogsResetBtn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -137,5 +127,4 @@
         })();
     </script>
 }
-
 

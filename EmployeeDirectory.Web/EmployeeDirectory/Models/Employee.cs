@@ -37,6 +37,9 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Является начальником отдела")]
         public bool IsHeadOfDepartment { get; set; } = false;
 
+        [Display(Name = "Является заместителем отдела")]
+        public bool IsDeputy { get; set; } = false;
+
         [Display(Name = "Должность/Описание")]
         public string? PositionDescription { get; set; }
 

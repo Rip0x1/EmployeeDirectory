@@ -29,6 +29,9 @@ namespace EmployeeDirectory
                 options.Password.RequiredLength = 6;
                 options.User.RequireUniqueEmail = false;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+                options.Lockout.AllowedForNewUsers = false;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.Zero;
+                options.Lockout.MaxFailedAccessAttempts = int.MaxValue;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
@@ -36,22 +39,32 @@ namespace EmployeeDirectory
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.SameSite = SameSiteMode.Lax;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+                    ? CookieSecurePolicy.SameAsRequest 
+                    : CookieSecurePolicy.Always;
                 options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
             });
 
-            builder.Services.AddAuthentication()
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/Account/Login";
-                    options.LogoutPath = "/Account/Logout";
-                    options.AccessDeniedPath = "/Account/AccessDenied";
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.IsEssential = true;
-                });
+            var authBuilder = builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
+            });
+            
+            if (OperatingSystem.IsWindows())
+            {
+                authBuilder.AddNegotiate();
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                authBuilder.AddNegotiate();
+            }
+            
+            authBuilder.AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+            });
 
             builder.Services.AddAuthorization();
 
@@ -61,13 +74,18 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<IDepartmentEditorService, DepartmentEditorService>();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ILogService, LogService>();
+            builder.Services.AddScoped<ILoginLogService, LoginLogService>();
             builder.Services.AddScoped<UserInitializationService>();
             builder.Services.AddScoped<DataSeederService>();
             builder.Services.AddScoped<QuestPdfService>();
 
             var app = builder.Build();
  
-            app.UseHsts();
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHsts();
+            }
+            
             app.UseHttpsRedirection();
             
             if (app.Environment.IsDevelopment())
