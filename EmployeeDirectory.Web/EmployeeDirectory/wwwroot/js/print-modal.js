@@ -2,30 +2,64 @@ document.addEventListener('DOMContentLoaded', function () {
     const printModal = new bootstrap.Modal(document.getElementById('printSettingsModal'));
     let currentPrintUrl = '';
 
+    const printAllRadio = document.getElementById('printAllDepartments');
+    const printSelectedRadio = document.getElementById('printSelectedDepartments');
+    const printDepartmentSelection = document.getElementById('printDepartmentSelection');
+    const printDepartmentsSelect = document.getElementById('printDepartmentsSelect');
+
     document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#printSettingsModal"]').forEach(button => {
         button.addEventListener('click', function () {
             currentPrintUrl = this.getAttribute('data-print-url');
+            loadDepartmentsForPrint();
         });
     });
 
+    printAllRadio.addEventListener('change', function() {
+        if (this.checked) {
+            printDepartmentSelection.style.display = 'none';
+        }
+    });
+
+    printSelectedRadio.addEventListener('change', function() {
+        if (this.checked) {
+            printDepartmentSelection.style.display = 'block';
+        }
+    });
+
+    function loadDepartmentsForPrint() {
+        fetch('/api/search/departments')
+            .then(response => response.json())
+            .then(departments => {
+                printDepartmentsSelect.innerHTML = '';
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.fullName || dept.name;
+                    printDepartmentsSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки отделов для печати:', error);
+            });
+    }
+
     document.getElementById('confirmPrint').addEventListener('click', function () {
         const orientation = document.getElementById('printOrientation').value;
+        const isAllDepartments = printAllRadio.checked;
 
         const url = new URL(currentPrintUrl, window.location.origin);
         url.searchParams.set('orientation', orientation);
         
-        const departmentsSelect = document.getElementById('departments');
-        const departmentSearchInput = document.getElementById('departmentSearch');
-        
-        if (departmentsSelect) {
-            const selectedDepartments = Array.from(departmentsSelect.selectedOptions).map(option => option.value);
-            if (selectedDepartments.length > 0) {
-                url.searchParams.set('departments', selectedDepartments.join(','));
+        if (!isAllDepartments) {
+            const selectedOptions = Array.from(printDepartmentsSelect.selectedOptions);
+            const departmentIds = selectedOptions.map(option => option.value);
+            
+            if (departmentIds.length === 0) {
+                alert('Выберите хотя бы один отдел для печати');
+                return;
             }
-        }
-        
-        if (departmentSearchInput && departmentSearchInput.value.trim()) {
-            url.searchParams.set('departmentSearch', departmentSearchInput.value.trim());
+            
+            url.searchParams.set('departments', departmentIds.join(','));
         }
         
         const logsSearchInput = document.getElementById('logsFilterForm')?.querySelector('input[name="q"]');

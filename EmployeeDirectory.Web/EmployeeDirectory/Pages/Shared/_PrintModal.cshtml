@@ -15,6 +15,27 @@
                         <option value="landscape">Альбомная (горизонтальная)</option>
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Отделы для печати:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="printDepartments" id="printAllDepartments" value="all" checked>
+                        <label class="form-check-label" for="printAllDepartments">
+                            Все отделы
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="printDepartments" id="printSelectedDepartments" value="selected">
+                        <label class="form-check-label" for="printSelectedDepartments">
+                            Выбранные отделы
+                        </label>
+                    </div>
+                </div>
+                <div id="printDepartmentSelection" style="display: none;">
+                    <label class="form-label">Выберите отделы:</label>
+                    <select class="form-select" id="printDepartmentsSelect" multiple size="5">
+                        <!-- Отделы будут загружены динамически -->
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

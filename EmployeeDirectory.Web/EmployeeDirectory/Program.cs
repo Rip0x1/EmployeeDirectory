@@ -78,6 +78,7 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<UserInitializationService>();
             builder.Services.AddScoped<DataSeederService>();
             builder.Services.AddScoped<QuestPdfService>();
+            builder.Services.AddScoped<IExportService, ExportService>();
 
             var app = builder.Build();
  

@@ -43,7 +43,7 @@ namespace EmployeeDirectory.Controllers
         }
 
         [HttpGet("MyDepartment")]
-        public async Task<IActionResult> MyDepartment(string orientation = "portrait")
+        public async Task<IActionResult> MyDepartment(string orientation = "portrait", string? departments = null)
         {
             var currentUser = User.Identity?.Name;
             if (string.IsNullOrEmpty(currentUser))
@@ -64,7 +64,6 @@ namespace EmployeeDirectory.Controllers
                 .Where(e => e.DepartmentId == user.Department.Id)
                 .OrderBy(e => e.FullName)
                 .ToListAsync();
-
 
             var pdfBytes = _questPdfService.GenerateEmployeeDirectoryPdf(employees, orientation);
 

@@ -19,9 +19,7 @@ services:
       retries: 5
 
   web:
-    build:
-      context: ./EmployeeDirectory.Web/EmployeeDirectory
-      dockerfile: Dockerfile
+    image: employeedirectory:dev
     container_name: employee-directory-web
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

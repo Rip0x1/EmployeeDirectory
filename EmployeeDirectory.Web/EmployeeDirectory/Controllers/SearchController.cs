@@ -181,5 +181,27 @@ namespace EmployeeDirectory.Controllers
             }
         }
 
+        [HttpGet("departments")]
+        public async Task<IActionResult> GetDepartments()
+        {
+            try
+            {
+                var departments = await _departmentService.GetAllDepartmentsAsync();
+                var result = departments.Select(d => new
+                {
+                    id = d.Id,
+                    name = d.Name,
+                    fullName = d.FullName,
+                    shortName = d.ShortName
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
     }
 }

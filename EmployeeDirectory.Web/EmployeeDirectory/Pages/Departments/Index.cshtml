@@ -4,6 +4,8 @@
     ViewData["Title"] = "Мой отдел";
 }
 
+@await Html.PartialAsync("_PrintModalMyDepartment")
+
 <div class="container-fluid fade-in-up">
     <div class="row">
         <div class="col-12">
@@ -137,8 +139,11 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <h5><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/MyDepartment">
+                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModalMyDepartment" data-print-url="/Pdf/MyDepartment">
                                 <i class="fas fa-print"></i> Печать
+                            </button>
+                            <button id="exportDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#exportSettingsModal">
+                                <i class="fas fa-download"></i> Экспорт
                             </button>
                         </div>
                     </div>
@@ -560,6 +565,114 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+});
+</script>
+
+<!-- Модальное окно экспорта -->
+<div class="modal fade" id="exportSettingsModal" tabindex="-1" aria-labelledby="exportSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportSettingsModalLabel">Экспорт сотрудников</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="exportFormat" class="form-label">Формат экспорта:</label>
+                    <select class="form-select" id="exportFormat">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="word">Word (.docx)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="exportConfirmBtn">Экспорт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportModal = document.getElementById('exportSettingsModal');
+    const exportFormatSelect = document.getElementById('exportFormat');
+    const exportConfirmBtn = document.getElementById('exportConfirmBtn');
+
+    exportConfirmBtn.addEventListener('click', function() {
+        const format = exportFormatSelect.value;
+        const currentDepartmentId = @Model.DepartmentId;
+        const departmentIds = [currentDepartmentId];
+
+        const modal = bootstrap.Modal.getInstance(exportModal);
+        modal.hide();
+        
+        setTimeout(() => {
+            exportEmployees(format, departmentIds);
+        }, 300);
+    });
+
+
+    const printModalMyDepartment = new bootstrap.Modal(document.getElementById('printSettingsModalMyDepartment'));
+    let currentPrintUrlMyDepartment = '';
+
+    document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#printSettingsModalMyDepartment"]').forEach(button => {
+        button.addEventListener('click', function () {
+            currentPrintUrlMyDepartment = this.getAttribute('data-print-url');
+        });
+    });
+
+    document.getElementById('confirmPrintMyDepartment').addEventListener('click', function () {
+        const orientation = document.getElementById('printOrientationMyDepartment').value;
+        const currentDepartmentId = @Model.DepartmentId;
+
+        const url = new URL(currentPrintUrlMyDepartment, window.location.origin);
+        url.searchParams.set('orientation', orientation);
+        url.searchParams.set('departments', currentDepartmentId.toString());
+
+        window.open(url.toString(), '_blank');
+        printModalMyDepartment.hide();
+    });
+
+    function exportEmployees(format, departmentIds) {
+        const requestData = {
+            DepartmentIds: departmentIds
+        };
+
+
+        const url = format === 'excel' ? '/api/export/excel' : '/api/export/word';
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Ошибка сервера:', text);
+                    throw new Error(`Ошибка сервера: ${response.status} - ${text}`);
+                });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Сотрудники_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${format === 'excel' ? 'xlsx' : 'docx'}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Ошибка экспорта:', error);
+            alert(`Ошибка при экспорте файла: ${error.message}`);
+        });
     }
 });
 </script>

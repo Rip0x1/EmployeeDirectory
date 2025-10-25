@@ -183,6 +183,9 @@
                 <button type="button" id="printBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModal" data-print-url="/Pdf/ManageEmployees">
                     <i class="fas fa-print"></i> Печать
                     </button>
+                <button type="button" id="exportBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#exportSettingsModal">
+                    <i class="fas fa-download"></i> Экспорт
+                </button>
                 </div>
             </div>
         </div>
@@ -953,6 +956,158 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+});
+</script>
+
+<!-- Модальное окно экспорта -->
+<div class="modal fade" id="exportSettingsModal" tabindex="-1" aria-labelledby="exportSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportSettingsModalLabel">Экспорт сотрудников</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="exportFormat" class="form-label">Формат экспорта:</label>
+                    <select class="form-select" id="exportFormat">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="word">Word (.docx)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Отделы для экспорта:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportDepartments" id="exportAllDepartments" value="all" checked>
+                        <label class="form-check-label" for="exportAllDepartments">
+                            Все отделы
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportDepartments" id="exportSelectedDepartments" value="selected">
+                        <label class="form-check-label" for="exportSelectedDepartments">
+                            Выбранные отделы
+                        </label>
+                    </div>
+                </div>
+                <div id="departmentSelection" style="display: none;">
+                    <label class="form-label">Выберите отделы:</label>
+                    <select class="form-select" id="exportDepartmentsSelect" multiple size="5">
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="exportConfirmBtn">Экспорт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportModal = document.getElementById('exportSettingsModal');
+    const exportFormatSelect = document.getElementById('exportFormat');
+    const exportAllRadio = document.getElementById('exportAllDepartments');
+    const exportSelectedRadio = document.getElementById('exportSelectedDepartments');
+    const departmentSelection = document.getElementById('departmentSelection');
+    const exportDepartmentsSelect = document.getElementById('exportDepartmentsSelect');
+    const exportConfirmBtn = document.getElementById('exportConfirmBtn');
+
+    exportModal.addEventListener('show.bs.modal', function() {
+        loadDepartmentsForExport();
+    });
+    exportAllRadio.addEventListener('change', function() {
+        if (this.checked) {
+            departmentSelection.style.display = 'none';
+        }
+    });
+
+    exportSelectedRadio.addEventListener('change', function() {
+        if (this.checked) {
+            departmentSelection.style.display = 'block';
+        }
+    });
+
+    exportConfirmBtn.addEventListener('click', function() {
+        const format = exportFormatSelect.value;
+        const isAllDepartments = exportAllRadio.checked;
+        let departmentIds = null;
+
+        if (!isAllDepartments) {
+            const selectedOptions = Array.from(exportDepartmentsSelect.selectedOptions);
+            departmentIds = selectedOptions.map(option => parseInt(option.value));
+            
+            if (departmentIds.length === 0) {
+                alert('Выберите хотя бы один отдел для экспорта');
+                return;
+            }
+        }
+
+        const modal = bootstrap.Modal.getInstance(exportModal);
+        modal.hide();
+        
+        setTimeout(() => {
+            exportEmployees(format, departmentIds);
+        }, 300);
+    });
+
+    function loadDepartmentsForExport() {
+        fetch('/api/search/departments')
+            .then(response => response.json())
+            .then(departments => {
+                exportDepartmentsSelect.innerHTML = '';
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.fullName || dept.name;
+                    exportDepartmentsSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки отделов:', error);
+            });
+    }
+
+    function exportEmployees(format, departmentIds) {
+        const requestData = {
+            DepartmentIds: departmentIds
+        };
+
+
+        const url = format === 'excel' ? '/api/export/excel' : '/api/export/word';
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Ошибка сервера:', text);
+                    throw new Error(`Ошибка сервера: ${response.status} - ${text}`);
+                });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Сотрудники_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${format === 'excel' ? 'xlsx' : 'docx'}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Ошибка экспорта:', error);
+            alert(`Ошибка при экспорте файла: ${error.message}`);
+        });
     }
 });
 </script>
