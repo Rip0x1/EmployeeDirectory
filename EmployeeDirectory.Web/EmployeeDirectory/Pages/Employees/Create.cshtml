@@ -62,6 +62,16 @@
                                 <span asp-validation-for="Employee.LocalPhone" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Employee.MobilePhone" class="form-label">
+                                    <i class="fas fa-mobile-alt me-1"></i>Мобильный номер
+                                </label>
+                                <input asp-for="Employee.MobilePhone" class="form-control" placeholder="+375 29 870 7877" />
+                                <span asp-validation-for="Employee.MobilePhone" class="text-danger"></span>
+                            </div>
+                        </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -95,7 +105,7 @@
                                 <div class="form-check">
                                     <input asp-for="Employee.IsDeputy" class="form-check-input" />
                                     <label asp-for="Employee.IsDeputy" class="form-check-label">
-                                        <i class="fas fa-user-shield me-1"></i>Заместитель отдела
+                                    <i class="fas fa-user-shield me-1"></i>Заместитель начальника
                                     </label>
                                 </div>
                             </div>

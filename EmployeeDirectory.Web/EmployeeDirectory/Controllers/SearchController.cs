@@ -71,7 +71,8 @@ namespace EmployeeDirectory.Controllers
                 {
                     employees = employees.Where(e => 
                         (e.CityPhone != null && e.CityPhone.Contains(phoneSearch)) ||
-                        (e.LocalPhone != null && e.LocalPhone.Contains(phoneSearch)));
+                        (e.LocalPhone != null && e.LocalPhone.Contains(phoneSearch)) ||
+                        (e.MobilePhone != null && e.MobilePhone.Contains(phoneSearch)));
                 }
                 
                 if (!string.IsNullOrEmpty(positionSearch))
@@ -110,9 +111,10 @@ namespace EmployeeDirectory.Controllers
                 if (!string.IsNullOrEmpty(departmentShortNameSearch))
                 {
                     employees = employees.Where(e =>
-                        e.Department != null && 
-                        !string.IsNullOrEmpty(e.Department.ShortName) && 
-                        e.Department.ShortName.Contains(departmentShortNameSearch, StringComparison.OrdinalIgnoreCase));
+                        e.Department != null && (
+                            (!string.IsNullOrEmpty(e.Department.ShortName) && e.Department.ShortName.Contains(departmentShortNameSearch, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(e.Department.Name) && e.Department.Name.Contains(departmentShortNameSearch, StringComparison.OrdinalIgnoreCase))
+                        ));
                 }
 
                 if (!string.IsNullOrEmpty(sortBy))
@@ -167,6 +169,7 @@ namespace EmployeeDirectory.Controllers
                     departmentName = e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел",
                     cityPhone = e.CityPhone ?? "Не указано",
                     localPhone = e.LocalPhone ?? "Не указано",
+                    mobilePhone = e.MobilePhone ?? "Не указано",
                     email = e.Email ?? "Не указано",
                     isHeadOfDepartment = e.IsHeadOfDepartment,
                     isDeputy = e.IsDeputy,

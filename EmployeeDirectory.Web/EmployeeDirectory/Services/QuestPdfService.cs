@@ -99,6 +99,7 @@ namespace EmployeeDirectory.Services
                         columns.RelativeColumn(2);
                         columns.RelativeColumn(1);
                         columns.RelativeColumn(1);
+                        columns.RelativeColumn(1);
                         columns.RelativeColumn(1.5f);
                     });
 
@@ -110,6 +111,8 @@ namespace EmployeeDirectory.Services
                                 .Text("Городской").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                             header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                                 .Text("Внутренний").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                                .Text("Мобильный").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                             header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                                 .Text("Email").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
                         });
@@ -148,7 +151,10 @@ namespace EmployeeDirectory.Services
                         table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                             .Text(localPhone).FontSize(8).FontColor(Colors.Black).AlignCenter();
 
+                        var mobile = !string.IsNullOrEmpty(employee.MobilePhone) ? employee.MobilePhone : "Не указано";
                         var email = !string.IsNullOrEmpty(employee.Email) ? employee.Email : "Не указано";
+                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                            .Text(mobile).FontSize(8).FontColor(Colors.Black).AlignCenter();
                         table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
                             .Text(email).FontSize(8).FontColor(Colors.Black).AlignCenter();
                     }

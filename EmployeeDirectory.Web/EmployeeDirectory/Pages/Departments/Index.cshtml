@@ -154,17 +154,18 @@
                         <div id="employeesTable">
                             <div class="department-section">
                                 <div class="department-header">
-                                    <span class="department-name-badge">@Model.DepartmentName</span>
+                                    <span class="department-name-badge">@((Model.Employees.FirstOrDefault()?.Department?.GetDisplayName()) ?? Model.DepartmentName)</span>
                                 </div>
 
                                 <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
                                         <tr>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Внутренний номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
-                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Мобильный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 19%;">Email</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Действия</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -198,13 +199,14 @@
                                             </td>
                                             <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.CityPhone ?? "Не указано")</td>
                                             <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.MobilePhone ?? "Не указано")</td>
                                             <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.Email ?? "Не указано")</td>
                                             <td class="text-center">
-                                                <div class="d-flex gap-2 justify-content-center">
-                                                    <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-primary">
+                                                <div class="d-flex flex-column gap-1 align-items-stretch actions-stack">
+                                                    <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-primary w-100">
                                                         <i class="fas fa-edit me-1"></i>Изменить
                                                     </a>
-                                                    <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-danger">
+                                                    <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-danger w-100">
                                                         <i class="fas fa-trash me-1"></i>Удалить
                                                     </a>
                                                 </div>
@@ -351,6 +353,18 @@
     background: linear-gradient(45deg, #007bff, #0056b3);
     color: white;
 }
+
+</style>
+<style>
+.actions-stack .btn {
+    padding: .125rem .25rem;
+    font-size: .75rem;
+    line-height: 1.1;
+}
+.actions-stack .btn i { margin-right: .25rem; }
+@@media (max-width: 576px) {
+  .actions-stack .btn span { display: none; }
+}
 </style>
 
 <script>
@@ -376,7 +390,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const phoneSearchInput = document.getElementById('phoneSearch');
     const positionSearchInput = document.getElementById('positionSearch');
     const emailSearchInput = document.getElementById('emailSearch');
-    const tbody = document.querySelector('#employeesTable tbody');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const employeesTableDiv = document.getElementById('employeesTable');
     
@@ -385,8 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let typingTimer;
     
     function performSearch() {
-        if (!tbody) return;
-        
         const searchTerm = searchInput.value.toLowerCase().trim();
         const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
         const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
@@ -394,19 +405,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const positionSearch = positionSearchInput.value.toLowerCase().trim();
         const emailSearch = emailSearchInput.value.toLowerCase().trim();
 
+        const isAllEmpty = !searchTerm && !phoneSearch && !positionSearch && !emailSearch && selectedEmployees.length === 0 && selectedPositions.length === 0;
+        if (isAllEmpty && employeesTableDiv) {
+            employeesTableDiv.innerHTML = originalTableHTML;
+            updateEmployeeCounter();
+            return;
+        }
+
+        const tbody = document.querySelector('#employeesTable tbody');
+        if (!tbody) {
+            if (employeesTableDiv && isAllEmpty) {
+                employeesTableDiv.innerHTML = originalTableHTML;
+                updateEmployeeCounter();
+            }
+            return;
+        }
+
         const rows = document.querySelectorAll('#employeesTable tbody tr');
         let visibleCount = 0;
         
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
-            if (cells.length < 5) return;
+            if (cells.length < 6) return;
             
             const fullName = (cells[0].querySelector('strong')?.textContent?.trim() || '').toLowerCase();
             const positionBadge = (cells[0].querySelector('.position-badge')?.textContent?.trim() || '').toLowerCase();
             const positionName = (fullName + ' ' + positionBadge).toLowerCase();
             const cityPhone = (cells[1] ? cells[1].textContent.trim() : '').toLowerCase();
             const localPhone = (cells[2] ? cells[2].textContent.trim() : '').toLowerCase();
-            const email = (cells[3] ? cells[3].textContent.trim() : '').toLowerCase();
+            const mobilePhone = (cells[3] ? cells[3].textContent.trim() : '').toLowerCase();
+            const email = (cells[4] ? cells[4].textContent.trim() : '').toLowerCase();
             
             let showRow = true;
             
@@ -414,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showRow = false;
             }
             
-            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch)) {
+            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch) && !mobilePhone.includes(phoneSearch)) {
                 showRow = false;
             }
             
@@ -569,7 +597,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Модальное окно экспорта -->
 <div class="modal fade" id="exportSettingsModal" tabindex="-1" aria-labelledby="exportSettingsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -76,6 +76,7 @@ namespace EmployeeDirectory.Pages.Admin
             csv.WriteField("ФИО");
             csv.WriteField("Городской номер");
             csv.WriteField("Внутренний номер");
+            csv.WriteField("Мобильный номер");
             csv.WriteField("Email");
             csv.WriteField("Отдел");
             csv.WriteField("Полное название отдела");
@@ -91,6 +92,7 @@ namespace EmployeeDirectory.Pages.Admin
                 csv.WriteField(emp.FullName ?? "");
                 csv.WriteField(emp.CityPhone ?? "");
                 csv.WriteField(emp.LocalPhone ?? "");
+                csv.WriteField(emp.MobilePhone ?? "");
                 csv.WriteField(emp.Email ?? "");
                 csv.WriteField(emp.Department?.Name ?? "");
                 csv.WriteField(emp.Department?.FullName ?? "");
@@ -281,6 +283,7 @@ namespace EmployeeDirectory.Pages.Admin
                         FullName = fullName,
                         CityPhone = csv.GetField<string>("Городской номер")?.Trim(),
                         LocalPhone = csv.GetField<string>("Внутренний номер")?.Trim(),
+                        MobilePhone = csv.GetField<string>("Мобильный номер")?.Trim(),
                         Email = csv.GetField<string>("Email")?.Trim(),
                         DepartmentId = departmentId,
                         PositionId = position?.Id,
@@ -377,6 +380,10 @@ namespace EmployeeDirectory.Pages.Admin
                     {
                         emp.Email = null;
                     }
+                    if (string.IsNullOrWhiteSpace(emp.MobilePhone))
+                    {
+                        emp.MobilePhone = null;
+                    }
                     if (string.IsNullOrWhiteSpace(emp.PositionDescription))
                     {
                         emp.PositionDescription = null;
@@ -387,6 +394,7 @@ namespace EmployeeDirectory.Pages.Admin
                         FullName = emp.FullName,
                         CityPhone = emp.CityPhone,
                         LocalPhone = emp.LocalPhone,
+                        MobilePhone = emp.MobilePhone,
                         Email = emp.Email,
                         DepartmentId = emp.DepartmentId,
                         PositionId = emp.PositionId,
@@ -686,6 +694,16 @@ namespace EmployeeDirectory.Pages.Admin
                                 }
                             }
                         }
+                        var userRoles = await _userManager.GetRolesAsync(user);
+                        if (user.DepartmentId.HasValue && userRoles.Contains("Administrator"))
+                        {
+                            var allEmployees = await _employeeService.GetAllEmployeesAsync();
+                            var matches = allEmployees.Where(e => e.DepartmentId == user.DepartmentId && (e.FullName ?? "").Trim().Equals((user.FullName ?? "").Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+                            foreach (var emp in matches)
+                            {
+                                await _employeeService.DeleteEmployeeAsync(emp.Id);
+                            }
+                        }
                         result.SuccessCount++;
                     }
                     else
@@ -783,6 +801,16 @@ namespace EmployeeDirectory.Pages.Admin
                                 {
                                     await _userManager.AddToRoleAsync(user, role);
                                 }
+                            }
+                        }
+                        var userRoles = await _userManager.GetRolesAsync(user);
+                        if (user.DepartmentId.HasValue && userRoles.Contains("Administrator"))
+                        {
+                            var allEmployees = await _employeeService.GetAllEmployeesAsync();
+                            var matches = allEmployees.Where(e => e.DepartmentId == user.DepartmentId && (e.FullName ?? "").Trim().Equals((user.FullName ?? "").Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+                            foreach (var emp in matches)
+                            {
+                                await _employeeService.DeleteEmployeeAsync(emp.Id);
                             }
                         }
                         result.SuccessCount++;

@@ -4,6 +4,7 @@ using EmployeeDirectory.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using EmployeeDirectory.Models;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace EmployeeDirectory
 {
@@ -45,26 +46,7 @@ namespace EmployeeDirectory
                 options.Cookie.HttpOnly = true;
             });
 
-            var authBuilder = builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
-            });
-            
-            if (OperatingSystem.IsWindows())
-            {
-                authBuilder.AddNegotiate();
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                authBuilder.AddNegotiate();
-            }
-            
-            authBuilder.AddCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-            });
+            builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             builder.Services.AddAuthorization();
 

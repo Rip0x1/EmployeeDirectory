@@ -71,9 +71,18 @@
                                         <a asp-page="/Users/Edit" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit me-1"></i>Изменить
                                         </a>
-                                        <a asp-page="/Users/Delete" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash me-1"></i>Удалить
-                                        </a>
+                                        @if (!string.Equals(user.UserName, "admin", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <a asp-page="/Users/Delete" asp-route-id="@user.Id" asp-route-returnUrl="/Users/Manage" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash me-1"></i>Удалить
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                                                <i class="fas fa-lock me-1"></i>Удалить
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>

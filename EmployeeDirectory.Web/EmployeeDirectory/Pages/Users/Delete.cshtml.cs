@@ -44,6 +44,12 @@ namespace EmployeeDirectory.Pages.Users
                 return NotFound();
             }
 
+            if (!string.IsNullOrEmpty(user.UserName) && user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Нельзя удалить основного администратора системы.";
+                return RedirectToPage("/Users/Manage");
+            }
+
             var result = await _userManager.DeleteAsync(user);
 
             if (result.Succeeded)

@@ -133,7 +133,7 @@
                             {
                                 @foreach (var department in Model.Departments)
                                 {
-                                    <option value="@department.Id" data-fullname="@(department.FullName ?? "")" data-shortname="@(department.ShortName ?? "")">@department.GetDisplayName()</option>
+                                    <option value="@department.Id" data-fullname="@(department.FullName ?? "")" data-shortname="@((department.ShortName ?? department.Name) ?? "")">@department.GetDisplayName()</option>
                                 }
                             }
                             else
@@ -207,11 +207,12 @@
                                     <table id="employeesTable" class="table mb-0">
                                         <thead class="table-dark sticky-header">
                                             <tr>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Внутренний номер</th>
-                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
-                                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 28%;">Должность / ФИО</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Городской номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Внутренний номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Мобильный номер</th>
+                                                <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 16%;">Email</th>
+                                                <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Действия</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -245,13 +246,14 @@
                                                     </td>
                                                     <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.CityPhone ?? "Не указано")</td>
                                                     <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.MobilePhone ?? "Не указано")</td>
                                                     <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.Email ?? "Не указано")</td>
                                                     <td class="text-center">
-                                                        <div class="d-flex gap-2 justify-content-center">
-                                                            <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-primary">
+                                                        <div class="d-flex flex-column gap-1 align-items-stretch actions-stack">
+                                                            <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-primary w-100">
                                                                 <i class="fas fa-edit me-1"></i>Изменить
                                                             </a>
-                                                            <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-danger">
+                                                            <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Employees/Manage" class="btn btn-sm btn-outline-danger w-100">
                                                                 <i class="fas fa-trash me-1"></i>Удалить
                                                             </a>
                                                         </div>
@@ -424,6 +426,19 @@
 #expandSearch:checked ~ .expand-search-label .expand-icon {
     transform: rotate(180deg);
 }
+
+
+</style>
+<style>
+.actions-stack .btn {
+    padding: .125rem .25rem;
+    font-size: .75rem;
+    line-height: 1.1;
+}
+.actions-stack .btn i { margin-right: .25rem; }
+@@media (max-width: 576px) {
+  .actions-stack .btn span { display: none; }
+}
 </style>
 
 <script>
@@ -503,11 +518,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Внутренний номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
-                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Действия</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 28%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Мобильный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 16%;">Email</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 14%;">Действия</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -539,12 +555,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                         ${emp.cityPhone || 'Не указано'}
                                     </td>
-                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
-                                        ${emp.localPhone || 'Не указано'}
-                                    </td>
-                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
-                                        ${emp.email || 'Не указано'}
-                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.mobilePhone || 'Не указано'}</td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.email || 'Не указано'}</td>
                                     <td class="text-center">
                                         <div class="d-flex gap-2 justify-content-center">
                                             <a href="/Employees/Edit/${emp.id}?returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary">

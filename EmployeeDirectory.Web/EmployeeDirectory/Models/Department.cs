@@ -39,23 +39,29 @@ namespace EmployeeDirectory.Models
         {
             bool hasFullName = !string.IsNullOrWhiteSpace(FullName);
             bool hasShortName = !string.IsNullOrWhiteSpace(ShortName);
+            bool hasName = !string.IsNullOrWhiteSpace(Name);
 
             if (hasFullName && hasShortName)
             {
                 return $"{FullName} ({ShortName})";
             }
-            else if (hasShortName)
+
+            if (hasFullName && !hasShortName && hasName)
             {
-                return ShortName;
+                return $"{FullName} ({Name})";
             }
-            else if (hasFullName)
+
+            if (hasShortName)
             {
-                return FullName;
+                return ShortName!;
             }
-            else
+
+            if (hasFullName)
             {
-                return Name;
+                return FullName!;
             }
+
+            return Name;
         }
     }
 }

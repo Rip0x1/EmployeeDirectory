@@ -53,16 +53,17 @@ namespace EmployeeDirectory.Services
                 worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 worksheet.Cell(currentRow, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                worksheet.Range(currentRow, 1, currentRow, 4).Merge();
+                worksheet.Range(currentRow, 1, currentRow, 5).Merge();
 
                 currentRow++;
 
                 worksheet.Cell(currentRow, 1).Value = "Должность / ФИО";
                 worksheet.Cell(currentRow, 2).Value = "Городской номер";
                 worksheet.Cell(currentRow, 3).Value = "Внутренний номер";
-                worksheet.Cell(currentRow, 4).Value = "Email";
+                worksheet.Cell(currentRow, 4).Value = "Мобильный номер";
+                worksheet.Cell(currentRow, 5).Value = "Email";
 
-                var headerRange = worksheet.Range(currentRow, 1, currentRow, 4);
+                var headerRange = worksheet.Range(currentRow, 1, currentRow, 5);
                 headerRange.Style.Font.Bold = true;
                 headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
                 headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -92,7 +93,8 @@ namespace EmployeeDirectory.Services
                     worksheet.Cell(currentRow, 1).Value = positionAndName;
                     worksheet.Cell(currentRow, 2).Value = string.IsNullOrEmpty(emp.CityPhone) ? "Не указано" : emp.CityPhone;
                     worksheet.Cell(currentRow, 3).Value = string.IsNullOrEmpty(emp.LocalPhone) ? "Не указано" : emp.LocalPhone;
-                    worksheet.Cell(currentRow, 4).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
+                    worksheet.Cell(currentRow, 4).Value = string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone;
+                    worksheet.Cell(currentRow, 5).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
 
                     var rowRange = worksheet.Range(currentRow, 1, currentRow, 4);
                     rowRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
@@ -101,7 +103,7 @@ namespace EmployeeDirectory.Services
                     currentRow++;
                 }
 
-                var tableRange = worksheet.Range(currentRow - departmentEmployees.Count(), 1, currentRow - 1, 4);
+                var tableRange = worksheet.Range(currentRow - departmentEmployees.Count(), 1, currentRow - 1, 5);
                 tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
                 tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
                 tableRange.Style.Fill.BackgroundColor = XLColor.White;
@@ -198,7 +200,7 @@ namespace EmployeeDirectory.Services
                 table.AppendChild(tableProperties);
 
                 var headerRow = new TableRow();
-                string[] headers = { "Должность / ФИО", "Городской номер", "Внутренний номер", "Email" };
+                string[] headers = { "Должность / ФИО", "Городской номер", "Внутренний номер", "Мобильный номер", "Email" };
                 
                 foreach (var header in headers)
                 {
@@ -242,6 +244,7 @@ namespace EmployeeDirectory.Services
                         positionAndName,
                         string.IsNullOrEmpty(emp.CityPhone) ? "Не указано" : emp.CityPhone,
                         string.IsNullOrEmpty(emp.LocalPhone) ? "Не указано" : emp.LocalPhone,
+                        string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone,
                         string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email
                     };
 

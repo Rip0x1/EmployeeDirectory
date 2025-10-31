@@ -147,7 +147,7 @@
                                     {
                                         @foreach (var dept in Model.Departments)
                                         {
-                                            <option value="@dept.Id" data-fullname="@(dept.FullName ?? "")" data-shortname="@(dept.ShortName ?? "")">@dept.GetDisplayName()</option>
+                                            <option value="@dept.Id" data-fullname="@(dept.FullName ?? "")" data-shortname="@((dept.ShortName ?? dept.Name) ?? "")">@dept.GetDisplayName()</option>
                                         }
                                     }
                                     else
@@ -227,9 +227,10 @@
                                 <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 35%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Мобильный номер</th>
                                             <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
@@ -270,12 +271,9 @@
                                                 <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                     @(employee.CityPhone ?? "Не указано")
                                                 </td>
-                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
-                                                    @(employee.LocalPhone ?? "Не указано")
-                                                </td>
-                                                <td class="text-center">
-                                                    @(employee.Email ?? "Не указано")
-                                                </td>
+                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                                <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.MobilePhone ?? "Не указано")</td>
+                                                <td class="text-center">@(employee.Email ?? "Не указано")</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -985,7 +983,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const departmentFullNameSearch = departmentFullNameSearchInput ? departmentFullNameSearchInput.value.trim() : '';
         const departmentShortNameSearch = departmentShortNameSearchInput ? departmentShortNameSearchInput.value.trim() : '';
 
-        tbody.innerHTML = `<div class="text-center p-4"><div class="spinner-border" role="status"><span class="visually-hidden">Загрузка...</span></div></div>`;
+        tbody.innerHTML = `<div class="text-center py-3"><div class="spinner-border spinner-border-sm" role="status"></div></div>`;
 
         const params = new URLSearchParams();
         if (searchTerm) params.append('search', searchTerm);
@@ -1032,9 +1030,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <table class="table mb-0">
                                     <thead class="table-dark sticky-header">
                                         <tr>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 40%;">Должность / ФИО</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Городской номер</th>
-                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 35%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Мобильный номер</th>
                                             <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 20%;">Email</th>
                                         </tr>
                                     </thead>
@@ -1067,12 +1066,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                         ${emp.cityPhone || 'Не указано'}
                                     </td>
-                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
-                                        ${emp.localPhone || 'Не указано'}
-                                    </td>
-                                    <td class="text-center">
-                                        ${emp.email || 'Не указано'}
-                                    </td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
+                                    <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.mobilePhone || 'Не указано'}</td>
+                                    <td class="text-center">${emp.email || 'Не указано'}</td>
                                 </tr>
                             `;
                         });
@@ -1110,17 +1106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     } else {
-                        tbody.innerHTML = `
-                            <div class="card">
-                                <div class="card-body p-0">
-                                    <div class="card-body p-0">
-                                        <div id="employeesTable">
-                                            <div class="text-center text-muted py-4">Сотрудники не найдены</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                        tbody.innerHTML = `<div class="text-center text-muted py-3">Сотрудники не найдены</div>`;
                         
                         const badgeElement = document.querySelector('.search-results-header .badge');
                         if (badgeElement) {
@@ -1135,17 +1121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Ошибка поиска:', error);
-                tbody.innerHTML = `
-                    <div class="card">
-                        <div class="card-body p-0">
-                            <div class="card-body p-0">
-                                <div id="employeesTable">
-                                    <div class="text-center text-danger py-4">Ошибка при выполнении поиска</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                tbody.innerHTML = `<div class="text-center text-danger py-3">Ошибка при выполнении поиска</div>`;
                 
                 const badgeElement = document.querySelector('.search-results-header .badge');
                 if (badgeElement) {
