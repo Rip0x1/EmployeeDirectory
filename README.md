@@ -141,9 +141,9 @@ docker stats
 ---
 
 ## 🚀 Фото
-<img width="1920" height="748" alt="{DE1C5D2D-4C6B-46CF-AF21-C5389E5C242F}" src="https://github.com/user-attachments/assets/c3f1bceb-169b-468a-805f-3ba68b8a1062" />
-<img width="1920" height="724" alt="{EC1D3432-87BB-491A-9D16-3B0AFE941FC9}" src="https://github.com/user-attachments/assets/7c6e4048-eaa9-4121-8108-81df29520ae8" />
-<img width="1920" height="841" alt="{09123777-1E66-495A-BB2E-87A02D1EADE8}" src="https://github.com/user-attachments/assets/c001a442-ec85-46e5-a926-d3ec871c93e0" />
+<img width="1920" height="728" alt="{513FFB87-524F-4326-8434-4FEF7D29AEDF}" src="https://github.com/user-attachments/assets/d42724bc-934a-418f-b35b-5e590ea31927" />
+<img width="1920" height="842" alt="{56D04C91-B8D7-4288-804D-34339EDB4903}" src="https://github.com/user-attachments/assets/91e03595-e1f4-4a19-8e55-31dc218e1ab4" />
+<img width="1920" height="724" alt="{2CEA618E-1CAA-4D07-A565-9DBFF8F503DA}" src="https://github.com/user-attachments/assets/2da461c7-14c3-416f-a509-7e649ec5c4b3" />
 
 
 
