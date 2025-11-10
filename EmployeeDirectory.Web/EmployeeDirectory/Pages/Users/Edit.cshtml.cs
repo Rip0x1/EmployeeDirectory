@@ -14,11 +14,13 @@ namespace EmployeeDirectory.Pages.Users
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDepartmentService _departmentService;
+        private readonly ILdapDirectory _ldapDirectory;
 
-        public EditModel(UserManager<ApplicationUser> userManager, IDepartmentService departmentService)
+        public EditModel(UserManager<ApplicationUser> userManager, IDepartmentService departmentService, ILdapDirectory ldapDirectory)
         {
             _userManager = userManager;
             _departmentService = departmentService;
+            _ldapDirectory = ldapDirectory;
         }
 
         [BindProperty]
@@ -28,6 +30,7 @@ namespace EmployeeDirectory.Pages.Users
         public string? ReturnUrl { get; set; }
 
         public SelectList Departments { get; set; } = default!;
+        public List<string> DomainAccounts { get; set; } = new();
 
         public class InputModel
         {
@@ -37,14 +40,10 @@ namespace EmployeeDirectory.Pages.Users
             [Display(Name = "Логин")]
             public string UserName { get; set; } = string.Empty;
 
-            [Display(Name = "Новый пароль")]
-            public string? NewPassword { get; set; }
-
-            [Display(Name = "Подтверждение пароля")]
-            public string? ConfirmPassword { get; set; }
+            
 
             [Display(Name = "Полное имя")]
-            public string FullName { get; set; } = string.Empty;
+            public string? FullName { get; set; }
 
             [Display(Name = "Отдел")]
             public int? DepartmentId { get; set; }
@@ -75,33 +74,29 @@ namespace EmployeeDirectory.Pages.Users
             };
 
             Departments = new SelectList(departments, "Id", "Name");
+
+            var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var dbAccounts = _userManager.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                .Select(u => u.UserName!)
+                .ToList();
+            foreach (var a in dbAccounts) accounts.Add(a);
+
+            if (await _ldapDirectory.IsEnabledAsync())
+            {
+                var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                foreach (var a in adUsers) accounts.Add(a);
+                foreach (var c in adComputers) accounts.Add(c);
+            }
+
+            DomainAccounts = accounts.OrderBy(a => a).ToList();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!string.IsNullOrWhiteSpace(Input.NewPassword) || !string.IsNullOrWhiteSpace(Input.ConfirmPassword))
-            {
-                if (string.IsNullOrWhiteSpace(Input.NewPassword))
-                {
-                    ModelState.AddModelError("Input.NewPassword", "Введите новый пароль");
-                }
-                
-                if (string.IsNullOrWhiteSpace(Input.ConfirmPassword))
-                {
-                    ModelState.AddModelError("Input.ConfirmPassword", "Подтвердите пароль");
-                }
-                
-                if (!string.IsNullOrWhiteSpace(Input.NewPassword) && !string.IsNullOrWhiteSpace(Input.ConfirmPassword) && Input.NewPassword != Input.ConfirmPassword)
-                {
-                    ModelState.AddModelError("Input.ConfirmPassword", "Пароли не совпадают");
-                }
-                
-                if (!string.IsNullOrWhiteSpace(Input.NewPassword) && Input.NewPassword.Length < 6)
-                {
-                    ModelState.AddModelError("Input.NewPassword", "Пароль должен содержать минимум 6 символов");
-                }
-            }
+            
 
             if (!ModelState.IsValid)
             {
@@ -117,43 +112,14 @@ namespace EmployeeDirectory.Pages.Users
             }
 
             user.UserName = Input.UserName;
-            user.FullName = Input.FullName;
+            user.FullName = string.IsNullOrWhiteSpace(Input.FullName) ? string.Empty : Input.FullName;
             user.DepartmentId = Input.DepartmentId;
 
             var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
             {       
-                if (!string.IsNullOrWhiteSpace(Input.NewPassword))
-                {
-                    var removePasswordResult = await _userManager.RemovePasswordAsync(user);
-                    if (removePasswordResult.Succeeded)
-                    {
-                        var addPasswordResult = await _userManager.AddPasswordAsync(user, Input.NewPassword);
-                        if (!addPasswordResult.Succeeded)
-                        {
-                            foreach (var error in addPasswordResult.Errors)
-                            {
-                                ModelState.AddModelError("Input.NewPassword", error.Description);
-                            }
-                            
-                            var departmentsReload1 = await _departmentService.GetAllDepartmentsAsync();
-                            Departments = new SelectList(departmentsReload1, "Id", "Name");
-                            return Page();
-                        }
-                    }
-                    else
-                    {
-                        foreach (var error in removePasswordResult.Errors)
-                        {
-                            ModelState.AddModelError("Input.NewPassword", error.Description);
-                        }
-                        
-                        var departmentsReload2 = await _departmentService.GetAllDepartmentsAsync();
-                        Departments = new SelectList(departmentsReload2, "Id", "Name");
-                        return Page();
-                    }
-                }
+                
 
                 var currentRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, currentRoles);
@@ -163,12 +129,7 @@ namespace EmployeeDirectory.Pages.Users
                     await _userManager.AddToRoleAsync(user, Input.Role);
                 }
 
-                var successMessage = $"Пользователь {Input.UserName} успешно обновлен!";
-                if (!string.IsNullOrWhiteSpace(Input.NewPassword))
-                {
-                    successMessage += " Пароль также обновлен.";
-                }
-                TempData["Success"] = successMessage;
+                TempData["Success"] = $"Пользователь {Input.UserName} успешно обновлен!";
                 
                 if (!string.IsNullOrEmpty(ReturnUrl))
                 {

@@ -18,7 +18,7 @@ namespace EmployeeDirectory.Services
             _context = context;
         }
 
-        public async Task<IdentityResult> CreateDepartmentEditorAsync(string userName, string password, string fullName, int departmentId)
+        public async Task<IdentityResult> CreateDepartmentEditorAsync(string userName, string fullName, int departmentId)
         {
             var department = await _context.Departments.FindAsync(departmentId);
             if (department == null)
@@ -41,7 +41,7 @@ namespace EmployeeDirectory.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user);
             
             if (result.Succeeded)
             {

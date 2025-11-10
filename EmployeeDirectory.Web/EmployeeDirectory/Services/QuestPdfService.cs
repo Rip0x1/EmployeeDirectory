@@ -27,25 +27,27 @@ namespace EmployeeDirectory.Services
                     page.Margin(20);
                     page.DefaultTextStyle(x => x.FontSize(10));
 
-                    page.Header()
-                        .Text("Справочник сотрудников")
-                        .FontSize(18)
-                        .FontColor(Colors.Black)
-                        .Bold()
-                        .AlignCenter();
-
                     page.Content()
-                        .AlignCenter()
-                        .AlignMiddle()
                         .Element(container =>
                         {
                             if (orientation == "landscape")
                             {
+                                var departmentsList = groupedEmployees.ToList();
+                                var leftDepartments = new List<IGrouping<string, EmployeeDirectory.Models.Employee>>();
+                                var rightDepartments = new List<IGrouping<string, EmployeeDirectory.Models.Employee>>();
+
+                                for (int i = 0; i < departmentsList.Count; i++)
+                                {
+                                    if (i % 2 == 0)
+                                        leftDepartments.Add(departmentsList[i]);
+                                    else
+                                        rightDepartments.Add(departmentsList[i]);
+                                }
+
                                 container.Row(row =>
                                 {
                                     row.RelativeItem().Column(leftColumn =>
                                     {
-                                        var leftDepartments = groupedEmployees.Take((int)(groupedEmployees.Count * 0.7)).ToList();
                                         foreach (var departmentGroup in leftDepartments)
                                         {
                                             leftColumn.Item().Element(depContainer => CreateDepartmentTable(depContainer, departmentGroup));
@@ -55,7 +57,6 @@ namespace EmployeeDirectory.Services
 
                                     row.RelativeItem().Column(rightColumn =>
                                     {
-                                        var rightDepartments = groupedEmployees.Skip((int)(groupedEmployees.Count * 0.7)).ToList();
                                         foreach (var departmentGroup in rightDepartments)
                                         {
                                             rightColumn.Item().Element(depContainer => CreateDepartmentTable(depContainer, departmentGroup));
@@ -84,81 +85,89 @@ namespace EmployeeDirectory.Services
 
         private void CreateDepartmentTable(IContainer container, IGrouping<string, EmployeeDirectory.Models.Employee> departmentGroup)
         {
-            container.Border(1).BorderColor(Colors.Black).Padding(3).Column(column =>
+            var departmentName = departmentGroup.Key;
+            var employees = departmentGroup
+                .OrderByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                .ThenByDescending(e => e.IsDeputy ? 1 : 0)
+                .ThenBy(e => e.FullName ?? "")
+                .ToList();
+
+            container.Border(1).BorderColor(Colors.Black).Padding(3).Table(table =>
             {
-                        column.Item().PaddingBottom(5).Text(departmentGroup.Key)
-                            .FontSize(12)
-                            .Bold()
-                            .FontColor(Colors.Black)
-                            .AlignCenter();
-
-                column.Item().Table(table =>
+                table.ColumnsDefinition(columns =>
                 {
-                    table.ColumnsDefinition(columns =>
-                    {
-                        columns.RelativeColumn(2);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1);
-                        columns.RelativeColumn(1.5f);
-                    });
-
-                        table.Header(header =>
-                        {
-                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Должность/ФИО").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
-                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Городской").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
-                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Внутренний").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
-                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Мобильный").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
-                            header.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                                .Text("Email").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
-                        });
-
-                    foreach (var employee in departmentGroup)
-                    {
-                        var positionText = !string.IsNullOrEmpty(employee.PositionDescription) ? employee.PositionDescription : "";
-                        var nameText = !string.IsNullOrEmpty(employee.FullName) ? employee.FullName : "";
-                        
-                        string combinedText;
-                        if (!string.IsNullOrEmpty(positionText) && !string.IsNullOrEmpty(nameText))
-                        {
-                            combinedText = $"{positionText}\n{nameText}";
-                        }
-                        else if (!string.IsNullOrEmpty(positionText))
-                        {
-                            combinedText = positionText;
-                        }
-                        else if (!string.IsNullOrEmpty(nameText))
-                        {
-                            combinedText = nameText;
-                        }
-                        else
-                        {
-                            combinedText = "Без данных";
-                        }
-                        
-                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                            .Text(combinedText).FontSize(8).FontColor(Colors.Black).AlignCenter();
-
-                        var cityPhone = !string.IsNullOrEmpty(employee.CityPhone) ? employee.CityPhone : "Не указано";
-                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                            .Text(cityPhone).FontSize(8).FontColor(Colors.Black).AlignCenter();
-
-                        var localPhone = !string.IsNullOrEmpty(employee.LocalPhone) ? employee.LocalPhone : "Не указано";
-                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                            .Text(localPhone).FontSize(8).FontColor(Colors.Black).AlignCenter();
-
-                        var mobile = !string.IsNullOrEmpty(employee.MobilePhone) ? employee.MobilePhone : "Не указано";
-                        var email = !string.IsNullOrEmpty(employee.Email) ? employee.Email : "Не указано";
-                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                            .Text(mobile).FontSize(8).FontColor(Colors.Black).AlignCenter();
-                        table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
-                            .Text(email).FontSize(8).FontColor(Colors.Black).AlignCenter();
-                    }
+                    columns.RelativeColumn(2);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(1);
+                    columns.RelativeColumn(1.5f);
                 });
+
+                table.Header(header =>
+                {
+                    header.Cell().ColumnSpan(5)
+                        .Border(1).BorderColor(Colors.Black)
+                        .Background(Colors.Grey.Lighten3)
+                        .Padding(4)
+                        .Text(departmentName)
+                        .FontSize(12)
+                        .Bold()
+                        .FontColor(Colors.Black)
+                        .AlignCenter();
+
+                    header.Cell().Border(1).BorderColor(Colors.Black).Background(Colors.Grey.Lighten2).Padding(2)
+                        .Text("Должность/ФИО").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                    header.Cell().Border(1).BorderColor(Colors.Black).Background(Colors.Grey.Lighten2).Padding(2)
+                        .Text("Городской").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                    header.Cell().Border(1).BorderColor(Colors.Black).Background(Colors.Grey.Lighten2).Padding(2)
+                        .Text("Внутренний").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                    header.Cell().Border(1).BorderColor(Colors.Black).Background(Colors.Grey.Lighten2).Padding(2)
+                        .Text("Мобильный").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                    header.Cell().Border(1).BorderColor(Colors.Black).Background(Colors.Grey.Lighten2).Padding(2)
+                        .Text("Email").FontSize(9).Bold().FontColor(Colors.Black).AlignCenter();
+                });
+
+                foreach (var employee in employees)
+                {
+                    var positionText = !string.IsNullOrEmpty(employee.PositionDescription) ? employee.PositionDescription : "";
+                    var nameText = !string.IsNullOrEmpty(employee.FullName) ? employee.FullName : "";
+                    
+                    string combinedText;
+                    if (!string.IsNullOrEmpty(positionText) && !string.IsNullOrEmpty(nameText))
+                    {
+                        combinedText = $"{positionText}\n{nameText}";
+                    }
+                    else if (!string.IsNullOrEmpty(positionText))
+                    {
+                        combinedText = positionText;
+                    }
+                    else if (!string.IsNullOrEmpty(nameText))
+                    {
+                        combinedText = nameText;
+                    }
+                    else
+                    {
+                        combinedText = "Без данных";
+                    }
+                    
+                    table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                        .Text(combinedText).FontSize(8).FontColor(Colors.Black).AlignCenter();
+
+                    var cityPhone = !string.IsNullOrEmpty(employee.CityPhone) ? employee.CityPhone : "Не указано";
+                    table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                        .Text(cityPhone).FontSize(8).FontColor(Colors.Black).AlignCenter();
+
+                    var localPhone = !string.IsNullOrEmpty(employee.LocalPhone) ? employee.LocalPhone : "Не указано";
+                    table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                        .Text(localPhone).FontSize(8).FontColor(Colors.Black).AlignCenter();
+
+                    var mobile = !string.IsNullOrEmpty(employee.MobilePhone) ? employee.MobilePhone : "Не указано";
+                    var email = !string.IsNullOrEmpty(employee.Email) ? employee.Email : "Не указано";
+                    table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                        .Text(mobile).FontSize(8).FontColor(Colors.Black).AlignCenter();
+                    table.Cell().Border(1).BorderColor(Colors.Black).Padding(2)
+                        .Text(email).FontSize(8).FontColor(Colors.Black).AlignCenter();
+                }
             });
         }
 
@@ -244,7 +253,7 @@ namespace EmployeeDirectory.Services
                     page.Margin(20);
 
                     page.Header()
-                        .Text("Логи входа и выхода")
+                        .Text("Логи входа")
                         .FontSize(16)
                         .FontColor(Colors.Black)
                         .Bold()

@@ -14,11 +14,13 @@ namespace EmployeeDirectory.Pages.Users
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDepartmentService _departmentService;
+        private readonly ILdapDirectory _ldapDirectory;
 
-        public CreateModel(UserManager<ApplicationUser> userManager, IDepartmentService departmentService)
+        public CreateModel(UserManager<ApplicationUser> userManager, IDepartmentService departmentService, ILdapDirectory ldapDirectory)
         {
             _userManager = userManager;
             _departmentService = departmentService;
+            _ldapDirectory = ldapDirectory;
         }
 
         [BindProperty]
@@ -28,6 +30,7 @@ namespace EmployeeDirectory.Pages.Users
         public string? ReturnUrl { get; set; }
 
         public SelectList Departments { get; set; } = default!;
+        public List<string> DomainAccounts { get; set; } = new();
 
         public class InputModel
         {
@@ -35,17 +38,8 @@ namespace EmployeeDirectory.Pages.Users
             [Display(Name = "Логин")]
             public string UserName { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Введите пароль")]
-            [Display(Name = "Пароль")]
-            public string Password { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "Подтвердите пароль")]
-            [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-            [Display(Name = "Подтверждение пароля")]
-            public string ConfirmPassword { get; set; } = string.Empty;
-
             [Display(Name = "Полное имя")]
-            public string FullName { get; set; } = string.Empty;
+            public string? FullName { get; set; }
 
             [Display(Name = "Отдел")]
             public int? DepartmentId { get; set; }
@@ -59,6 +53,23 @@ namespace EmployeeDirectory.Pages.Users
         {
             var departments = await _departmentService.GetAllDepartmentsAsync();
             Departments = new SelectList(departments, "Id", "Name");
+
+            var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var dbAccounts = _userManager.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                .Select(u => u.UserName!)
+                .ToList();
+            foreach (var a in dbAccounts) accounts.Add(a);
+
+            if (await _ldapDirectory.IsEnabledAsync())
+            {
+                var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                foreach (var a in adUsers) accounts.Add(a);
+                foreach (var c in adComputers) accounts.Add(c);
+            }
+
+            DomainAccounts = accounts.OrderBy(a => a).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -78,11 +89,11 @@ namespace EmployeeDirectory.Pages.Users
             var user = new ApplicationUser
             {
                 UserName = Input.UserName,
-                FullName = Input.FullName,
+                FullName = string.IsNullOrWhiteSpace(Input.FullName) ? string.Empty : Input.FullName,
                 DepartmentId = Input.DepartmentId
             };
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            var result = await _userManager.CreateAsync(user);
 
             if (result.Succeeded)
             {

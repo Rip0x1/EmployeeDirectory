@@ -5,7 +5,7 @@ namespace EmployeeDirectory.Services
 {
     public interface IDepartmentEditorService
     {
-        Task<IdentityResult> CreateDepartmentEditorAsync(string userName, string password, string fullName, int departmentId);
+        Task<IdentityResult> CreateDepartmentEditorAsync(string userName, string fullName, int departmentId);
         Task<List<ApplicationUser>> GetDepartmentEditorsAsync(int departmentId);
         Task<bool> CanUserEditDepartmentAsync(string userId, int departmentId);
         Task<bool> IsDepartmentEditorAsync(string userId);

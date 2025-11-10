@@ -36,6 +36,14 @@ namespace EmployeeDirectory.Pages.Users
             return Page();
         }
 
+        private async Task<ApplicationUser?> GetPrimaryAdministratorAsync()
+        {
+            var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+            return admins
+                .OrderBy(u => u.CreatedAt)
+                .FirstOrDefault();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.FindByIdAsync(UserId);
@@ -44,7 +52,8 @@ namespace EmployeeDirectory.Pages.Users
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(user.UserName) && user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase))
+            var primaryAdmin = await GetPrimaryAdministratorAsync();
+            if (primaryAdmin != null && primaryAdmin.Id == user.Id)
             {
                 TempData["Error"] = "Нельзя удалить основного администратора системы.";
                 return RedirectToPage("/Users/Manage");

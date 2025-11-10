@@ -55,9 +55,9 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Account/Logout">
-                                    <i class="fas fa-sign-out-alt me-1"></i>Выход (@User.Identity.Name)
-                                </a>
+                                <span class="nav-link text-white">
+                                    @User.Identity.Name
+                                </span>
                             </li>
                         }
                         else
