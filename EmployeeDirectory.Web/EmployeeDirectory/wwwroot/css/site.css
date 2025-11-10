@@ -178,7 +178,7 @@ body > main {
 
 .navbar-nav .nav-link,
 .navbar-nav .nav-link.text-light {
-  color: #000 !important;
+  color: #fff !important;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
@@ -195,47 +195,48 @@ body > main {
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.text-light:hover {
-  background: rgba(0, 0, 0, 0.1) !important;
-  color: #000 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
 }
 
 .navbar-nav .nav-link:focus,
 .navbar-nav .nav-link.text-light:focus {
-  color: #000 !important;
-  background: rgba(0, 0, 0, 0.05) !important;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .navbar-nav .nav-link:active,
 .navbar-nav .nav-link.text-light:active {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 .navbar-nav .nav-link:visited,
 .navbar-nav .nav-link.text-light:visited {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 .navbar .navbar-nav .nav-link,
 .navbar .navbar-nav .nav-link.text-light {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 .navbar .navbar-nav .nav-link:hover,
 .navbar .navbar-nav .nav-link.text-light:hover {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 .navbar .navbar-nav .nav-link:focus,
 .navbar .navbar-nav .nav-link.text-light:focus {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 .navbar-nav .nav-link i {
   display: inline-block;
+  color: inherit;
 }
 
 .navbar-nav .nav-link:hover i {
-  color: #000;
+  color: #fff;
 }
 
 .btn {
@@ -860,6 +861,13 @@ body {
   box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
 }
 
+.search-filters-header,
+.search-filters-header *,
+.search-results-header,
+.search-results-header * {
+  color: #fff !important;
+}
+
 .search-filters-header h6 {
   margin: 0;
   font-weight: 600;
@@ -1133,6 +1141,12 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.search-results-header h5,
+.search-results-header h5 i,
+.search-results-header .badge {
+  color: #fff !important;
 }
 
 .search-results-header .badge {
