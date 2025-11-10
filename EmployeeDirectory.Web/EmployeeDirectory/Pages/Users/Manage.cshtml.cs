@@ -19,6 +19,7 @@ namespace EmployeeDirectory.Pages.Users
         }
 
         public IList<UserViewModel> Users { get; set; } = new List<UserViewModel>();
+        public string? PrimaryAdminUserId { get; set; }
 
         public class UserViewModel
         {
@@ -29,11 +30,22 @@ namespace EmployeeDirectory.Pages.Users
             public List<string> Roles { get; set; } = new List<string>();
         }
 
+        private async Task<string?> GetPrimaryAdminUserIdAsync()
+        {
+            var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+            var primary = admins
+                .OrderBy(u => u.CreatedAt)
+                .FirstOrDefault();
+            return primary?.Id;
+        }
+
         public async Task OnGetAsync()
         {
             var users = await _userManager.Users
                 .Include(u => u.Department)
                 .ToListAsync();
+
+            PrimaryAdminUserId = await GetPrimaryAdminUserIdAsync();
 
             var userViewModels = new List<UserViewModel>();
 

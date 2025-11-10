@@ -442,8 +442,7 @@ namespace EmployeeDirectory.Pages.Admin
                     Roles = string.Join(", ", roles),
                     IsActive = user.IsActive,
                     CreatedAt = user.CreatedAt,
-                    LastLoginAt = user.LastLoginAt,
-                    PasswordHash = user.PasswordHash
+                    LastLoginAt = user.LastLoginAt
                 });
             }
 
@@ -480,7 +479,6 @@ namespace EmployeeDirectory.Pages.Admin
             csv.WriteField("Активен");
             csv.WriteField("Дата создания");
             csv.WriteField("Дата последнего входа");
-            csv.WriteField("PasswordHash");
             csv.NextRecord();
 
             foreach (var user in users)
@@ -498,7 +496,6 @@ namespace EmployeeDirectory.Pages.Admin
                 csv.WriteField(user.IsActive ? "Да" : "Нет");
                 csv.WriteField(user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"));
                 csv.WriteField(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "");
-                csv.WriteField(user.PasswordHash ?? "");
                 csv.NextRecord();
             }
 
@@ -583,8 +580,7 @@ namespace EmployeeDirectory.Pages.Admin
                         ["FullName"] = csv.GetField<string>("Полное имя")?.Trim() ?? "",
                         ["DepartmentName"] = csv.GetField<string>("Отдел")?.Trim() ?? "",
                         ["Roles"] = csv.GetField<string>("Роли")?.Trim() ?? "",
-                        ["IsActive"] = csv.GetField<string>("Активен")?.Trim() ?? "",
-                        ["PasswordHash"] = csv.GetField<string>("PasswordHash")?.Trim() ?? ""
+                        ["IsActive"] = csv.GetField<string>("Активен")?.Trim() ?? ""
                     };
                     usersData.Add(userData);
                 }
@@ -657,8 +653,6 @@ namespace EmployeeDirectory.Pages.Admin
                         }
                     }
 
-                    var passwordHash = userData.ContainsKey("PasswordHash") ? userData["PasswordHash"].GetString() : null;
-                    
                     var user = new ApplicationUser
                     {
                         UserName = username,
@@ -667,19 +661,10 @@ namespace EmployeeDirectory.Pages.Admin
                         DepartmentId = departmentId,
                         IsActive = isActive,
                         CreatedAt = DateTime.UtcNow,
-                        PasswordHash = passwordHash
+                        PasswordHash = null
                     };
 
-                    IdentityResult createResult;
-                    if (!string.IsNullOrWhiteSpace(passwordHash))
-                    {
-                        createResult = await _userManager.CreateAsync(user);
-                    }
-                    else
-                    {
-                        var password = userData.ContainsKey("Password") ? userData["Password"].GetString() : "TempPassword123!";
-                        createResult = await _userManager.CreateAsync(user, password);
-                    }
+                    var createResult = await _userManager.CreateAsync(user);
 
                     if (createResult.Succeeded)
                     {
@@ -738,7 +723,6 @@ namespace EmployeeDirectory.Pages.Admin
                     var rolesStr = userData.ContainsKey("Roles") ? userData["Roles"] : null;
                     var isActiveStr = userData.ContainsKey("IsActive") ? userData["IsActive"] : "Да";
                     var isActive = isActiveStr.ToLower() == "да" || isActiveStr.ToLower() == "yes" || isActiveStr == "1";
-                    var passwordHash = userData.ContainsKey("PasswordHash") ? userData["PasswordHash"] : null;
 
                     if (string.IsNullOrWhiteSpace(username))
                     {
@@ -777,18 +761,10 @@ namespace EmployeeDirectory.Pages.Admin
                         DepartmentId = departmentId,
                         IsActive = isActive,
                         CreatedAt = DateTime.UtcNow,
-                        PasswordHash = passwordHash
+                        PasswordHash = null
                     };
 
-                    IdentityResult createResult;
-                    if (!string.IsNullOrWhiteSpace(passwordHash))
-                    {
-                        createResult = await _userManager.CreateAsync(user);
-                    }
-                    else
-                    {
-                        createResult = await _userManager.CreateAsync(user, "TempPassword123!");
-                    }
+                    var createResult = await _userManager.CreateAsync(user);
 
                     if (createResult.Succeeded)
                     {

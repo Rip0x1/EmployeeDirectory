@@ -307,8 +307,8 @@ body > main {
 }
 
 .table thead th {
-  background: linear-gradient(135deg, #56ab2f 0%, #11998e 100%);
-  color: white;
+  background: linear-gradient(135deg, #56ab2f 0%, #11998e 100%) !important;
+  color: white !important;
   border: none;
   font-weight: 600;
   text-transform: uppercase;
@@ -482,10 +482,20 @@ h5.mb-0 {
 }
 
 .department-header {
-  background: linear-gradient(135deg, #56ab2f 0%, #11998e 100%);
+  background: linear-gradient(135deg, #56ab2f 0%, #11998e 100%) !important;
   padding: 10px 14px;
   border-radius: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.department-section {
+  position: relative;
+}
+
+.department-section .table {
+  margin-bottom: 20px;
+}
+
 
 .department-name-badge {
   background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 50%, #11998e 100%);
@@ -832,7 +842,7 @@ body {
 }
 
 .search-filters-container {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
   border-radius: 15px;
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);

@@ -22,29 +22,27 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.UserName" class="form-label">Логин *</label>
-                                <input asp-for="Input.UserName" class="form-control" id="Input_UserName" />
+                                <input asp-for="Input.UserName" class="form-control" id="Input_UserName" placeholder="DOMAIN\\логин или ИМЯПК\\логин" />
                                 <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Доменные учётные записи</label>
+                                <select class="form-select" id="DomainAccounts" onchange="(function(){var v=this.value; if(v){ document.getElementById('Input_UserName').value=v; } }).call(this)">
+                                    <option value="">— Выберите из домена —</option>
+                                    @foreach (var acc in Model.DomainAccounts)
+                                    {
+                                        <option value="@acc">@acc</option>
+                                    }
+                                </select>
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Input.NewPassword" class="form-label">Новый пароль (необязательно)</label>
-                                <input asp-for="Input.NewPassword" type="password" class="form-control" placeholder="Оставьте пустым, чтобы не менять пароль" data-val="false" id="Input_NewPassword" />
-                                <span asp-validation-for="Input.NewPassword" class="text-danger"></span>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Input.ConfirmPassword" class="form-label">Подтвердите новый пароль (необязательно)</label>
-                                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="Только если меняете пароль" data-val="false" id="Input_ConfirmPassword" />
-                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                            </div>
-                        </div>
+                        
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Input.FullName" class="form-label">Полное имя</label>
-                                <input asp-for="Input.FullName" class="form-control" id="Input_FullName" />
+                                <input asp-for="Input.FullName" class="form-control" id="Input_FullName" placeholder="Например: Иванов Иван Иванович" />
                                 <span asp-validation-for="Input.FullName" class="text-danger"></span>
                             </div>
                             
