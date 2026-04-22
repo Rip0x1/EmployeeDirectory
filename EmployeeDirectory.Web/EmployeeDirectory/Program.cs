@@ -19,7 +19,9 @@ namespace EmployeeDirectory
             builder.Services.AddMvc();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                x => x.MigrationsAssembly("EmployeeDirectory")
+                ));
 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
