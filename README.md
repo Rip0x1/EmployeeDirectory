@@ -95,6 +95,17 @@ docker-compose up -d --build
 
 ---
 
+##📱 Мобильное приложение
+
+Для удобства сотрудников разработано приложение на базе .NET MAUI, адаптированное под iOS и Android.
+Особенности мобильной версии:
+Адаптивные карточки: Контактные данные автоматически подстраиваются под размер экрана.
+Интуитивная навигация: Быстрый поиск по ФИО или отделу.
+Статус данных: Визуальное отображение отсутствующих контактов ("Не указано").
+Синхронизация: Работает напрямую с основным API через REST.
+
+---
+
 ## 🌐 Веб-интерфейсы
 
 - **Основное приложение:** http://localhost:5000
@@ -142,6 +153,8 @@ docker stats
 <img width="1920" height="725" alt="{C7A1AADD-8943-40FB-91E0-CED48DE93661}" src="https://github.com/user-attachments/assets/542f051e-87cf-4e7b-b90f-51bbf3ea112a" />
 <img width="1917" height="714" alt="{79B658E3-68AF-4009-ADAF-E0DACDEFA029}" src="https://github.com/user-attachments/assets/8486e62a-8527-4e9b-9bf2-84bbf24035cd" />
 <img width="1920" height="842" alt="{1C261348-F034-4DFF-A467-F021FDD8B344}" src="https://github.com/user-attachments/assets/5362cd7b-1dab-4de9-b7d6-ad3d3b550e51" />
+<img width="392" height="893" alt="{A2391E55-D5AA-41FC-AD48-A2B2D8BC69F0}" src="https://github.com/user-attachments/assets/d6887562-d91f-4ca5-bd7a-a07b260c8bb1" />
+
 
 
 
