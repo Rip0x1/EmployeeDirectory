@@ -104,19 +104,31 @@ namespace EmployeeDirectory
 
             using (var scope = app.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var userInit = scope.ServiceProvider.GetRequiredService<UserInitializationService>();
-                var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
-                try
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                var logger = services.GetRequiredService<ILogger<Program>>();
+
+                int retries = 5;
+                while (retries > 0)
                 {
-                    context.Database.Migrate();
-                    await userInit.InitializeAsync();
-                    await dataSeeder.SeedDataAsync();
-                }
-                catch (Exception ex)
-                {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while migrating the database");
+                    try
+                    {
+                        await context.Database.EnsureCreatedAsync();
+
+                        var dataSeeder = services.GetRequiredService<DataSeederService>();
+                        if (!context.Roles.Any())
+                        {
+                            await dataSeeder.SeedDataAsync();
+                        }
+                        break; 
+                    }
+                    catch (Exception ex)
+                    {
+                        retries--;
+                        logger.LogWarning($"База данных еще не готова. Ожидание... (Осталось попыток: {retries})");
+                        await Task.Delay(5000); 
+                        if (retries == 0) throw;
+                    }
                 }
             }
 
