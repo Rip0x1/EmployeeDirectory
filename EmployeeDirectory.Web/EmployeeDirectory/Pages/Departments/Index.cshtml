@@ -1,0 +1,705 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Мой отдел";
+}
+
+@await Html.PartialAsync("_PrintModalMyDepartment")
+
+<div class="container-fluid fade-in-up">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-building me-2"></i>Мой отдел</h2>
+                <div class="d-flex gap-2">
+                    @if (User.IsInRole("Manager") || User.IsInRole("Administrator"))
+                    {
+                        <a asp-page="/Departments/ManageEditors" asp-route-departmentId="@Model.DepartmentId" class="btn btn-warning">
+                            <i class="fas fa-users-cog me-1"></i>Управление редакторами
+                        </a>
+                        <a asp-page="/Departments/AddEditor" asp-route-departmentId="@Model.DepartmentId" class="btn btn-info">
+                            <i class="fas fa-user-plus me-1"></i>Добавить редактора
+                        </a>
+                    }
+                    <a asp-page="/Employees/Create" asp-route-returnUrl="/Departments" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Добавить сотрудника
+                    </a>
+                </div>
+            </div>
+            
+
+            <div class="search-filters-container">
+                <div class="search-filters-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h6 style="margin: 0; color: #fff;"><i class="fas fa-search"></i>Поиск и фильтрация</h6>
+                    <div class="expand-search-toggle">
+                        <label for="expandSearch" class="expand-search-label">
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                            <span>Расширенный</span>
+                        </label>
+                        <input type="checkbox" id="expandSearch" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="row g-3 mb-3 justify-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
+                            <label for="search" class="form-label">
+                                <i class="fas fa-search"></i>Поиск по ФИО
+                            </label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Введите ФИО...">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
+                            <label for="phoneSearch" class="form-label">
+                                <i class="fas fa-phone"></i>Поиск по телефону
+                            </label>
+                            <input type="text" class="form-control" id="phoneSearch" name="phoneSearch" 
+                                   placeholder="Городской или внутренний номер...">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
+                            <label for="positionSearch" class="form-label">
+                                <i class="fas fa-user-tie"></i>Поиск по должности
+                            </label>
+                            <input type="text" class="form-control" id="positionSearch" name="positionSearch" 
+                                   placeholder="Введите должность...">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="search-input-group">
+                            <label for="emailSearch" class="form-label">
+                                <i class="fas fa-envelope"></i>Поиск по Email
+                            </label>
+                            <input type="text" class="form-control" id="emailSearch" name="emailSearch" 
+                                   placeholder="Введите email...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="advancedSearch" style="display: none; border-top: 2px solid rgba(86, 171, 47, 0.2); padding-top: 20px; margin-top: 10px;">
+                    <div class="row g-3 mb-3 justify-content-center">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-select-group">
+                                <label for="employees" class="form-label">
+                                    <i class="fas fa-users"></i>ФИО
+                                </label>
+                                <select class="form-select" id="employees" name="employees" multiple size="3">
+                                    @if (Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Any())
+                                    {
+                                        @foreach (var employee in Model.Employees.Where(e => !string.IsNullOrEmpty(e.FullName)).Select(e => e.FullName).Distinct().OrderBy(e => e))
+                                        {
+                                            <option value="@employee">@employee</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>Нет доступных сотрудников</option>
+                                    }
+                                </select>
+                                <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                            <div class="search-select-group">
+                                <label for="positions" class="form-label">
+                                    <i class="fas fa-user-tie"></i>Должности
+                                </label>
+                                <select class="form-select" id="positions" name="positions" multiple size="3">
+                                    @if (Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Any())
+                                    {
+                                        @foreach (var position in Model.Employees.Select(e => e.PositionDescription).Where(p => !string.IsNullOrEmpty(p)).Distinct().OrderBy(p => p))
+                                        {
+                                            <option value="@position">@position</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>Нет доступных должностей</option>
+                                    }
+                                </select>
+                                <div class="search-help-text">Удерживайте Ctrl для выбора нескольких</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="search-actions">
+                    <button type="button" id="resetFiltersBtn" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-times"></i>Сброс фильтров
+                    </button>
+                </div>
+            </div>
+
+            @if (Model.Employees.Any())
+            {
+                <div class="search-results-header">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <h5 style="color: #fff;"><i class="fas fa-users"></i>Список сотрудников <span class="badge">@Model.Employees.Count()</span></h5>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <button id="printDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#printSettingsModalMyDepartment" data-print-url="/Pdf/MyDepartment">
+                                <i class="fas fa-print"></i> Печать
+                            </button>
+                            <button id="exportDepartmentBtn" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" data-bs-toggle="modal" data-bs-target="#exportSettingsModal">
+                                <i class="fas fa-download"></i> Экспорт
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div id="employeesTable">
+                            <div class="department-section">
+                                <div class="department-header">
+                                    <span class="department-name-badge">@((Model.Employees.FirstOrDefault()?.Department?.GetDisplayName()) ?? Model.DepartmentName)</span>
+                                </div>
+
+                                <table class="table mb-0">
+                                    <thead class="table-dark sticky-header">
+                                        <tr>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 30%;">Должность / ФИО</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Городской номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Внутренний номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 12%;">Мобильный номер</th>
+                                            <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important; width: 19%;">Email</th>
+                                            <th class="text-center" style="border-bottom: 2px solid rgb(33, 37, 41) !important; width: 15%;">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var employee in Model.Employees.OrderByDescending(e => e.IsHeadOfDepartment).ThenByDescending(e => e.IsDeputy).ThenBy(e => e.FullName))
+                                    {
+                                        <tr>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                                                @if (!string.IsNullOrEmpty(employee.PositionDescription))
+                                                {
+                                                    var badgeClass = "position-employee";
+                                                    if (employee.IsHeadOfDepartment)
+                                                    {
+                                                        badgeClass = "position-head";
+                                                    }
+                                                    else if (employee.IsDeputy)
+                                                    {
+                                                        badgeClass = "position-deputy";
+                                                    }
+                                                    <span class="position-badge @badgeClass">
+                                                        @employee.PositionDescription
+                                                    </span>
+                                                    @if (!string.IsNullOrEmpty(employee.FullName))
+                                                    {
+                                                        <strong>@employee.FullName</strong>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted fst-italic">-</span>
+                                                }
+                                            </td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.CityPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.LocalPhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.MobilePhone ?? "Не указано")</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(employee.Email ?? "Не указано")</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-column gap-1 align-items-stretch actions-stack">
+                                                    <a asp-page="/Employees/Edit" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-primary w-100">
+                                                        <i class="fas fa-edit me-1"></i>Изменить
+                                                    </a>
+                                                    <a asp-page="/Employees/Delete" asp-route-id="@employee.Id" asp-route-returnUrl="/Departments" class="btn btn-sm btn-outline-danger w-100">
+                                                        <i class="fas fa-trash me-1"></i>Удалить
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">В отделе пока нет сотрудников</h5>
+                        <p class="text-muted">Добавьте первого сотрудника в ваш отдел</p>
+                        <a asp-page="/Employees/Create" asp-route-returnUrl="/Departments" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i>Добавить сотрудника
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+.department-name-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.9em;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 6px rgba(124, 58, 237, 0.2);
+    text-align: center;
+    margin: 0 auto;
+    width: fit-content;
+    min-width: 80px;
+}
+
+.department-header {
+    background: none !important;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.department-section {
+    margin-bottom: 20px;
+}
+    
+.expand-search-toggle {
+    display: flex;
+    align-items: center;
+}
+    
+.expand-search-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
+    color: #fff;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: none;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+    
+.expand-search-label:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+    
+.expand-search-label .expand-icon {
+    transition: transform 0.3s ease;
+}
+    
+#expandSearch:checked ~ .expand-search-label .expand-icon {
+    transform: rotate(180deg);
+}
+
+.employees-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.employees-table th {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.employees-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.employee-name {
+    font-weight: 500;
+}
+
+.phone-number {
+    text-align: center;
+}
+
+.position-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.position-head {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+    color: #000;
+}
+
+.position-deputy {
+    background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+    color: white;
+}
+
+.position-employee {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+}
+
+</style>
+<style>
+.actions-stack .btn {
+    padding: .125rem .25rem;
+    font-size: .75rem;
+    line-height: 1.1;
+}
+.actions-stack .btn i { margin-right: .25rem; }
+@@media (max-width: 576px) {
+  .actions-stack .btn span { display: none; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const expandSearchCheckbox = document.getElementById('expandSearch');
+    const advancedSearch = document.getElementById('advancedSearch');
+    const expandLabel = document.querySelector('.expand-search-label');
+    
+    expandLabel.addEventListener('click', function(e) {
+        e.preventDefault();
+        expandSearchCheckbox.checked = !expandSearchCheckbox.checked;
+        
+        if (expandSearchCheckbox.checked) {
+            advancedSearch.style.display = 'block';
+        } else {
+            advancedSearch.style.display = 'none';
+        }
+    });
+    
+    const searchInput = document.getElementById('search');
+    const employeesSelect = document.getElementById('employees');
+    const positionsSelect = document.getElementById('positions');
+    const phoneSearchInput = document.getElementById('phoneSearch');
+    const positionSearchInput = document.getElementById('positionSearch');
+    const emailSearchInput = document.getElementById('emailSearch');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    const employeesTableDiv = document.getElementById('employeesTable');
+    
+    const originalTableHTML = employeesTableDiv ? employeesTableDiv.innerHTML : '';
+    
+    let typingTimer;
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedEmployees = Array.from(employeesSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
+        const selectedPositions = Array.from(positionsSelect.selectedOptions).map(option => option.value.trim().toLowerCase());
+        const phoneSearch = phoneSearchInput.value.toLowerCase().trim();
+        const positionSearch = positionSearchInput.value.toLowerCase().trim();
+        const emailSearch = emailSearchInput.value.toLowerCase().trim();
+
+        const isAllEmpty = !searchTerm && !phoneSearch && !positionSearch && !emailSearch && selectedEmployees.length === 0 && selectedPositions.length === 0;
+        if (isAllEmpty && employeesTableDiv) {
+            employeesTableDiv.innerHTML = originalTableHTML;
+            updateEmployeeCounter();
+            return;
+        }
+
+        const tbody = document.querySelector('#employeesTable tbody');
+        if (!tbody) {
+            if (employeesTableDiv && isAllEmpty) {
+                employeesTableDiv.innerHTML = originalTableHTML;
+                updateEmployeeCounter();
+            }
+            return;
+        }
+
+        const rows = document.querySelectorAll('#employeesTable tbody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 6) return;
+            
+            const fullName = (cells[0].querySelector('strong')?.textContent?.trim() || '').toLowerCase();
+            const positionBadge = (cells[0].querySelector('.position-badge')?.textContent?.trim() || '').toLowerCase();
+            const positionName = (fullName + ' ' + positionBadge).toLowerCase();
+            const cityPhone = (cells[1] ? cells[1].textContent.trim() : '').toLowerCase();
+            const localPhone = (cells[2] ? cells[2].textContent.trim() : '').toLowerCase();
+            const mobilePhone = (cells[3] ? cells[3].textContent.trim() : '').toLowerCase();
+            const email = (cells[4] ? cells[4].textContent.trim() : '').toLowerCase();
+            
+            let showRow = true;
+            
+            if (searchTerm && !positionName.includes(searchTerm)) {
+                showRow = false;
+            }
+            
+            if (phoneSearch && !cityPhone.includes(phoneSearch) && !localPhone.includes(phoneSearch) && !mobilePhone.includes(phoneSearch)) {
+                showRow = false;
+            }
+            
+            if (positionSearch && !positionBadge.includes(positionSearch)) {
+                showRow = false;
+            }
+            
+            if (emailSearch && !email.includes(emailSearch)) {
+                showRow = false;
+            }
+            
+            if (selectedEmployees.length > 0) {
+                const nameMatches = selectedEmployees.some(emp => {
+                    const empClean = emp.replace(/\s+/g, ' ').trim();
+                    const fullNameClean = fullName.replace(/\s+/g, ' ').trim();
+                    return fullNameClean === empClean;
+                });
+                if (!nameMatches) {
+                    showRow = false;
+                }
+            }
+            
+            if (selectedPositions.length > 0) {
+                const positionMatches = selectedPositions.some(pos => {
+                    const posClean = pos.replace(/\s+/g, ' ').trim();
+                    const badgeClean = positionBadge.replace(/\s+/g, ' ').trim();
+                    return badgeClean === posClean;
+                });
+                if (!positionMatches) {
+                    showRow = false;
+                }
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+            if (showRow) visibleCount++;
+        });
+        
+        if (visibleCount === 0 && rows.length > 0) {
+            if (employeesTableDiv && !employeesTableDiv.querySelector('.no-results-message')) {
+                const noResultsDiv = document.createElement('div');
+                noResultsDiv.className = 'no-results-message';
+                noResultsDiv.innerHTML = '<div class="text-center text-muted py-4">Сотрудники не найдены</div>';
+                employeesTableDiv.innerHTML = '';
+                employeesTableDiv.appendChild(noResultsDiv);
+            }
+        } else if (visibleCount > 0) {
+            const noResultsMsg = employeesTableDiv?.querySelector('.no-results-message');
+            if (noResultsMsg) {
+                employeesTableDiv.innerHTML = originalTableHTML;
+            }
+        }
+        
+        updateEmployeeCounter();
+    }
+    
+    function updateEmployeeCounter() {
+        const visibleRows = document.querySelectorAll('#employeesTable tbody tr:not([style*="display: none"])');
+        const totalEmployees = visibleRows.length;
+        
+        const badgeElement = document.querySelector('.search-results-header .badge');
+        if (badgeElement) {
+            badgeElement.textContent = totalEmployees;
+        }
+        
+        const headerElement = document.querySelector('.card-header h5');
+        if (headerElement) {
+            headerElement.textContent = `Список сотрудников (${totalEmployees})`;
+        }
+    }
+
+
+
+    function updateEmployeesList() {
+        Array.from(employeesSelect.options).forEach(option => {
+            option.style.display = '';
+        });
+    }
+
+    function updatePositionsList() {
+        Array.from(positionsSelect.options).forEach(option => {
+            option.style.display = '';
+        });
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        phoneSearchInput.value = '';
+        positionSearchInput.value = '';
+        emailSearchInput.value = '';
+        
+        Array.from(employeesSelect.options).forEach(option => option.selected = false);
+        Array.from(positionsSelect.options).forEach(option => option.selected = false);
+
+        updateEmployeesList();
+        updatePositionsList();
+        
+        const noResultsMsg = employeesTableDiv?.querySelector('.no-results-message');
+        if (noResultsMsg) {
+            employeesTableDiv.innerHTML = originalTableHTML;
+        }
+        
+        const rows = document.querySelectorAll('#employeesTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+        
+        updateEmployeeCounter();
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    phoneSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+
+    emailSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    positionSearchInput.addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    employeesSelect.addEventListener('change', function() {
+        Array.from(employeesSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    positionsSelect.addEventListener('change', function() {
+        Array.from(positionsSelect.selectedOptions).forEach(option => {
+            if (option.hasAttribute('data-placeholder')) {
+                option.selected = false;
+            }
+        });
+        performSearch();
+    });
+
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+});
+</script>
+
+<div class="modal fade" id="exportSettingsModal" tabindex="-1" aria-labelledby="exportSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportSettingsModalLabel">Экспорт сотрудников</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="exportFormat" class="form-label">Формат экспорта:</label>
+                    <select class="form-select" id="exportFormat">
+                        <option value="excel">Excel (.xlsx)</option>
+                        <option value="word">Word (.docx)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="exportConfirmBtn">Экспорт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportModal = document.getElementById('exportSettingsModal');
+    const exportFormatSelect = document.getElementById('exportFormat');
+    const exportConfirmBtn = document.getElementById('exportConfirmBtn');
+
+    exportConfirmBtn.addEventListener('click', function() {
+        const format = exportFormatSelect.value;
+        const currentDepartmentId = @Model.DepartmentId;
+        const departmentIds = [currentDepartmentId];
+
+        const modal = bootstrap.Modal.getInstance(exportModal);
+        modal.hide();
+        
+        setTimeout(() => {
+            exportEmployees(format, departmentIds);
+        }, 300);
+    });
+
+
+    const printModalMyDepartment = new bootstrap.Modal(document.getElementById('printSettingsModalMyDepartment'));
+    let currentPrintUrlMyDepartment = '';
+
+    document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#printSettingsModalMyDepartment"]').forEach(button => {
+        button.addEventListener('click', function () {
+            currentPrintUrlMyDepartment = this.getAttribute('data-print-url');
+        });
+    });
+
+    document.getElementById('confirmPrintMyDepartment').addEventListener('click', function () {
+        const orientation = document.getElementById('printOrientationMyDepartment').value;
+        const currentDepartmentId = @Model.DepartmentId;
+
+        const url = new URL(currentPrintUrlMyDepartment, window.location.origin);
+        url.searchParams.set('orientation', orientation);
+        url.searchParams.set('departments', currentDepartmentId.toString());
+
+        window.open(url.toString(), '_blank');
+        printModalMyDepartment.hide();
+    });
+
+    function exportEmployees(format, departmentIds) {
+        const requestData = {
+            DepartmentIds: departmentIds
+        };
+
+
+        const url = format === 'excel' ? '/api/export/excel' : '/api/export/word';
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Ошибка сервера:', text);
+                    throw new Error(`Ошибка сервера: ${response.status} - ${text}`);
+                });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Сотрудники_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${format === 'excel' ? 'xlsx' : 'docx'}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error('Ошибка экспорта:', error);
+            alert(`Ошибка при экспорте файла: ${error.message}`);
+        });
+    }
+});
+</script>

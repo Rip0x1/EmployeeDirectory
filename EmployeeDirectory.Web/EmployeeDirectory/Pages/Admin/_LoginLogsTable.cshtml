@@ -1,0 +1,66 @@
+@model IEnumerable<EmployeeDirectory.Models.LoginLog>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var log in Model)
+    {
+        <tr>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                @TimeZoneInfo.ConvertTimeFromUtc(log.TimestampUtc, TimeZoneInfo.Local).ToString("yyyy-MM-dd HH:mm:ss")
+            </td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                @(log.UserName ?? "-")
+            </td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                @if (log.Action == "Login")
+                {
+                    <span class="badge bg-success">
+                        <i class="fas fa-sign-in-alt me-1"></i>Вход
+                    </span>
+                }
+                else if (log.Action == "Logout")
+                {
+                    <span class="badge bg-info">
+                        <i class="fas fa-sign-out-alt me-1"></i>Выход
+                    </span>
+                }
+                else if (log.Action == "FailedLogin")
+                {
+                    <span class="badge bg-danger">
+                        <i class="fas fa-times-circle me-1"></i>Неудачный вход
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@log.Action</span>
+                }
+            </td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
+                @(log.IpAddress ?? "Не указано")
+            </td>
+            <td class="text-center">
+                @if (log.Success)
+                {
+                    <span class="badge bg-success">
+                        <i class="fas fa-check me-1"></i>Успешно
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">
+                        <i class="fas fa-times me-1"></i>Ошибка
+                    </span>
+                }
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="5" class="text-center text-muted py-4">
+            Логи входа не найдены
+        </td>
+    </tr>
+}
+
