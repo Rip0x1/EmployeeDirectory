@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-<<<<<<< HEAD
     <TargetFramework>net9.0</TargetFramework>
-=======
-    <TargetFramework>net8.0</TargetFramework>
->>>>>>> 72d00c74d0060d1160cd9c31bf5d0504d3d0879f
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>8511790a-a04d-4887-aebf-33cb23d60bb8</UserSecretsId>
@@ -18,7 +14,6 @@
     <EmbeddedResource Remove="Pages\Print\**" />
     <None Remove="Pages\Print\**" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
@@ -36,14 +31,8 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
   </ItemGroup>
 
-
-<<<<<<< HEAD
   <ItemGroup>
     <ProjectReference Include="..\EmployeeDirectory.Models\EmployeeDirectory.Models.csproj" />
   </ItemGroup>
-
-
-=======
->>>>>>> 72d00c74d0060d1160cd9c31bf5d0504d3d0879f
 
 </Project>
