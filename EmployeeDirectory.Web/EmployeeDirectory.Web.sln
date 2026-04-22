@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+<<<<<<< HEAD
 # Visual Studio Version 18
 VisualStudioVersion = 18.5.11626.173 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -9,6 +10,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeDirectory.Models", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeDirectory.Maui", "EmployeeDirectory.Maui\EmployeeDirectory.Maui.csproj", "{EDFF565E-2DD8-40C7-98D1-5A7897C96435}"
 EndProject
+=======
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeDirectory", "EmployeeDirectory\EmployeeDirectory.csproj", "{DC9AA207-0139-46FC-9328-0A735433BA7F}"
+EndProject
+>>>>>>> 72d00c74d0060d1160cd9c31bf5d0504d3d0879f
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +27,7 @@ Global
 		{DC9AA207-0139-46FC-9328-0A735433BA7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC9AA207-0139-46FC-9328-0A735433BA7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC9AA207-0139-46FC-9328-0A735433BA7F}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{61A2F0AE-7851-88F0-FC40-8CB29FA9386C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61A2F0AE-7851-88F0-FC40-8CB29FA9386C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A2F0AE-7851-88F0-FC40-8CB29FA9386C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +36,8 @@ Global
 		{EDFF565E-2DD8-40C7-98D1-5A7897C96435}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDFF565E-2DD8-40C7-98D1-5A7897C96435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDFF565E-2DD8-40C7-98D1-5A7897C96435}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+>>>>>>> 72d00c74d0060d1160cd9c31bf5d0504d3d0879f
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
