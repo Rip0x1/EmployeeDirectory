@@ -69,8 +69,6 @@ namespace EmployeeDirectory
                 app.UseHsts();
             }
             
-            app.UseHttpsRedirection();
-            
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

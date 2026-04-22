@@ -1,8 +1,6 @@
 ﻿using EmployeeDirectory.Services;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace EmployeeDirectory.Controllers
 {
     [Route("api/[controller]")]
@@ -28,6 +26,8 @@ namespace EmployeeDirectory.Controllers
                     e.Id,
                     e.FullName,
                     e.MobilePhone,
+                    e.CityPhone,
+                    e.LocalPhone, 
                     e.Email,
                     DepartmentName = e.Department?.Name ?? "Без отдела",
                     PositionDescription = e.Position?.Name ?? e.PositionDescription ?? "Нет должности"

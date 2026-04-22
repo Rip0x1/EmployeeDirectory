@@ -14,7 +14,7 @@ public class EmployeeApiService
     private readonly JsonSerializerOptions _jsonOptions;
 
     private readonly string _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-                                       ? "http://10.0.2.2:7019"
+                                       ? "http://10.0.2.2:7019" 
                                        : "https://localhost:7019";
 
     public EmployeeApiService(HttpClient httpClient)
@@ -43,4 +43,28 @@ public class EmployeeApiService
             return new();
         }
     }
+
+    public async Task<List<Employee>> SearchEmployeesAsync(string search, string departmentSearch)
+    {
+        try
+        {
+            var url = $"{_baseUrl}/api/Search?search={search}&departmentSearch={departmentSearch}";
+
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(content);
+                var employeesJson = doc.RootElement.GetProperty("employees").GetRawText();
+                return JsonSerializer.Deserialize<List<Employee>>(employeesJson, _jsonOptions) ?? new();
+            }
+            return new();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Search Error]: {ex.Message}");
+            return new();
+        }
+    }
+
 }

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using EmployeeDirectory.Models;
 using EmployeeDirectory.Maui.Services;
+using EmployeeDirectory.Models;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace EmployeeDirectory.Maui.ViewModels;
@@ -10,103 +10,115 @@ namespace EmployeeDirectory.Maui.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly EmployeeApiService _apiService;
-    private int _currentPage = 1;
-    private const int PageSize = 10;
-    private bool _isLoadingMore;
-    private bool _allDataLoaded;
-    private bool _isAutoRefreshing;
+    private CancellationTokenSource _searchCts;
 
     public ObservableCollection<Employee> Employees { get; } = new();
 
     [ObservableProperty]
     private bool isRefreshing;
 
+    [ObservableProperty]
+    private string searchText;
+
+    [ObservableProperty]
+    private bool isBusy;
+
     public MainViewModel(EmployeeApiService apiService)
     {
         _apiService = apiService;
+        Task.Run(async () => await LoadEmployeesInternal(false));
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        _searchCts?.Cancel();
+        _searchCts = new CancellationTokenSource();
+        var token = _searchCts.Token;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(400, token);
+                if (token.IsCancellationRequested) return;
+
+                List<Employee> results;
+                if (string.IsNullOrWhiteSpace(value))
+                    results = await _apiService.GetEmployeesAsync(1, 10);
+                else
+                    results = await _apiService.SearchEmployeesAsync(value, "");
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Employees.Clear();
+                    if (results != null)
+                    {
+                        foreach (var emp in results)
+                            Employees.Add(emp);
+                    }
+                });
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        }, token);
     }
 
     [RelayCommand]
-    public async Task LoadEmployeesAsync()
+    private async Task LoadEmployeesAsync()
+    {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+
+            var employees = await _apiService.GetEmployeesAsync(1, 20);
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Employees.Clear();
+                if (employees != null)
+                {
+                    foreach (var emp in employees)
+                        Employees.Add(emp);
+                }
+            });
+
+            await Task.Delay(100);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Refresh Error]: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+            IsRefreshing = false; 
+        }
+    }
+
+    private async Task LoadEmployeesInternal(bool showRefresh)
     {
         if (IsRefreshing) return;
 
-        IsRefreshing = true;
-        _currentPage = 1;
-        _allDataLoaded = false;
+        if (showRefresh) IsRefreshing = true;
 
         try
         {
-            var employees = await _apiService.GetEmployeesAsync(_currentPage, PageSize);
-            Employees.Clear();
-            if (employees != null)
+            var employees = await _apiService.GetEmployeesAsync(1, 10);
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                foreach (var emp in employees)
-                    Employees.Add(emp);
-
-                if (employees.Count < PageSize) _allDataLoaded = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Ошибка: {ex.Message}");
-        }
-        finally
-        {
-            IsRefreshing = false;
-        }
-    }
-
-    [RelayCommand]
-    public async Task LoadMoreEmployeesAsync()
-    {
-        if (_isLoadingMore || IsRefreshing || _allDataLoaded)
-            return;
-
-        _isLoadingMore = true;
-        try
-        {
-            _currentPage++;
-            var nextEmployees = await _apiService.GetEmployeesAsync(_currentPage, PageSize);
-
-            if (nextEmployees != null && nextEmployees.Any())
-            {
-                foreach (var emp in nextEmployees)
-                    Employees.Add(emp);
-
-                if (nextEmployees.Count < PageSize)
-                    _allDataLoaded = true;
-            }
-            else
-            {
-                _allDataLoaded = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            _currentPage--;
-            Debug.WriteLine($"Ошибка подгрузки: {ex.Message}");
-        }
-        finally
-        {
-            _isLoadingMore = false;
-        }
-    }
-
-    public void StartAutoRefresh()
-    {
-        _isAutoRefreshing = true;
-        Application.Current?.Dispatcher.StartTimer(TimeSpan.FromSeconds(10), () =>
-        {
-            MainThread.BeginInvokeOnMainThread(() => {
-                _ = LoadEmployeesAsync();
+                Employees.Clear();
+                if (employees != null)
+                {
+                    foreach (var emp in employees)
+                        Employees.Add(emp);
+                }
             });
-            return _isAutoRefreshing;
-        });
-    }
-
-    public void StopAutoRefresh()
-    {
-        _isAutoRefreshing = false;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        finally
+        {
+            if (showRefresh) IsRefreshing = false;
+        }
     }
 }

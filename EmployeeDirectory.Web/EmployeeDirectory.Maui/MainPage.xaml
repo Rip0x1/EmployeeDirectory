@@ -5,143 +5,137 @@
              xmlns:models="clr-namespace:EmployeeDirectory.Models;assembly=EmployeeDirectory.Models"
              x:DataType="vm:MainViewModel"
              x:Class="EmployeeDirectory.Maui.MainPage"
-             Title="Справочник"
-             BackgroundColor="#F3F4F6">
+             BackgroundColor="#F9FAFB">
 
-    <RefreshView IsRefreshing="{Binding IsRefreshing}" 
-                 Command="{Binding LoadEmployeesCommand}"
-                 RefreshColor="#4F46E5">
+    <Grid RowDefinitions="Auto, *">
 
-        <CollectionView ItemsSource="{Binding Employees}"
-                RemainingItemsThreshold="5" 
-                RemainingItemsThresholdReachedCommand="{Binding LoadMoreEmployeesCommand}">
+        <Border Grid.Row="0" BackgroundColor="White" StrokeThickness="0" Padding="0,10,0,15">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05"/>
+            </Border.Shadow>
 
-            <CollectionView.Header>
-                <VerticalStackLayout Padding="25,40,25,20" Spacing="5" HorizontalOptions="Fill">
-                    <Label Text="Сотрудники" 
-                           FontSize="32" 
-                           FontAttributes="Bold" 
-                           TextColor="#111827"
-                           HorizontalOptions="Center"/>
-
-                    <Border BackgroundColor="#E5E7EB" 
-                            Padding="12,4" 
-                            HorizontalOptions="Center" 
-                            StrokeShape="RoundRectangle 20"
-                            StrokeThickness="0">
-                        <Label Text="{Binding Employees.Count, StringFormat='Всего: {0}'}" 
-                               TextColor="#4B5563" 
-                               FontSize="13" 
-                               FontAttributes="Bold"/>
-                    </Border>
-                </VerticalStackLayout>
-            </CollectionView.Header>
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Employee">
-                    <Grid Padding="15,6" HorizontalOptions="Center" MaximumWidthRequest="550">
-                        <Border BackgroundColor="White" StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="20" />
-                            </Border.StrokeShape>
-
-                            <Border.Shadow>
-                                <Shadow Brush="Black" Offset="0,6" Radius="12" Opacity="0.06" />
-                            </Border.Shadow>
-
-                            <Grid ColumnDefinitions="90, *" Padding="16" ColumnSpacing="10">
-
-                                <VerticalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Start">
-                                    <Border StrokeShape="RoundRectangle 20" 
-                                            HeightRequest="75" WidthRequest="75"
-                                            BackgroundColor="#F5F3FF" StrokeThickness="0">
-                                        <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="38"/>
-                                    </Border>
-
-                                    <Label Text="{Binding DepartmentName}" 
-                                           FontSize="10" FontAttributes="Bold" 
-                                           TextColor="#6366F1" HorizontalTextAlignment="Center"
-                                           LineBreakMode="TailTruncation"/>
-                                </VerticalStackLayout>
-
-                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                    <Label Text="{Binding FullName, TargetNullValue='ФИО не указано'}" 
-                                           FontSize="20" FontAttributes="Bold" 
-                                           TextColor="#111827" LineBreakMode="WordWrap"/>
-
-                                    <Label Text="{Binding PositionDescription, TargetNullValue='Должность не указана'}" 
-                                           FontSize="14" TextColor="#4F46E5" 
-                                           FontAttributes="Bold" Margin="0,0,0,10" />
-
-                                    <Border BackgroundColor="#F8FAFC" Padding="12,8" StrokeThickness="1" Stroke="#F1F5F9">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-
-                                        <VerticalStackLayout Spacing="5">
-                                            <HorizontalStackLayout Spacing="8">
-                                                <Label Text="📞" FontSize="12" Opacity="0.7"/>
-                                                <Label Text="{Binding MobilePhone, TargetNullValue='Номер не указан'}" 
-                                                       FontSize="13" TextColor="#1F2937" FontAttributes="Bold"/>
-                                            </HorizontalStackLayout>
-
-                                            <HorizontalStackLayout Spacing="8">
-                                                <Label Text="✉️" FontSize="12" Opacity="0.7"/>
-                                                <Label Text="{Binding Email, TargetNullValue='Почта не указана'}" 
-                                                       FontSize="13" TextColor="#64748B" LineBreakMode="TailTruncation"/>
-                                            </HorizontalStackLayout>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-            <CollectionView.EmptyView>
-                <Grid VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Padding="0,100">
-                    <VerticalStackLayout Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
-
-                        <Border BackgroundColor="#F3F4F6" 
-                    HeightRequest="120" 
-                    WidthRequest="120" 
-                    StrokeThickness="0"
-                    HorizontalOptions="Center">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="60" />
-                            </Border.StrokeShape>
-
-                            <Label Text="👥" 
-                       FontSize="50" 
-                       HorizontalTextAlignment="Center" 
-                       VerticalTextAlignment="Center" 
-                       HorizontalOptions="Center" 
-                       VerticalOptions="Center"/>
-                        </Border>
-
-                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
-                            <Label Text="Сотрудники не найдены" 
-                       FontSize="22" 
-                       FontAttributes="Bold" 
-                       TextColor="#111827" 
-                       HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center"/>
-                            <Label Text="Потяните вниз для обновления данных" 
-                       FontSize="15" 
-                       TextColor="#6B7280" 
-                       HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center"/>
-                        </VerticalStackLayout>
-
+            <VerticalStackLayout Spacing="10" HorizontalOptions="Fill" MaximumWidthRequest="600">
+                <Grid ColumnDefinitions="*, Auto" Padding="20,5">
+                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                        <Label Text="Сотрудники" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
+                        <Label Text="Корпоративный справочник" FontSize="12" TextColor="#6366F1" FontAttributes="Bold"/>
                     </VerticalStackLayout>
+
+                    <Button Grid.Column="1" Text="↻" FontSize="18" HeightRequest="42" WidthRequest="42"
+                            CornerRadius="21" BackgroundColor="#F5F3FF" TextColor="#4F46E5"
+                            Command="{Binding LoadEmployeesCommand}" VerticalOptions="Center" Padding="0"/>
                 </Grid>
-            </CollectionView.EmptyView>
 
-            <CollectionView.Footer>
-                <BoxView HeightRequest="30" Color="Transparent"/>
-            </CollectionView.Footer>
+                <Border Margin="15,5" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#E5E7EB" 
+                        BackgroundColor="#F3F4F6" HeightRequest="48">
+                    <Grid ColumnDefinitions="40, *">
+                        <Label Text="🔍" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" Opacity="0.6"/>
+                        <Entry Grid.Column="1" Text="{Binding SearchText, UpdateSourceEventName=TextChanged}" 
+                               Placeholder="Поиск..." PlaceholderColor="#9CA3AF" TextColor="#1F2937" 
+                               FontSize="14" VerticalOptions="Center" BackgroundColor="Transparent" 
+                               ClearButtonVisibility="WhileEditing" Margin="0,0,10,0"/>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </Border>
 
-        </CollectionView>
-    </RefreshView>
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsRefreshing}" Command="{Binding LoadEmployeesCommand}" RefreshColor="#4F46E5">
+            <CollectionView ItemsSource="{Binding Employees}" RemainingItemsThreshold="5" 
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreEmployeesCommand}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Employee">
+                        <Grid HorizontalOptions="Fill" MaximumWidthRequest="600" Padding="10,6">
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#F1F5F9">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20"/>
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.03"/>
+                                </Border.Shadow>
+
+                                <Grid ColumnDefinitions="90, *" Padding="16" ColumnSpacing="10">
+
+                                    <VerticalStackLayout Grid.Column="0" Spacing="8" HorizontalOptions="Center">
+                                        <Border StrokeShape="RoundRectangle 20" HeightRequest="70" WidthRequest="70" 
+                                                BackgroundColor="#F5F3FF" StrokeThickness="0">
+                                            <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="34"/>
+                                        </Border>
+
+                                        <Border BackgroundColor="#EEF2FF" Padding="8,2" StrokeShape="RoundRectangle 8">
+                                            <Label FontSize="9" FontAttributes="Bold" TextColor="#4F46E5" HorizontalTextAlignment="Center" MaxLines="1">
+                                                <Label.Text>
+                                                    <Binding Path="DepartmentName" TargetNullValue="Вне отдела" FallbackValue="Вне отдела"/>
+                                                </Label.Text>
+                                            </Label>
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+
+                                        <Label FontSize="20" FontAttributes="Bold" TextColor="#111827">
+                                            <Label.Text>
+                                                <Binding Path="FullName" TargetNullValue="Имя не указано" FallbackValue="Имя не указано"/>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <Label FontSize="14" TextColor="#6366F1" Margin="0,0,0,8">
+                                            <Label.Text>
+                                                <Binding Path="PositionDescription" TargetNullValue="Должность не указана" FallbackValue="Должность не указана"/>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <VerticalStackLayout Spacing="5" Margin="0,5,0,0">
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="📱" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="MobilePhone" TargetNullValue="Номер не указан" FallbackValue="Номер не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="📞" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="CityPhone" TargetNullValue="Городской не указан" FallbackValue="Городской не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="🆔" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="LocalPhone" TargetNullValue="Внутренний не указан" FallbackValue="Внутренний не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="✉️" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#6366F1" VerticalOptions="Center" 
+               LineBreakMode="TailTruncation" MaxLines="1">
+                                                    <Label.Text>
+                                                        <Binding Path="Email" TargetNullValue="Почта не указана" FallbackValue="Почта не указана"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>
