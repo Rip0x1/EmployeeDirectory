@@ -31,45 +31,56 @@ namespace EmployeeDirectory.Services
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Сотрудники");
 
-            var currentRow = 1;
-
             var groupedEmployees = employees.GroupBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
-                                          .OrderBy(g => g.Key);
+                                          .OrderBy(g => g.Key)
+                                          .ToList();
 
-            foreach (var departmentGroup in groupedEmployees)
+            var departmentsList = groupedEmployees.ToList();
+            var departmentsPerColumn = (int)Math.Ceiling(departmentsList.Count / 2.0);
+            
+            var leftDepartments = departmentsList.Take(departmentsPerColumn).ToList();
+            var rightDepartments = departmentsList.Skip(departmentsPerColumn).ToList();
+
+            int leftCurrentRow = 1;
+            int rightCurrentRow = 1;
+            int maxRow = 1;
+
+            foreach (var departmentGroup in leftDepartments)
             {
-                if (currentRow > 1)
+                if (leftCurrentRow > 1)
                 {
-                    currentRow += 1;
+                    leftCurrentRow += 1;
                 }
 
                 var departmentName = departmentGroup.Key;
-                var departmentEmployees = departmentGroup.OrderByDescending(e => e.IsHeadOfDepartment)
-                                                       .ThenByDescending(e => e.IsDeputy)
-                                                       .ThenBy(e => e.FullName ?? "");
+                var departmentEmployees = departmentGroup
+                    .OrderByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                    .ThenByDescending(e => e.IsDeputy ? 1 : 0)
+                    .ThenBy(e => e.FullName ?? "")
+                    .ToList();
 
-                worksheet.Cell(currentRow, 1).Value = departmentName;
-                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
-                worksheet.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Cell(currentRow, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                worksheet.Range(currentRow, 1, currentRow, 5).Merge();
+                worksheet.Cell(leftCurrentRow, 1).Value = departmentName;
+                worksheet.Cell(leftCurrentRow, 1).Style.Font.Bold = true;
+                worksheet.Cell(leftCurrentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Cell(leftCurrentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell(leftCurrentRow, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                worksheet.Range(leftCurrentRow, 1, leftCurrentRow, 5).Merge();
 
-                currentRow++;
+                leftCurrentRow++;
 
-                worksheet.Cell(currentRow, 1).Value = "Должность / ФИО";
-                worksheet.Cell(currentRow, 2).Value = "Городской номер";
-                worksheet.Cell(currentRow, 3).Value = "Внутренний номер";
-                worksheet.Cell(currentRow, 4).Value = "Мобильный номер";
-                worksheet.Cell(currentRow, 5).Value = "Email";
+                worksheet.Cell(leftCurrentRow, 1).Value = "Должность / ФИО";
+                worksheet.Cell(leftCurrentRow, 2).Value = "Городской номер";
+                worksheet.Cell(leftCurrentRow, 3).Value = "Внутренний номер";
+                worksheet.Cell(leftCurrentRow, 4).Value = "Мобильный номер";
+                worksheet.Cell(leftCurrentRow, 5).Value = "Email";
 
-                var headerRange = worksheet.Range(currentRow, 1, currentRow, 5);
+                var headerRange = worksheet.Range(leftCurrentRow, 1, leftCurrentRow, 5);
                 headerRange.Style.Font.Bold = true;
                 headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
                 headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-                currentRow++;
+                leftCurrentRow++;
 
                 foreach (var emp in departmentEmployees)
                 {
@@ -90,23 +101,112 @@ namespace EmployeeDirectory.Services
                             : fullName;
                     }
                     
-                    worksheet.Cell(currentRow, 1).Value = positionAndName;
-                    worksheet.Cell(currentRow, 2).Value = string.IsNullOrEmpty(emp.CityPhone) ? "Не указано" : emp.CityPhone;
-                    worksheet.Cell(currentRow, 3).Value = string.IsNullOrEmpty(emp.LocalPhone) ? "Не указано" : emp.LocalPhone;
-                    worksheet.Cell(currentRow, 4).Value = string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone;
-                    worksheet.Cell(currentRow, 5).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
+                    worksheet.Cell(leftCurrentRow, 1).Value = positionAndName;
+                    worksheet.Cell(leftCurrentRow, 2).Value = string.IsNullOrEmpty(emp.CityPhone) ? "Не указано" : emp.CityPhone;
+                    worksheet.Cell(leftCurrentRow, 3).Value = string.IsNullOrEmpty(emp.LocalPhone) ? "Не указано" : emp.LocalPhone;
+                    worksheet.Cell(leftCurrentRow, 4).Value = string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone;
+                    worksheet.Cell(leftCurrentRow, 5).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
 
-                    var rowRange = worksheet.Range(currentRow, 1, currentRow, 4);
+                    var rowRange = worksheet.Range(leftCurrentRow, 1, leftCurrentRow, 5);
                     rowRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                     rowRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-                    currentRow++;
+                    leftCurrentRow++;
                 }
 
-                var tableRange = worksheet.Range(currentRow - departmentEmployees.Count(), 1, currentRow - 1, 5);
+                var tableStartRow = leftCurrentRow - departmentEmployees.Count - 2;
+                var tableEndRow = leftCurrentRow - 1;
+                var tableRange = worksheet.Range(tableStartRow, 1, tableEndRow, 5);
                 tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
                 tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
                 tableRange.Style.Fill.BackgroundColor = XLColor.White;
+
+                if (leftCurrentRow > maxRow)
+                {
+                    maxRow = leftCurrentRow;
+                }
+            }
+
+            foreach (var departmentGroup in rightDepartments)
+            {
+                if (rightCurrentRow > 1)
+                {
+                    rightCurrentRow += 1;
+                }
+
+                var departmentName = departmentGroup.Key;
+                var departmentEmployees = departmentGroup
+                    .OrderByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                    .ThenByDescending(e => e.IsDeputy ? 1 : 0)
+                    .ThenBy(e => e.FullName ?? "")
+                    .ToList();
+
+                worksheet.Cell(rightCurrentRow, 7).Value = departmentName;
+                worksheet.Cell(rightCurrentRow, 7).Style.Font.Bold = true;
+                worksheet.Cell(rightCurrentRow, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Cell(rightCurrentRow, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell(rightCurrentRow, 7).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                worksheet.Range(rightCurrentRow, 7, rightCurrentRow, 11).Merge();
+
+                rightCurrentRow++;
+
+                worksheet.Cell(rightCurrentRow, 7).Value = "Должность / ФИО";
+                worksheet.Cell(rightCurrentRow, 8).Value = "Городской номер";
+                worksheet.Cell(rightCurrentRow, 9).Value = "Внутренний номер";
+                worksheet.Cell(rightCurrentRow, 10).Value = "Мобильный номер";
+                worksheet.Cell(rightCurrentRow, 11).Value = "Email";
+
+                var headerRange = worksheet.Range(rightCurrentRow, 7, rightCurrentRow, 11);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+                rightCurrentRow++;
+
+                foreach (var emp in departmentEmployees)
+                {
+                    var positionText = !string.IsNullOrEmpty(emp.PositionDescription) 
+                        ? emp.PositionDescription 
+                        : emp.Position?.Name;
+                    var fullName = emp.FullName;
+                    
+                    string positionAndName;
+                    if (string.IsNullOrEmpty(fullName))
+                    {
+                        positionAndName = positionText ?? "Без должности";
+                    }
+                    else
+                    {
+                        positionAndName = !string.IsNullOrEmpty(positionText) 
+                            ? $"{positionText} / {fullName}"
+                            : fullName;
+                    }
+                    
+                    worksheet.Cell(rightCurrentRow, 7).Value = positionAndName;
+                    worksheet.Cell(rightCurrentRow, 8).Value = string.IsNullOrEmpty(emp.CityPhone) ? "Не указано" : emp.CityPhone;
+                    worksheet.Cell(rightCurrentRow, 9).Value = string.IsNullOrEmpty(emp.LocalPhone) ? "Не указано" : emp.LocalPhone;
+                    worksheet.Cell(rightCurrentRow, 10).Value = string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone;
+                    worksheet.Cell(rightCurrentRow, 11).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
+
+                    var rowRange = worksheet.Range(rightCurrentRow, 7, rightCurrentRow, 11);
+                    rowRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    rowRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                    rightCurrentRow++;
+                }
+
+                var tableStartRow = rightCurrentRow - departmentEmployees.Count - 2;
+                var tableEndRow = rightCurrentRow - 1;
+                var tableRange = worksheet.Range(tableStartRow, 7, tableEndRow, 11);
+                tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+                tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                tableRange.Style.Fill.BackgroundColor = XLColor.White;
+
+                if (rightCurrentRow > maxRow)
+                {
+                    maxRow = rightCurrentRow;
+                }
             }
 
             worksheet.Columns().AdjustToContents();
@@ -125,7 +225,6 @@ namespace EmployeeDirectory.Services
             {
                 throw new InvalidOperationException("Нет сотрудников для экспорта");
             }
-
 
             using var stream = new MemoryStream();
             using var document = WordprocessingDocument.Create(stream, WordprocessingDocumentType.Document);
@@ -153,7 +252,6 @@ namespace EmployeeDirectory.Services
             var groupedEmployees = employees.GroupBy(e => e.Department?.GetDisplayName() ?? e.Department?.Name ?? "Неизвестный отдел")
                                           .OrderBy(g => g.Key);
 
-
             if (!groupedEmployees.Any())
             {
                 var noDataParagraph = new Paragraph();
@@ -167,9 +265,10 @@ namespace EmployeeDirectory.Services
                 foreach (var departmentGroup in groupedEmployees)
                 {
                     var departmentName = departmentGroup.Key;
-                var departmentEmployees = departmentGroup.OrderByDescending(e => e.IsHeadOfDepartment)
-                                                       .ThenByDescending(e => e.IsDeputy)
-                                                       .ThenBy(e => e.FullName ?? "");
+                var departmentEmployees = departmentGroup
+                    .OrderByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                    .ThenByDescending(e => e.IsDeputy ? 1 : 0)
+                    .ThenBy(e => e.FullName ?? "");
 
                 var departmentTitle = new Paragraph();
                 var departmentTitleRun = new Run();

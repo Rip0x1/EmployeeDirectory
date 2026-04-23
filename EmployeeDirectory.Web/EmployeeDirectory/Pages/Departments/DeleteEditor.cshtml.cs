@@ -21,17 +21,17 @@ namespace EmployeeDirectory.Pages.Departments
             _context = context;
         }
 
-        public ApplicationUser Editor { get; set; } = new();
-        public string DepartmentName { get; set; } = string.Empty;
+        [BindProperty]
+        public string EditorId { get; set; } = string.Empty;
+
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
+
+        public ApplicationUser? EditorToDelete { get; set; }
         public int DepartmentId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string? id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             var editor = await _userManager.FindByIdAsync(id);
             if (editor == null)
             {
@@ -43,9 +43,9 @@ namespace EmployeeDirectory.Pages.Departments
                 return NotFound();
             }
 
-            Editor = editor;
+            EditorToDelete = editor;
             DepartmentId = editor.DepartmentId ?? 0;
-            DepartmentName = editor.Department?.GetDisplayName() ?? "Неизвестный отдел";
+            EditorId = id;
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
@@ -67,39 +67,36 @@ namespace EmployeeDirectory.Pages.Departments
             return Forbid();
         }
 
-        public async Task<IActionResult> OnPostAsync(string? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrEmpty(id))
+            var editor = await _userManager.FindByIdAsync(EditorId);
+            if (editor == null)
             {
                 return NotFound();
             }
 
-            try
+            DepartmentId = editor.DepartmentId ?? 0;
+
+            var result = await _userManager.DeleteAsync(editor);
+
+            if (result.Succeeded)
             {
-                var editor = await _userManager.FindByIdAsync(id);
-                if (editor == null)
-                {
-                    return NotFound();
-                }
-
-                DepartmentId = editor.DepartmentId ?? 0;
-
-                var result = await _userManager.DeleteAsync(editor);
-
-                if (result.Succeeded)
-                {
-                    TempData["SuccessMessage"] = "Редактор отдела успешно удален";
-                    return RedirectToPage("/Departments/ManageEditors", new { departmentId = DepartmentId });
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    TempData["ErrorMessage"] = error.Description;
-                }
+                TempData["Success"] = $"Редактор {editor.UserName} успешно удален!";
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = $"Ошибка при удалении редактора: {ex.Message}";
+                TempData["Error"] = "Ошибка при удалении редактора.";
+            }
+
+            if (!string.IsNullOrEmpty(ReturnUrl))
+            {
+                return Redirect(ReturnUrl);
+            }
+
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer) && !referer.Contains("/Departments/DeleteEditor"))
+            {
+                return Redirect(referer);
             }
 
             return RedirectToPage("/Departments/ManageEditors", new { departmentId = DepartmentId });

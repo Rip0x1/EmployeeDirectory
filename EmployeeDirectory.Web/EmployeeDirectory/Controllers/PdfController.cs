@@ -33,9 +33,10 @@ namespace EmployeeDirectory.Controllers
 
             var employees = await query
                 .OrderBy(e => e.DepartmentName)
+                .ThenByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                .ThenByDescending(e => e.IsDeputy ? 1 : 0)
                 .ThenBy(e => e.FullName)
                 .ToListAsync();
-
 
             var pdfBytes = _questPdfService.GenerateEmployeeDirectoryPdf(employees, orientation);
 
@@ -62,7 +63,9 @@ namespace EmployeeDirectory.Controllers
 
             var employees = await _context.Employees
                 .Where(e => e.DepartmentId == user.Department.Id)
-                .OrderBy(e => e.FullName)
+                .OrderByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                .ThenByDescending(e => e.IsDeputy ? 1 : 0)
+                .ThenBy(e => e.FullName)
                 .ToListAsync();
 
             var pdfBytes = _questPdfService.GenerateEmployeeDirectoryPdf(employees, orientation);
@@ -85,6 +88,8 @@ namespace EmployeeDirectory.Controllers
 
             var employees = await query
                 .OrderBy(e => e.DepartmentName)
+                .ThenByDescending(e => e.IsHeadOfDepartment ? 1 : 0)
+                .ThenByDescending(e => e.IsDeputy ? 1 : 0)
                 .ThenBy(e => e.FullName)
                 .ToListAsync();
 

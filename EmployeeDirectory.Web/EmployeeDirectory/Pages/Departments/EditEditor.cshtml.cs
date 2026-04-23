@@ -15,13 +15,16 @@ namespace EmployeeDirectory.Pages.Departments
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly ILdapDirectory _ldapDirectory;
 
         public EditEditorModel(
             UserManager<ApplicationUser> userManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ILdapDirectory ldapDirectory)
         {
             _userManager = userManager;
             _context = context;
+            _ldapDirectory = ldapDirectory;
         }
 
         [BindProperty]
@@ -36,6 +39,8 @@ namespace EmployeeDirectory.Pages.Departments
         [BindProperty]
         public string EditorId { get; set; } = string.Empty;
 
+        public List<string> DomainAccounts { get; set; } = new();
+
         public class InputModel
         {
             [Required(ErrorMessage = "Логин обязателен")]
@@ -45,9 +50,6 @@ namespace EmployeeDirectory.Pages.Departments
             [Display(Name = "Полное имя")]
             public string FullName { get; set; } = string.Empty;
 
-            [Display(Name = "Новый пароль")]
-            [StringLength(100, ErrorMessage = "Пароль должен содержать минимум {2} символов", MinimumLength = 6)]
-            public string? NewPassword { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync(string? id)
@@ -84,6 +86,23 @@ namespace EmployeeDirectory.Pages.Departments
             Input.UserName = editor.UserName ?? "";
             Input.FullName = editor.FullName;
 
+            var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var dbAccounts = _userManager.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                .Select(u => u.UserName!)
+                .ToList();
+            foreach (var a in dbAccounts) accounts.Add(a);
+
+            if (await _ldapDirectory.IsEnabledAsync())
+            {
+                var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                foreach (var a in adUsers) accounts.Add(a);
+                foreach (var c in adComputers) accounts.Add(c);
+            }
+
+            DomainAccounts = accounts.OrderBy(a => a).ToList();
+
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
@@ -108,6 +127,22 @@ namespace EmployeeDirectory.Pages.Departments
         {
             if (!ModelState.IsValid)
             {
+                var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var dbAccounts = _userManager.Users
+                    .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                    .Select(u => u.UserName!)
+                    .ToList();
+                foreach (var a in dbAccounts) accounts.Add(a);
+
+                if (await _ldapDirectory.IsEnabledAsync())
+                {
+                    var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                    var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                    foreach (var a in adUsers) accounts.Add(a);
+                    foreach (var c in adComputers) accounts.Add(c);
+                }
+
+                DomainAccounts = accounts.OrderBy(a => a).ToList();
                 return Page();
             }
 
@@ -128,18 +163,12 @@ namespace EmployeeDirectory.Pages.Departments
 
                 editor.UserName = Input.UserName;
                 editor.NormalizedUserName = Input.UserName.ToUpper();
-                editor.FullName = Input.FullName;
+                editor.FullName = string.IsNullOrWhiteSpace(Input.FullName) ? string.Empty : Input.FullName;
 
                 var result = await _userManager.UpdateAsync(editor);
 
                 if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(Input.NewPassword))
-                    {
-                        var token = await _userManager.GeneratePasswordResetTokenAsync(editor);
-                        await _userManager.ResetPasswordAsync(editor, token, Input.NewPassword);
-                    }
-
                     TempData["SuccessMessage"] = "Данные редактора успешно обновлены";
                     return RedirectToPage("/Departments/ManageEditors", new { departmentId = DepartmentId });
                 }

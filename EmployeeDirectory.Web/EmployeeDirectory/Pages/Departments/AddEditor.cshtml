@@ -29,20 +29,23 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label asp-for="Input.UserName" class="form-label">
-                                        <i class="fas fa-user me-2"></i>Логин
-                                    </label>
-                                    <input asp-for="Input.UserName" class="form-control" placeholder="Введите логин" />
-                                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                                    <label class="form-label">Доменный логин (из выпадающего списка, опционально)</label>
+                                    <select class="form-select" id="DomainAccountsSelect" onchange="(function(){var v=this.value; if(v){ var u=document.getElementById('Input_UserName'); if(u){u.value=v;} } }).call(this)">
+                                        <option value="">— Выберите доменный логин —</option>
+                                        @foreach (var acc in Model.DomainAccounts)
+                                        {
+                                            <option value="@acc">@acc</option>
+                                        }
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label asp-for="Input.Password" class="form-label">
-                                        <i class="fas fa-lock me-2"></i>Пароль
+                                    <label asp-for="Input.UserName" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Логин *
                                     </label>
-                                    <input asp-for="Input.Password" class="form-control" placeholder="Введите пароль" />
-                                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                    <input asp-for="Input.UserName" class="form-control" id="Input_UserName" placeholder="DOMAIN\\логин или ИМЯПК\\логин" />
+                                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -53,7 +56,7 @@
                                     <label asp-for="Input.FullName" class="form-label">
                                         <i class="fas fa-id-card me-2"></i>Полное имя
                                     </label>
-                                    <input asp-for="Input.FullName" class="form-control" placeholder="Введите полное имя" />
+                                    <input asp-for="Input.FullName" class="form-control" id="Input_FullName" placeholder="Например: Иванов Иван Иванович" />
                                     <span asp-validation-for="Input.FullName" class="text-danger"></span>
                                 </div>
                             </div>

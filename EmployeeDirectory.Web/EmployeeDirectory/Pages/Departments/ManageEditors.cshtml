@@ -19,6 +19,15 @@
                 </div>
             </div>
 
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
             @if (Model.Editors.Any())
             {
                 <div class="card shadow-sm">
@@ -26,7 +35,7 @@
                         <div class="table-responsive">
                             <div class="table-container">
                                 <table class="table mb-0">
-                                    <thead class="table-dark sticky-header">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Логин</th>
                                             <th class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important; border-bottom: 2px solid rgb(33, 37, 41) !important;">Полное имя</th>
@@ -41,14 +50,14 @@
                                             <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">
                                                 <strong>@editor.UserName</strong>
                                             </td>
-                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@editor.FullName</td>
+                                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@(string.IsNullOrWhiteSpace(editor.FullName) ? "Не указано" : editor.FullName)</td>
                                             <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">@editor.CreatedAt.ToString("dd.MM.yyyy")</td>
                                             <td class="text-center">
                                                 <div class="d-flex gap-2 justify-content-center">
                                                     <a asp-page="/Departments/EditEditor" asp-route-id="@editor.Id" class="btn btn-sm btn-outline-primary">
                                                         <i class="fas fa-edit me-1"></i>Изменить
                                                     </a>
-                                                    <a asp-page="/Departments/DeleteEditor" asp-route-id="@editor.Id" class="btn btn-sm btn-outline-danger">
+                                                    <a asp-page="/Departments/DeleteEditor" asp-route-id="@editor.Id" asp-route-returnUrl="/Departments/ManageEditors?departmentId=@Model.DepartmentId" class="btn btn-sm btn-outline-danger">
                                                         <i class="fas fa-trash me-1"></i>Удалить
                                                     </a>
                                                 </div>

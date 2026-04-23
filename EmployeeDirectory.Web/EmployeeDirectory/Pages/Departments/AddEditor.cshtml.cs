@@ -16,15 +16,18 @@ namespace EmployeeDirectory.Pages.Departments
         private readonly IDepartmentEditorService _editorService;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILdapDirectory _ldapDirectory;
 
         public AddEditorModel(
             IDepartmentEditorService editorService,
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILdapDirectory ldapDirectory)
         {
             _editorService = editorService;
             _context = context;
             _userManager = userManager;
+            _ldapDirectory = ldapDirectory;
         }
 
         [BindProperty]
@@ -36,20 +39,16 @@ namespace EmployeeDirectory.Pages.Departments
         [BindProperty]
         public int DepartmentId { get; set; }
 
+        public List<string> DomainAccounts { get; set; } = new();
+
         public class InputModel
         {
             [Required(ErrorMessage = "Логин обязателен")]
             [Display(Name = "Логин")]
             public string UserName { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Пароль обязателен")]
-            [StringLength(100, ErrorMessage = "Пароль должен содержать минимум {2} символов", MinimumLength = 6)]
-            [Display(Name = "Пароль")]
-            public string Password { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "Полное имя обязательно")]
             [Display(Name = "Полное имя")]
-            public string FullName { get; set; } = string.Empty;
+            public string? FullName { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync(int? departmentId)
@@ -70,6 +69,23 @@ namespace EmployeeDirectory.Pages.Departments
 
             DepartmentId = department.Id;
             DepartmentName = department.GetDisplayName();
+
+            var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var dbAccounts = _userManager.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                .Select(u => u.UserName!)
+                .ToList();
+            foreach (var a in dbAccounts) accounts.Add(a);
+
+            if (await _ldapDirectory.IsEnabledAsync())
+            {
+                var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                foreach (var a in adUsers) accounts.Add(a);
+                foreach (var c in adComputers) accounts.Add(c);
+            }
+
+            DomainAccounts = accounts.OrderBy(a => a).ToList();
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
@@ -94,6 +110,22 @@ namespace EmployeeDirectory.Pages.Departments
         {
             if (!ModelState.IsValid)
             {
+                var accounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var dbAccounts = _userManager.Users
+                    .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                    .Select(u => u.UserName!)
+                    .ToList();
+                foreach (var a in dbAccounts) accounts.Add(a);
+
+                if (await _ldapDirectory.IsEnabledAsync())
+                {
+                    var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                    var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                    foreach (var a in adUsers) accounts.Add(a);
+                    foreach (var c in adComputers) accounts.Add(c);
+                }
+
+                DomainAccounts = accounts.OrderBy(a => a).ToList();
                 return Page();
             }
 
@@ -101,8 +133,7 @@ namespace EmployeeDirectory.Pages.Departments
             {
                 var result = await _editorService.CreateDepartmentEditorAsync(
                     Input.UserName,
-                    Input.Password,
-                    Input.FullName,
+                    string.IsNullOrWhiteSpace(Input.FullName) ? string.Empty : Input.FullName,
                     DepartmentId);
 
                 if (result.Succeeded)
@@ -121,6 +152,22 @@ namespace EmployeeDirectory.Pages.Departments
                 ModelState.AddModelError(string.Empty, $"Ошибка при создании редактора: {ex.Message}");
             }
 
+            var accountsReload = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var dbAccountsReload = _userManager.Users
+                .Where(u => u.UserName != null && u.UserName.Contains("\\"))
+                .Select(u => u.UserName!)
+                .ToList();
+            foreach (var a in dbAccountsReload) accountsReload.Add(a);
+
+            if (await _ldapDirectory.IsEnabledAsync())
+            {
+                var adUsers = await _ldapDirectory.GetDomainUserAccountsAsync();
+                var adComputers = await _ldapDirectory.GetDomainComputerAccountsAsync();
+                foreach (var a in adUsers) accountsReload.Add(a);
+                foreach (var c in adComputers) accountsReload.Add(c);
+            }
+
+            DomainAccounts = accountsReload.OrderBy(a => a).ToList();
             return Page();
         }
     }
