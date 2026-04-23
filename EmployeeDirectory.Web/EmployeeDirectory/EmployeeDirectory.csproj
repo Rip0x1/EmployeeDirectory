@@ -6,6 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>8511790a-a04d-4887-aebf-33cb23d60bb8</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationIcon>istockphoto-1165660282-612x612.ico</ApplicationIcon>
+    <OutputType>Exe</OutputType>
+    <PackageIcon>istockphoto-1165660282-612x612.jpg</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +21,21 @@
     <Content Remove="Pages\Print\**" />
     <EmbeddedResource Remove="Pages\Print\**" />
     <None Remove="Pages\Print\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="istockphoto-1165660282-612x612.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Pictures\istockphoto-1165660282-612x612.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
