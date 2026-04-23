@@ -10,25 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#printSettingsModal"]').forEach(button => {
         button.addEventListener('click', function () {
             currentPrintUrl = this.getAttribute('data-print-url');
-            const isLogs = currentPrintUrl && (currentPrintUrl.indexOf('/Pdf/LoginLogs') === 0 || currentPrintUrl.indexOf('/Pdf/Logs') === 0);
-
-            if (isLogs) {
-                if (printDepartmentSelection) {
-                    printDepartmentSelection.style.display = 'none';
-                }
-                if (printAllRadio && printSelectedRadio) {
-                    printAllRadio.closest('.mb-3').style.display = 'none';
-                }
-            } else {
-                if (printAllRadio && printSelectedRadio) {
-                    printAllRadio.closest('.mb-3').style.display = '';
-                    printAllRadio.checked = true;
-                }
-                if (printDepartmentSelection) {
-                    printDepartmentSelection.style.display = 'none';
-                }
-                loadDepartmentsForPrint();
-            }
+            loadDepartmentsForPrint();
         });
     });
 
@@ -63,13 +45,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('confirmPrint').addEventListener('click', function () {
         const orientation = document.getElementById('printOrientation').value;
-        const isLogs = currentPrintUrl && (currentPrintUrl.indexOf('/Pdf/LoginLogs') === 0 || currentPrintUrl.indexOf('/Pdf/Logs') === 0);
-        const isAllDepartments = isLogs ? true : printAllRadio.checked;
+        const isAllDepartments = printAllRadio.checked;
 
         const url = new URL(currentPrintUrl, window.location.origin);
         url.searchParams.set('orientation', orientation);
         
-        if (!isLogs && !isAllDepartments) {
+        if (!isAllDepartments) {
             const selectedOptions = Array.from(printDepartmentsSelect.selectedOptions);
             const departmentIds = selectedOptions.map(option => option.value);
             
@@ -80,17 +61,19 @@ document.addEventListener('DOMContentLoaded', function () {
             
             url.searchParams.set('departments', departmentIds.join(','));
         }
-        // Pass filters for logs pages
-        const loginLogsForm = document.getElementById('loginLogsFilterForm');
-        const systemLogsForm = document.getElementById('logsFilterForm');
-        const activeLogsForm = loginLogsForm || systemLogsForm;
-        if (activeLogsForm) {
-            const q = activeLogsForm.querySelector('input[name="q"]').value.trim();
-            const from = activeLogsForm.querySelector('input[name="from"]').value;
-            const to = activeLogsForm.querySelector('input[name="to"]').value;
-            if (q) url.searchParams.set('search', q);
-            if (from) url.searchParams.set('startDate', from);
-            if (to) url.searchParams.set('endDate', to);
+        
+        const logsSearchInput = document.getElementById('logsFilterForm')?.querySelector('input[name="q"]');
+        const logsFromInput = document.getElementById('logsFilterForm')?.querySelector('input[name="from"]');
+        const logsToInput = document.getElementById('logsFilterForm')?.querySelector('input[name="to"]');
+        
+        if (logsSearchInput && logsSearchInput.value.trim()) {
+            url.searchParams.set('search', logsSearchInput.value.trim());
+        }
+        if (logsFromInput && logsFromInput.value) {
+            url.searchParams.set('startDate', logsFromInput.value);
+        }
+        if (logsToInput && logsToInput.value) {
+            url.searchParams.set('endDate', logsToInput.value);
         }
 
         window.open(url.toString(), '_blank');
