@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 400;
@@ -40,7 +40,7 @@ body {
 }
 
 .navbar {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #a855f7 100%) !important;
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%) !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
   border-bottom: none !important;
@@ -116,7 +116,7 @@ body > main {
   .navbar-collapse.show {
     display: block !important;
     position: relative !important;
-    background: linear-gradient(135deg, rgba(91, 33, 182, 0.95) 0%, rgba(124, 58, 237, 0.95) 50%, rgba(168, 85, 247, 0.95) 100%) !important;
+    background: linear-gradient(135deg, rgba(76, 29, 149, 0.95) 0%, rgba(124, 58, 237, 0.95) 50%, rgba(168, 85, 247, 0.95) 100%) !important;
     backdrop-filter: blur(10px) !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     border-radius: 0 0 15px 15px !important;
@@ -156,7 +156,7 @@ body > main {
   }
   
   .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
   }
 }
 
@@ -202,7 +202,7 @@ body > main {
 .navbar-nav .nav-link:focus,
 .navbar-nav .nav-link.text-light:focus {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 
 .navbar-nav .nav-link:active,
@@ -232,7 +232,7 @@ body > main {
 
 .navbar-nav .nav-link i {
   display: inline-block;
-  color: inherit;
+  color: #fff !important;
 }
 
 .navbar-nav .nav-link:hover i {
@@ -251,12 +251,12 @@ body > main {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
   border: none;
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #5b21b6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
   border: none;
 }
 
@@ -308,8 +308,8 @@ body > main {
 }
 
 .table thead th {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%) !important;
-  color: white !important;
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
+  color: white;
   border: none;
   font-weight: 600;
   text-transform: uppercase;
@@ -401,7 +401,7 @@ body > main {
 }
 
 .auth-page {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -418,7 +418,7 @@ body > main {
 }
 
 .auth-header {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
   color: white;
   border-radius: 20px 20px 0 0;
   padding: 30px;
@@ -443,7 +443,7 @@ body > main {
 }
 
 .alert-success {
-  background: linear-gradient(135deg, #5b21b6 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
   color: white;
 }
 
@@ -483,7 +483,7 @@ h5.mb-0 {
 }
 
 .department-header {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%) !important;
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
   padding: 10px 14px;
   border-radius: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -499,7 +499,7 @@ h5.mb-0 {
 
 
 .department-name-badge {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
   color: #000;
   padding: 4px 10px;
   border-radius: 12px;
@@ -518,7 +518,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -569,7 +569,7 @@ body {
 }
 
 .logs-header {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #a855f7 100%) !important;
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%) !important;
   color: white !important;
   border: none !important;
   border-radius: 10px 10px 0 0 !important;
@@ -853,12 +853,12 @@ body {
 }
 
 .search-filters-header {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
-  color: white;
-  border-radius: 12px 12px 0 0;
-  padding: 15px 20px;
-  margin: -25px -25px 20px -25px;
-  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
+    background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
+    color: #fff !important;
+    border-radius: 12px 12px 0 0;
+    padding: 15px 20px;
+    margin: -25px -25px 20px -25px;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
 }
 
 .search-filters-header,
@@ -866,6 +866,8 @@ body {
 .search-results-header,
 .search-results-header * {
   color: #fff !important;
+=======
+>>>>>>> origin/main
 }
 
 .search-filters-header h6 {
@@ -875,10 +877,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #fff !important;
 }
 
 .search-filters-header i {
   font-size: 1.2rem;
+  color: #fff !important;
 }
 
 .search-input-group {
@@ -1127,8 +1131,8 @@ body {
 }
 
 .search-results-header {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
-  color: white;
+  background: linear-gradient(135deg, #4c1d95 0%, #a855f7 100%);
+  color: #fff !important;
   border-radius: 10px;
   padding: 15px 20px;
   margin-bottom: 20px;
@@ -1141,6 +1145,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: #fff !important;
 }
 
 .search-results-header h5,

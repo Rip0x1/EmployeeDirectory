@@ -27,8 +27,6 @@
 
 ## 🛠 Технологический стек
 
-- **Фронтенд:** React.js
-- **Бэкенд:** Python Flask
 - **База данных:** PostgreSQL
 - **Контейнеризация:** Docker + Docker Compose
 - **Администрирование БД:** pgAdmin 4
@@ -97,6 +95,17 @@ docker-compose up -d --build
 
 ---
 
+## 📱 Мобильное приложение
+
+Для удобства сотрудников разработано приложение на базе .NET MAUI, адаптированное под iOS и Android.
+**Особенности мобильной версии**:
+- **Адаптивные карточки:** Контактные данные автоматически подстраиваются под размер экрана.
+- **Интуитивная навигация:** Быстрый поиск по ФИО или отделу.
+- **Статус данных:** Визуальное отображение отсутствующих контактов ("Не указано").
+- **Синхронизация:** Работает напрямую с основным API через REST.
+
+---
+
 ## 🌐 Веб-интерфейсы
 
 - **Основное приложение:** http://localhost:5000
@@ -144,7 +153,7 @@ docker stats
 <img width="1920" height="738" alt="{1F9AF164-4567-428E-A89B-387D455E8329}" src="https://github.com/user-attachments/assets/2e58c287-d7f8-4c72-942c-6eabe5e0572c" />
 <img width="1920" height="718" alt="{78CFA9C2-AFA6-4455-83D6-48689C46D781}" src="https://github.com/user-attachments/assets/a04930bf-248b-4256-bc99-c11f831ac772" />
 <img width="1920" height="841" alt="{BAECE02C-F7DE-48D4-A78A-56C62D42FC12}" src="https://github.com/user-attachments/assets/13a0c71f-d13f-4b07-b52c-2e93656d1f38" />
-
+<img width="392" height="893" alt="{A2391E55-D5AA-41FC-AD48-A2B2D8BC69F0}" src="https://github.com/user-attachments/assets/d6887562-d91f-4ca5-bd7a-a07b260c8bb1" />
 
 
 

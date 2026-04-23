@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EmployeeDirectory.Maui.ViewModels"
+             xmlns:models="clr-namespace:EmployeeDirectory.Models;assembly=EmployeeDirectory.Models"
+             x:DataType="vm:MainViewModel"
+             x:Class="EmployeeDirectory.Maui.MainPage"
+             BackgroundColor="#F9FAFB">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Border Grid.Row="0" BackgroundColor="White" StrokeThickness="0" Padding="0,10,0,15">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05"/>
+            </Border.Shadow>
+
+            <VerticalStackLayout Spacing="10" HorizontalOptions="Fill" MaximumWidthRequest="600">
+                <Grid ColumnDefinitions="*, Auto" Padding="20,5">
+                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                        <Label Text="Сотрудники" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
+                        <Label Text="Корпоративный справочник" FontSize="12" TextColor="#6366F1" FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="1" Text="↻" FontSize="18" HeightRequest="42" WidthRequest="42"
+                            CornerRadius="21" BackgroundColor="#F5F3FF" TextColor="#4F46E5"
+                            Command="{Binding LoadEmployeesCommand}" VerticalOptions="Center" Padding="0"/>
+                </Grid>
+
+                <Border Margin="15,5" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#E5E7EB" 
+                        BackgroundColor="#F3F4F6" HeightRequest="48">
+                    <Grid ColumnDefinitions="40, *">
+                        <Label Text="🔍" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" Opacity="0.6"/>
+                        <Entry Grid.Column="1" Text="{Binding SearchText, UpdateSourceEventName=TextChanged}" 
+                               Placeholder="Поиск..." PlaceholderColor="#9CA3AF" TextColor="#1F2937" 
+                               FontSize="14" VerticalOptions="Center" BackgroundColor="Transparent" 
+                               ClearButtonVisibility="WhileEditing" Margin="0,0,10,0"/>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </Border>
+
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsRefreshing}" Command="{Binding LoadEmployeesCommand}" RefreshColor="#4F46E5">
+            <CollectionView ItemsSource="{Binding Employees}" RemainingItemsThreshold="5" 
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreEmployeesCommand}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Employee">
+                        <Grid HorizontalOptions="Fill" MaximumWidthRequest="600" Padding="10,6">
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#F1F5F9">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20"/>
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.03"/>
+                                </Border.Shadow>
+
+                                <Grid ColumnDefinitions="90, *" Padding="16" ColumnSpacing="10">
+
+                                    <VerticalStackLayout Grid.Column="0" Spacing="8" HorizontalOptions="Center">
+                                        <Border StrokeShape="RoundRectangle 20" HeightRequest="70" WidthRequest="70" 
+                                                BackgroundColor="#F5F3FF" StrokeThickness="0">
+                                            <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="34"/>
+                                        </Border>
+
+                                        <Border BackgroundColor="#EEF2FF" Padding="8,2" StrokeShape="RoundRectangle 8">
+                                            <Label FontSize="9" FontAttributes="Bold" TextColor="#4F46E5" HorizontalTextAlignment="Center" MaxLines="1">
+                                                <Label.Text>
+                                                    <Binding Path="DepartmentName" TargetNullValue="Вне отдела" FallbackValue="Вне отдела"/>
+                                                </Label.Text>
+                                            </Label>
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+
+                                        <Label FontSize="20" FontAttributes="Bold" TextColor="#111827">
+                                            <Label.Text>
+                                                <Binding Path="FullName" TargetNullValue="Имя не указано" FallbackValue="Имя не указано"/>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <Label FontSize="14" TextColor="#6366F1" Margin="0,0,0,8">
+                                            <Label.Text>
+                                                <Binding Path="PositionDescription" TargetNullValue="Должность не указана" FallbackValue="Должность не указана"/>
+                                            </Label.Text>
+                                        </Label>
+
+                                        <VerticalStackLayout Spacing="5" Margin="0,5,0,0">
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="📱" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="MobilePhone" TargetNullValue="Номер не указан" FallbackValue="Номер не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="📞" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="CityPhone" TargetNullValue="Городской не указан" FallbackValue="Городской не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="🆔" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#4B5563" VerticalOptions="Center">
+                                                    <Label.Text>
+                                                        <Binding Path="LocalPhone" TargetNullValue="Внутренний не указан" FallbackValue="Внутренний не указан"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="✉️" FontSize="13" VerticalOptions="Center" Opacity="0.7"/>
+                                                <Label FontSize="13" TextColor="#6366F1" VerticalOptions="Center" 
+               LineBreakMode="TailTruncation" MaxLines="1">
+                                                    <Label.Text>
+                                                        <Binding Path="Email" TargetNullValue="Почта не указана" FallbackValue="Почта не указана"/>
+                                                    </Label.Text>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

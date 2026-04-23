@@ -33,7 +33,9 @@ namespace EmployeeDirectory
             });
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                x => x.MigrationsAssembly("EmployeeDirectory")
+                ));
 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
@@ -124,8 +126,6 @@ namespace EmployeeDirectory
                 app.UseHsts();
             }
             
-            app.UseHttpsRedirection();
-            
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -159,30 +159,43 @@ namespace EmployeeDirectory
 
             using (var scope = app.Services.CreateScope())
             {
-                var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializationService>();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var userInit = scope.ServiceProvider.GetRequiredService<UserInitializationService>();
-                var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                
-                try
-                {
-                    await databaseInitializer.EnsureDatabaseCreatedAsync();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "An error occurred while ensuring database exists");
-                }
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                var logger = services.GetRequiredService<ILogger<Program>>();
 
-                try
+                var databaseInitializer = services.GetRequiredService<DatabaseInitializationService>();
+                var userInit = services.GetRequiredService<UserInitializationService>();
+                var dataSeeder = services.GetRequiredService<DataSeederService>();
+
+                int retries = 5;
+                while (retries > 0)
                 {
-                    context.Database.Migrate();
-                    await userInit.InitializeAsync();
-                    await dataSeeder.SeedDataAsync();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "An error occurred while migrating the database");
+                    try
+                    {
+                        await databaseInitializer.EnsureDatabaseCreatedAsync();
+                        await context.Database.EnsureCreatedAsync();
+                        await userInit.InitializeAsync();
+
+                        if (!await context.Roles.AnyAsync())
+                        {
+                            await dataSeeder.SeedDataAsync();
+                        }
+
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        retries--;
+                        logger.LogWarning($"База данных еще не готова или произошла ошибка. Ожидание... (Осталось попыток: {retries}). Ошибка: {ex.Message}");
+
+                        if (retries == 0)
+                        {
+                            logger.LogCritical(ex, "Не удалось инициализировать базу данных после 5 попыток.");
+                            throw;
+                        }
+
+                        await Task.Delay(5000);
+                    }
                 }
             }
 
