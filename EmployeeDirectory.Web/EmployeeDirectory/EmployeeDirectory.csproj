@@ -32,10 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Pictures\istockphoto-1165660282-612x612.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Include="..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
