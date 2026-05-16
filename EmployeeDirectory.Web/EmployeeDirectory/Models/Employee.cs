@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EmployeeDirectory.Models
 {
@@ -32,6 +33,7 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; } = null!;
 
@@ -50,6 +52,7 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Должность")]
         public int? PositionId { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("PositionId")]
         public virtual Position? Position { get; set; }
 

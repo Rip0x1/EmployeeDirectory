@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EmployeeDirectory.Models
 {
@@ -24,6 +25,7 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Глава отдела")]
         public int? HeadId { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("HeadId")]
         public virtual Employee? Head { get; set; }
 
@@ -33,6 +35,7 @@ namespace EmployeeDirectory.Models
         [Display(Name = "Дата обновления")]
         public DateTime? UpdatedAt { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
         public string GetDisplayName()
