@@ -14,6 +14,16 @@ namespace EmployeeDirectory
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenLocalhost(5050);
+
+                options.ListenLocalhost(5051, listenOptions =>
+                {
+                    listenOptions.UseHttps();
+                });
+            });
+
             builder.Services.AddRazorPages();
             builder.Services.AddControllers();
             builder.Services.AddMvc();
@@ -42,8 +52,8 @@ namespace EmployeeDirectory
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.SameSite = SameSiteMode.Lax;
-                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
-                    ? CookieSecurePolicy.SameAsRequest 
+                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+                    ? CookieSecurePolicy.SameAsRequest
                     : CookieSecurePolicy.Always;
                 options.Cookie.HttpOnly = true;
             });
@@ -65,12 +75,12 @@ namespace EmployeeDirectory
             builder.Services.AddScoped<IExportService, ExportService>();
 
             var app = builder.Build();
- 
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseHsts();
             }
-            
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -79,6 +89,9 @@ namespace EmployeeDirectory
             {
                 app.UseExceptionHandler("/Error");
             }
+
+            app.UseHttpsRedirection();
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = ctx =>
@@ -97,10 +110,8 @@ namespace EmployeeDirectory
             app.Use(async (context, next) =>
             {
                 context.Response.Headers.Append("Permissions-Policy", "attribution-reporting=()");
-                
                 await next();
             });
-
 
             using (var scope = app.Services.CreateScope())
             {
@@ -113,20 +124,20 @@ namespace EmployeeDirectory
                 {
                     try
                     {
-                        await context.Database.EnsureCreatedAsync();
+                        await context.Database.MigrateAsync();
 
                         var dataSeeder = services.GetRequiredService<DataSeederService>();
-                        if (!context.Roles.Any())
+                        if (!await context.Roles.AnyAsync())
                         {
                             await dataSeeder.SeedDataAsync();
                         }
-                        break; 
+                        break;
                     }
                     catch (Exception ex)
                     {
                         retries--;
-                        logger.LogWarning($"База данных еще не готова. Ожидание... (Осталось попыток: {retries})");
-                        await Task.Delay(5000); 
+                        logger.LogWarning(ex, $"База данных еще не готова или повреждена. Ожидание... (Осталось попыток: {retries})");
+                        await Task.Delay(5000);
                         if (retries == 0) throw;
                     }
                 }

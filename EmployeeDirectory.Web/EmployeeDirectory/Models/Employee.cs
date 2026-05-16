@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -14,18 +15,23 @@ namespace EmployeeDirectory.Models
         public string? FullName { get; set; }
 
         [StringLength(20)]
+        [RegularExpression(@"^[0-9\s\-]+$", ErrorMessage = "Городской номер может содержать только цифры, пробелы и дефисы")]
         [Display(Name = "Городской номер")]
         public string? CityPhone { get; set; }
 
         [StringLength(20)]
+        [RegularExpression(@"^\d{3,5}$", ErrorMessage = "Внутренний номер должен состоять из 3-5 цифр")]
         [Display(Name = "Внутренний номер")]
         public string? LocalPhone { get; set; }
 
         [StringLength(20)]
+        [RegularExpression(@"^\+375\s?(25|29|33|44|17)\s?(\d{3})[ \-]?(\d{2})[ \-]?(\d{2})$",
+            ErrorMessage = "Неверный формат номера. Пример: +375 29 870-78-77")]
         [Display(Name = "Мобильный номер")]
         public string? MobilePhone { get; set; }
 
         [StringLength(150)]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Некорректный формат Email адреса")]
         [Display(Name = "Email")]
         public string? Email { get; set; }
 
