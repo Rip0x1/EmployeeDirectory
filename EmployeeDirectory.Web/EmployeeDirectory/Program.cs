@@ -116,29 +116,40 @@ namespace EmployeeDirectory
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<ApplicationDbContext>();
                 var logger = services.GetRequiredService<ILogger<Program>>();
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                var userInit = services.GetRequiredService<UserInitializationService>();
+                var dataSeeder = services.GetRequiredService<DataSeederService>();
 
-                int retries = 5;
-                while (retries > 0)
+                // Настройки повторных попыток для Docker или слабого ПК
+                int maxRetries = 5;
+                int delayInMilliseconds = 3000;
+
+                for (int retry = 0; retry < maxRetries; retry++)
                 {
                     try
                     {
+                        logger.LogInformation($"Попытка подключения к БД и применения миграций (Попытка {retry + 1} из {maxRetries})...");
+
                         await context.Database.MigrateAsync();
 
-                        var dataSeeder = services.GetRequiredService<DataSeederService>();
-                        if (!await context.Roles.AnyAsync())
-                        {
-                            await dataSeeder.SeedDataAsync();
-                        }
-                        break;
+                        await userInit.InitializeAsync();
+                        await dataSeeder.SeedDataAsync();
+
+                        logger.LogInformation("База данных успешно создана и инициализирована.");
+                        break; 
                     }
                     catch (Exception ex)
                     {
-                        retries--;
-                        logger.LogWarning(ex, $"База данных еще не готова или повреждена. Ожидание... (Осталось попыток: {retries})");
-                        await Task.Delay(5000);
-                        if (retries == 0) throw;
+                        logger.LogWarning($"База данных еще не готова. Ожидание... (Осталось попыток: {maxRetries - retry - 1})");
+
+                        if (retry == maxRetries - 1)
+                        {
+                            logger.LogError(ex, "Критическая ошибка: не удалось инициализировать базу данных после нескольких попыток.");
+                            throw; 
+                        }
+
+                        await Task.Delay(delayInMilliseconds);
                     }
                 }
             }
