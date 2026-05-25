@@ -121,7 +121,6 @@ namespace EmployeeDirectory
                 var userInit = services.GetRequiredService<UserInitializationService>();
                 var dataSeeder = services.GetRequiredService<DataSeederService>();
 
-                // Настройки повторных попыток для Docker или слабого ПК
                 int maxRetries = 5;
                 int delayInMilliseconds = 3000;
 
