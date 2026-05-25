@@ -20,7 +20,7 @@ namespace EmployeeDirectory.Models
         public string? CityPhone { get; set; }
 
         [StringLength(20)]
-        [RegularExpression(@"^\d{3,5}$", ErrorMessage = "Внутренний номер должен состоять из 3-5 цифр")]
+        [RegularExpression(@"^[0-9\s\-]+$", ErrorMessage = "Внутренний номер может содержать только цифры, пробелы и дефисы")]
         [Display(Name = "Внутренний номер")]
         public string? LocalPhone { get; set; }
 
