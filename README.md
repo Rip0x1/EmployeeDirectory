@@ -114,7 +114,7 @@ docker-compose up -d --build
 
 ## 🌐 Веб-интерфейсы
 
-- **Основное приложение:** http://localhost:5000
+- **Основное приложение:** https://localhost:5051 или http://localhost:5050
 - **База данных:** localhost:7777 (pgAdmin)
 
 ---
@@ -123,7 +123,7 @@ docker-compose up -d --build
 
 **Параметры подключения:**
 - **Host:** `localhost`
-- **Port:** `7777`
+- **Port:** `5432`
 - **Database:** `EmployeeDirectory`
 - **Username:** `postgres`
 - **Password:** `root`
