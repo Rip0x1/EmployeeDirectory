@@ -608,10 +608,10 @@
                                         <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.email || 'Не указано'}</td>
                                         <td class="text-center">
                                             <div class="d-flex gap-2 justify-content-center">
-                                                <a href="/Employees/Edit/${emp.id}?returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary">
+                                                <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-edit me-1"></i>Изменить
                                                 </a>
-                                                <a href="/Employees/Delete/${emp.id}?returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger">
+                                                <a href="/Employees/Delete?id=${emp.id}&returnUrl=/Employees/Manage" class="btn btn-sm btn-outline-danger">
                                                     <i class="fas fa-trash me-1"></i>Удалить
                                                 </a>
                                             </div>

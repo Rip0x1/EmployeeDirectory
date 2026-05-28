@@ -445,14 +445,24 @@
                     let positionBadge = emp.positionDescription ? `<span class="position-badge ${badgeClass}">${emp.positionDescription}</span>` : '<span class="text-muted fst-italic">-</span>';
                     let fullNameText = (emp.fullName && emp.fullName !== '-') ? ` <strong>${emp.fullName}</strong>` : '';
 
-                    html += `
-                        <tr>
-                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${positionBadge}${fullNameText}</td>
-                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.cityPhone || 'Не указано'}</td>
-                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
-                            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.mobilePhone || 'Не указано'}</td>
-                            <td class="text-center">${emp.email || 'Не указано'}</td>
-                        </tr>`;
+    html += `
+        <tr>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${positionBadge}${fullNameText}</td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.cityPhone || 'Не указано'}</td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.localPhone || 'Не указано'}</td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.mobilePhone || 'Не указано'}</td>
+            <td class="text-center" style="border-right: 3px solid rgb(33, 37, 41) !important;">${emp.email || 'Не указано'}</td>
+            <td class="text-center">
+                <div class="d-flex flex-column gap-1 align-items-stretch actions-stack">
+                    <a href="/Employees/Edit?id=${emp.id}&returnUrl=/Departments" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-edit me-1"></i>Изменить
+                    </a>
+                    <a href="/Employees/Delete?id=${emp.id}&returnUrl=/Departments" class="btn btn-sm btn-outline-danger w-100">
+                        <i class="fas fa-trash me-1"></i>Удалить
+                    </a>
+                </div>
+            </td>
+        </tr>`;
                 });
 
                 if (tbody) tbody.innerHTML = html;
