@@ -96,7 +96,7 @@ namespace EmployeeDirectory.Services
                     worksheet.Cell(currentRow, 4).Value = string.IsNullOrEmpty(emp.MobilePhone) ? "Не указано" : emp.MobilePhone;
                     worksheet.Cell(currentRow, 5).Value = string.IsNullOrEmpty(emp.Email) ? "Не указано" : emp.Email;
 
-                    var rowRange = worksheet.Range(currentRow, 1, currentRow, 4);
+                    var rowRange = worksheet.Range(currentRow, 1, currentRow, 5);
                     rowRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                     rowRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 

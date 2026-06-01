@@ -5,17 +5,10 @@ using System.Text.Json;
 
 namespace EmployeeDirectory.Maui.Services;
 
-using System.Text.Json;
-using System.Net.Http.Json;
-
 public class EmployeeApiService
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonOptions;
-
-    private readonly string _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-                                       ? "http://10.0.2.2:7019" 
-                                       : "https://localhost:7019";
 
     public EmployeeApiService(HttpClient httpClient)
     {
@@ -27,7 +20,7 @@ public class EmployeeApiService
     {
         try
         {
-            var url = $"{_baseUrl}/api/employees?page={page}&pageSize={pageSize}";
+            var url = $"api/employees?page={page}&pageSize={pageSize}";
 
             var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
@@ -48,7 +41,7 @@ public class EmployeeApiService
     {
         try
         {
-            var url = $"{_baseUrl}/api/Search?search={search}&departmentSearch={departmentSearch}";
+            var url = $"api/Search?search={search}&departmentSearch={departmentSearch}";
 
             var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
@@ -66,5 +59,4 @@ public class EmployeeApiService
             return new();
         }
     }
-
 }

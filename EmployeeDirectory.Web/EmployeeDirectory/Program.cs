@@ -12,8 +12,8 @@ namespace EmployeeDirectory
     {
         public static async Task Main(string[] args)
         {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
             var builder = WebApplication.CreateBuilder(args);
-
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.ListenLocalhost(5050);

@@ -8,7 +8,6 @@ namespace EmployeeDirectory.Services
     {
         public QuestPdfService()
         {
-            QuestPDF.Settings.License = LicenseType.Community;
         }
 
         public byte[] GenerateEmployeeDirectoryPdf(List<EmployeeDirectory.Models.Employee> employees, string orientation = "portrait")
